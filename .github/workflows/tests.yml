@@ -1,0 +1,179 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [main, develop, claude/**]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  backend-tests:
+    name: Backend Tests (Python + PostgreSQL)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: platziflix_user
+          POSTGRES_PASSWORD: platziflix_password
+          POSTGRES_DB: platziflix_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install UV (Python package manager)
+        run: |
+          pip install uv
+
+      - name: Install Backend dependencies
+        run: |
+          cd Backend
+          uv pip install --system -e .
+          uv pip install --system pytest pytest-cov pytest-asyncio httpx
+
+      - name: Run Alembic migrations
+        env:
+          DATABASE_URL: postgresql://platziflix_user:platziflix_password@localhost:5432/platziflix_test
+        run: |
+          cd Backend
+          alembic upgrade head
+
+      - name: Run Backend tests with coverage
+        env:
+          DATABASE_URL: postgresql://platziflix_user:platziflix_password@localhost:5432/platziflix_test
+        run: |
+          cd Backend
+          pytest app/tests/ -v --cov=app --cov-report=xml --cov-report=term-missing
+
+      - name: Upload Backend coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./Backend/coverage.xml
+          flags: backend
+          name: backend-coverage
+
+  frontend-tests:
+    name: Frontend Tests (Next.js + TypeScript)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'yarn'
+          cache-dependency-path: Frontend/yarn.lock
+
+      - name: Install Frontend dependencies
+        run: |
+          cd Frontend
+          yarn install --frozen-lockfile
+
+      - name: Run ESLint
+        run: |
+          cd Frontend
+          yarn lint
+
+      - name: Run TypeScript type check
+        run: |
+          cd Frontend
+          yarn tsc --noEmit
+
+      - name: Run Frontend tests with coverage
+        run: |
+          cd Frontend
+          yarn test --coverage --passWithNoTests
+
+      - name: Upload Frontend coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./Frontend/coverage/coverage-final.json
+          flags: frontend
+          name: frontend-coverage
+
+  integration-health-check:
+    name: Integration - API Health Check
+    runs-on: ubuntu-latest
+    needs: [backend-tests]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start Backend with Docker Compose
+        run: |
+          cd Backend
+          docker-compose up -d
+
+      - name: Wait for services to be ready
+        run: |
+          echo "Waiting for Backend API..."
+          timeout 60 bash -c 'until curl -f http://localhost:8000/health; do sleep 2; done'
+
+      - name: Test API health endpoint
+        run: |
+          response=$(curl -s http://localhost:8000/health)
+          echo "Health check response: $response"
+          echo "$response" | jq -e '.status == "ok"' || exit 1
+
+      - name: Test courses endpoint
+        run: |
+          response=$(curl -s http://localhost:8000/courses)
+          echo "Courses response: $response"
+          echo "$response" | jq -e 'type == "array"' || exit 1
+
+      - name: Show Docker logs on failure
+        if: failure()
+        run: |
+          cd Backend
+          docker-compose logs
+
+      - name: Cleanup
+        if: always()
+        run: |
+          cd Backend
+          docker-compose down -v
+
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests, integration-health-check]
+    if: always()
+
+    steps:
+      - name: Check test results
+        run: |
+          echo "==================================="
+          echo "Test Results Summary"
+          echo "==================================="
+          echo "Backend Tests: ${{ needs.backend-tests.result }}"
+          echo "Frontend Tests: ${{ needs.frontend-tests.result }}"
+          echo "Integration Tests: ${{ needs.integration-health-check.result }}"
+          echo "==================================="
+
+      - name: Fail if any test failed
+        if: |
+          needs.backend-tests.result == 'failure' ||
+          needs.frontend-tests.result == 'failure' ||
+          needs.integration-health-check.result == 'failure'
+        run: |
+          echo "❌ Some tests failed. Check the logs above."
+          exit 1

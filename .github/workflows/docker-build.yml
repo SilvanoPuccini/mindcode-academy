@@ -1,0 +1,172 @@
+name: Docker Build & Test
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'Backend/**'
+      - '.github/workflows/docker-build.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'Backend/**'
+
+jobs:
+  docker-build-test:
+    name: Build & Test Docker Images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build Backend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Backend
+          push: false
+          load: true
+          tags: platziflix-backend:${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+
+      - name: Start services with Docker Compose
+        run: |
+          cd Backend
+          # Override image tag to use the one we just built
+          export BACKEND_IMAGE=platziflix-backend:${{ github.sha }}
+          docker-compose up -d
+
+      - name: Wait for services to be healthy
+        run: |
+          echo "Waiting for PostgreSQL..."
+          timeout 60 bash -c 'until docker-compose -f Backend/docker-compose.yml exec -T db pg_isready -U platziflix_user; do sleep 2; done'
+
+          echo "Waiting for API..."
+          timeout 60 bash -c 'until curl -f http://localhost:8000/health; do sleep 2; done'
+
+      - name: Run migrations
+        run: |
+          cd Backend
+          docker-compose exec -T api alembic upgrade head
+
+      - name: Test API endpoints
+        run: |
+          echo "Testing health endpoint..."
+          curl -f http://localhost:8000/health | jq
+
+          echo "Testing courses endpoint..."
+          curl -f http://localhost:8000/courses | jq
+
+          echo "Testing docs endpoint..."
+          curl -f http://localhost:8000/docs > /dev/null
+
+      - name: Run tests inside container
+        run: |
+          cd Backend
+          docker-compose exec -T api pytest app/tests/ -v
+
+      - name: Check container logs
+        if: failure()
+        run: |
+          cd Backend
+          echo "=== API Logs ==="
+          docker-compose logs api
+          echo "=== DB Logs ==="
+          docker-compose logs db
+
+      - name: Cleanup
+        if: always()
+        run: |
+          cd Backend
+          docker-compose down -v
+
+      # Move cache to avoid growing indefinitely
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache || true
+
+  docker-security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image for scanning
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Backend
+          push: false
+          load: true
+          tags: platziflix-backend:scan
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'platziflix-backend:scan'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  docker-size-check:
+    name: Check Image Size
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Backend
+          push: false
+          load: true
+          tags: platziflix-backend:size-check
+
+      - name: Check image size
+        run: |
+          SIZE=$(docker image inspect platziflix-backend:size-check --format='{{.Size}}')
+          SIZE_MB=$(echo "scale=2; $SIZE / 1048576" | bc)
+
+          echo "Docker image size: ${SIZE_MB} MB"
+
+          # Warn if image is larger than 1GB
+          if [ $(echo "$SIZE_MB > 1024" | bc) -eq 1 ]; then
+            echo "::warning::Image size (${SIZE_MB}MB) is larger than 1GB. Consider optimization."
+          fi
+
+          # Show image layers
+          echo "=== Image Layers ==="
+          docker history platziflix-backend:size-check --human=true --no-trunc
+
+      - name: Cleanup
+        if: always()
+        run: docker rmi platziflix-backend:size-check || true
