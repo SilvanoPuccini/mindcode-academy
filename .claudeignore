@@ -1,0 +1,90 @@
+# .claudeignore
+# Files and directories that Claude should ignore for better performance
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+.Python
+
+# Build outputs
+Frontend/.next/
+Frontend/out/
+Frontend/build/
+Frontend/dist/
+Backend/app/__pycache__/
+*.egg-info/
+dist/
+build/
+
+# Database
+postgres_data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# IDE and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.bak
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+
+# Mobile build artifacts
+Mobile/PlatziFlixAndroid/.gradle/
+Mobile/PlatziFlixAndroid/build/
+Mobile/PlatziFlixAndroid/app/build/
+Mobile/PlatziFlixAndroid/local.properties
+Mobile/PlatziFlixiOS/DerivedData/
+Mobile/PlatziFlixiOS/build/
+Mobile/PlatziFlixiOS/Pods/
+Mobile/PlatziFlixiOS/*.xcworkspace/xcuserdata/
+
+# Testing
+coverage/
+.coverage
+htmlcov/
+.pytest_cache/
+.vitest/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Package files
+*.tar.gz
+*.zip
+*.rar
+
+# Compiled files
+*.pyc
+*.pyo
+*.class
+*.o
+*.so
+*.dylib
