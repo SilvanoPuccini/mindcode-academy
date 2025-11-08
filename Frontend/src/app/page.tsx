@@ -19,17 +19,17 @@ export default async function Home() {
     <div className={styles.page}>
       {/* Banner superior */}
       <header className={styles.banner}>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <span className={styles.bannerPrimary}>MIN</span>
-          <span className={styles.bannerAccent}>DIA</span>
+        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+          <span className={styles.bannerPrimary}>MIND</span>
+          <span className={styles.bannerAccent}>IA</span>
         </div>
       </header>
       <div style={{ textAlign: 'center', marginTop: '-1.5rem', marginBottom: '2rem' }}>
-        <span className={styles.bannerSub}>Aprende con inteligencia</span>
+        <span className={styles.bannerSub}>Aprende con inteligencia artificial</span>
       </div>
       {/* Nombres laterales */}
-      <div className={styles.verticalLeft}>MIN</div>
-      <div className={styles.verticalRight}>DIA</div>
+      <div className={styles.verticalLeft}>MIND</div>
+      <div className={styles.verticalRight}>IA</div>
       {/* Grid de cursos */}
       <main className={styles.main}>
         <div className={styles.coursesGrid}>
