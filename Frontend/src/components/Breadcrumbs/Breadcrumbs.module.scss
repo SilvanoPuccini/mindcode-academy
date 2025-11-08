@@ -1,0 +1,74 @@
+@import '@/styles/vars.scss';
+
+.breadcrumbs {
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+}
+
+.list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  list-style: none;
+  margin: 0;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-inter);
+  font-size: 0.9rem;
+}
+
+.link {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+
+  &:hover {
+    color: white;
+    background: rgba(102, 126, 234, 0.2);
+    text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+  }
+
+  &:focus {
+    outline: 2px solid rgba(102, 126, 234, 0.5);
+    outline-offset: 2px;
+  }
+}
+
+.separator {
+  color: rgba(102, 126, 234, 0.6);
+  font-weight: 300;
+  user-select: none;
+}
+
+.current {
+  color: white;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  background: rgba(102, 126, 234, 0.15);
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .list {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .item {
+    font-size: 0.85rem;
+  }
+}

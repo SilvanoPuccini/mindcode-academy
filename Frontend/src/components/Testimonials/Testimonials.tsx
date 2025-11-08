@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import styles from './Testimonials.module.scss';
 
 const testimonials = [
@@ -65,7 +66,14 @@ export function Testimonials() {
                 ))}
               </div>
               <div className={styles.author}>
-                <img src={testimonial.image} alt={testimonial.name} className={styles.avatar} />
+                <Image
+                  src={testimonial.image}
+                  alt={testimonial.name}
+                  className={styles.avatar}
+                  width={64}
+                  height={64}
+                  loading="lazy"
+                />
                 <div className={styles.info}>
                   <div className={styles.name}>{testimonial.name}</div>
                   <div className={styles.role}>{testimonial.role}</div>
