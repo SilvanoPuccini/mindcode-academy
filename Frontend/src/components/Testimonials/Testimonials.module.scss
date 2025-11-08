@@ -138,7 +138,7 @@
   font-family: var(--font-inter);
   font-size: 1.3rem;
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
   margin-bottom: 2rem;
   position: relative;
   z-index: 1;
@@ -209,7 +209,7 @@
 .role {
   font-family: var(--font-inter);
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
 }
 
 .dots {
