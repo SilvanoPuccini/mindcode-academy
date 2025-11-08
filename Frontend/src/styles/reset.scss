@@ -43,6 +43,9 @@ table {
   border-spacing: 0;
 }
 
+/* Import theme CSS variables */
+@import './theme.css';
+
 /* Smooth theme transitions */
 * {
   transition: background-color 0.3s ease,
