@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import styles from "./page.module.scss";
 import { Course } from "@/types";
 import { Course as CourseComponent } from "@/components/Course/Course";
@@ -14,31 +14,56 @@ import { Footer } from "@/components/Footer/Footer";
 import { ScrollProgress } from "@/components/ScrollProgress/ScrollProgress";
 import { SkeletonCourse } from "@/components/SkeletonCourse/SkeletonCourse";
 import { useCourses } from "@/contexts/CourseContext";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import Link from "next/link";
+
+// Wrapper component for individual course cards with scroll reveal
+// Memoized to prevent unnecessary re-renders
+const CourseCardWrapper = ({ course }: { course: Course }) => {
+  const { ref, isVisible } = useScrollReveal({ threshold: 0.2 });
+
+  return (
+    <Link
+      href={`/course/${course.slug}`}
+      ref={ref as React.RefObject<HTMLAnchorElement>}
+      className={isVisible ? styles.visible : ''}
+    >
+      <CourseComponent
+        id={course.id}
+        name={course.name}
+        description={course.description}
+        thumbnail={course.thumbnail}
+        average_rating={course.average_rating}
+        total_ratings={course.total_ratings}
+      />
+    </Link>
+  );
+};
 
 export default function Home() {
   const { filteredCourses, setAllCourses } = useCourses();
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function getCourses() {
-      try {
-        const res = await fetch("http://localhost:8000/courses", { cache: "no-store" });
-        if (!res.ok) {
-          throw new Error("Failed to fetch courses");
-        }
-        const data: Course[] = await res.json();
-        setAllCourses(data);
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-      } finally {
-        // Simular mínimo de carga para UX suave
-        setTimeout(() => setLoading(false), 500);
+  // Memoize getCourses function to prevent recreation on every render
+  const getCourses = useCallback(async () => {
+    try {
+      const res = await fetch("http://localhost:8000/courses", { cache: "no-store" });
+      if (!res.ok) {
+        throw new Error("Failed to fetch courses");
       }
+      const data: Course[] = await res.json();
+      setAllCourses(data);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+    } finally {
+      // Simular mínimo de carga para UX suave
+      setTimeout(() => setLoading(false), 500);
     }
-
-    getCourses();
   }, [setAllCourses]);
+
+  useEffect(() => {
+    getCourses();
+  }, [getCourses]);
 
   return (
     <>
@@ -88,16 +113,7 @@ export default function Home() {
                   </div>
                 ) : (
                   filteredCourses.map((course) => (
-                    <Link href={`/course/${course.slug}`} key={course.id}>
-                      <CourseComponent
-                        id={course.id}
-                        name={course.name}
-                        description={course.description}
-                        thumbnail={course.thumbnail}
-                        average_rating={course.average_rating}
-                        total_ratings={course.total_ratings}
-                      />
-                    </Link>
+                    <CourseCardWrapper key={course.id} course={course} />
                   ))
                 )}
               </div>

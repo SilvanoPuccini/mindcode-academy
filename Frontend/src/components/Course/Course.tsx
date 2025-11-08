@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useMemo, memo } from 'react';
 import Image from 'next/image';
 import styles from "./Course.module.scss";
 import { Course as CourseType } from "@/types";
@@ -10,7 +10,7 @@ import { useToast } from "@/contexts/ToastContext";
 
 type CourseProps = Omit<CourseType, "slug">;
 
-export const Course = ({
+const CourseComponent = ({
   id,
   name,
   description,
@@ -41,8 +41,8 @@ export const Course = ({
     setTimeout(() => setIsAnimating(false), 600);
   };
 
-  // Determine badge type based on course properties
-  const getBadge = () => {
+  // Memoize badge calculation to prevent unnecessary recalculations
+  const badge = useMemo(() => {
     if (average_rating && average_rating >= 4.5 && total_ratings && total_ratings > 50) {
       return { type: 'top', label: '⭐ TOP RATED' };
     }
@@ -53,9 +53,7 @@ export const Course = ({
       return { type: 'new', label: '✨ NUEVO' };
     }
     return null;
-  };
-
-  const badge = getBadge();
+  }, [average_rating, total_ratings, id]);
 
   return (
     <article className={styles.courseCard}>
@@ -106,3 +104,6 @@ export const Course = ({
     </article>
   );
 };
+
+// Export memoized component to prevent unnecessary re-renders
+export const Course = memo(CourseComponent);
