@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Outfit, Inter } from "next/font/google";
+import { CourseProvider } from "@/contexts/CourseContext";
+import { ToastProvider } from "@/contexts/ToastContext";
+import { ToastContainer } from "@/components/Toast/Toast";
 import "../styles/reset.scss";
 
 // Outfit Bold - Para títulos y branding
@@ -35,7 +38,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${outfit.variable} ${inter.variable}`}>{children}</body>
+      <body className={`${outfit.variable} ${inter.variable}`}>
+        <ToastProvider>
+          <CourseProvider>
+            {children}
+            <ToastContainer />
+          </CourseProvider>
+        </ToastProvider>
+      </body>
     </html>
   );
 }

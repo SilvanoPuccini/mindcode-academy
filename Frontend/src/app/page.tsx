@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import styles from "./page.module.scss";
 import { Course } from "@/types";
 import { Course as CourseComponent } from "@/components/Course/Course";
@@ -8,19 +11,31 @@ import { Filters } from "@/components/Filters/Filters";
 import { Testimonials } from "@/components/Testimonials/Testimonials";
 import { Footer } from "@/components/Footer/Footer";
 import { ScrollProgress } from "@/components/ScrollProgress/ScrollProgress";
+import { useCourses } from "@/contexts/CourseContext";
 import Link from "next/link";
 
-async function getCourses(): Promise<Course[]> {
-  const res = await fetch("http://localhost:8000/courses", { cache: "no-store" });
-  if (!res.ok) {
-    throw new Error("Failed to fetch courses");
-  }
-  const data = await res.json();
-  return data;
-}
+export default function Home() {
+  const { filteredCourses, setAllCourses } = useCourses();
+  const [loading, setLoading] = useState(true);
 
-export default async function Home() {
-  const courses = await getCourses();
+  useEffect(() => {
+    async function getCourses() {
+      try {
+        const res = await fetch("http://localhost:8000/courses", { cache: "no-store" });
+        if (!res.ok) {
+          throw new Error("Failed to fetch courses");
+        }
+        const data: Course[] = await res.json();
+        setAllCourses(data);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    getCourses();
+  }, [setAllCourses]);
 
   return (
     <>
@@ -50,23 +65,29 @@ export default async function Home() {
                   Cursos <span className={styles.highlight}>Destacados</span>
                 </h2>
                 <p className={styles.sectionSubtitle}>
-                  {courses.length} cursos disponibles
+                  {loading ? "Cargando..." : `${filteredCourses.length} cursos encontrados`}
                 </p>
               </div>
 
               <div className={styles.coursesGrid}>
-                {courses.map((course) => (
-                  <Link href={`/course/${course.slug}`} key={course.id}>
-                    <CourseComponent
-                      id={course.id}
-                      name={course.name}
-                      description={course.description}
-                      thumbnail={course.thumbnail}
-                      average_rating={course.average_rating}
-                      total_ratings={course.total_ratings}
-                    />
-                  </Link>
-                ))}
+                {loading ? (
+                  <p>Cargando cursos...</p>
+                ) : filteredCourses.length === 0 ? (
+                  <p>No se encontraron cursos</p>
+                ) : (
+                  filteredCourses.map((course) => (
+                    <Link href={`/course/${course.slug}`} key={course.id}>
+                      <CourseComponent
+                        id={course.id}
+                        name={course.name}
+                        description={course.description}
+                        thumbnail={course.thumbnail}
+                        average_rating={course.average_rating}
+                        total_ratings={course.total_ratings}
+                      />
+                    </Link>
+                  ))
+                )}
               </div>
             </div>
           </div>
