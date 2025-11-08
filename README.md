@@ -1,4 +1,4 @@
-# 🎬 Platziflix
+# 🧠 Mind IA
 
 > Plataforma de cursos online multi-plataforma desarrollada con arquitectura moderna
 
@@ -26,7 +26,7 @@
 
 ## 🎯 Descripción
 
-**Platziflix** es una plataforma completa de gestión de cursos online que replica la experiencia visual de Netflix. El proyecto incluye:
+**Mind IA** es una plataforma completa de gestión de cursos online que replica la experiencia visual de Netflix. El proyecto incluye:
 
 - 🖥️ **Web App** - Interfaz moderna con Next.js 15 y React 19
 - 📱 **Mobile Apps** - Apps nativas para Android (Kotlin) e iOS (Swift)
