@@ -3,6 +3,7 @@ import { Outfit, Inter } from "next/font/google";
 import { CourseProvider } from "@/contexts/CourseContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import { ToastContainer } from "@/components/Toast/Toast";
+import { ScrollToTop } from "@/components/ScrollToTop/ScrollToTop";
 import "../styles/reset.scss";
 
 // Outfit Bold - Para títulos y branding
@@ -20,14 +21,68 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Mindia - Aprende con inteligencia",
-  description: "Donde la mente y la tecnología se encuentran para aprender. Plataforma de cursos online moderna e inteligente.",
-  keywords: ["cursos online", "aprendizaje", "tecnología", "educación"],
-  authors: [{ name: "Mindia" }],
+  metadataBase: new URL('https://mindia.com'),
+  title: {
+    default: "MIND IA - Aprende con inteligencia artificial",
+    template: "%s | MIND IA",
+  },
+  description: "Donde la mente y la inteligencia artificial se encuentran para aprender. Plataforma de cursos online con tecnología de IA para potenciar tu aprendizaje.",
+  keywords: [
+    "cursos online",
+    "aprendizaje",
+    "tecnología",
+    "educación",
+    "inteligencia artificial",
+    "IA",
+    "programación",
+    "desarrollo web",
+    "ciencia de datos",
+    "machine learning",
+    "cursos interactivos",
+    "educación online",
+    "MIND IA",
+  ],
+  authors: [{ name: "MIND IA" }],
+  creator: "MIND IA",
+  publisher: "MIND IA",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   openGraph: {
-    title: "Mindia - Aprende con inteligencia",
-    description: "Donde la mente y la tecnología se encuentran para aprender",
     type: "website",
+    locale: "es_ES",
+    url: "https://mindia.com",
+    siteName: "MIND IA",
+    title: "MIND IA - Aprende con inteligencia artificial",
+    description: "Donde la mente y la inteligencia artificial se encuentran para aprender.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "MIND IA - Plataforma de cursos online",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MIND IA - Aprende con inteligencia artificial",
+    description: "Donde la mente y la inteligencia artificial se encuentran para aprender.",
+    images: ["/og-image.png"],
+    creator: "@mindia",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
   },
 };
 
@@ -43,6 +98,7 @@ export default function RootLayout({
           <CourseProvider>
             {children}
             <ToastContainer />
+            <ScrollToTop />
           </CourseProvider>
         </ToastProvider>
       </body>

@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from './Navbar.module.scss';
+import { useCourses } from '@/contexts/CourseContext';
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const { favorites } = useCourses();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,7 +28,13 @@ export function Navbar() {
 
         {/* Menu */}
         <div className={styles.menu}>
-          <Link href="#cursos" className={styles.menuItem}>Cursos</Link>
+          <Link href="/#cursos" className={styles.menuItem}>Cursos</Link>
+          <Link href="/favorites" className={styles.menuItem}>
+            Favoritos
+            {favorites.length > 0 && (
+              <span className={styles.badge}>{favorites.length}</span>
+            )}
+          </Link>
           <Link href="#profesores" className={styles.menuItem}>Profesores</Link>
           <Link href="#categorias" className={styles.menuItem}>Categorías</Link>
         </div>
