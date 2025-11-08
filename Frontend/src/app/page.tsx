@@ -123,13 +123,6 @@ export default function Home() {
 
         {/* Testimonials */}
         <Testimonials />
-
-        {/* Nombres laterales decorativos */}
-        <div className={styles.verticalLeft}>MIND</div>
-        <div className={styles.verticalRight}>IA</div>
-
-        {/* Fondo de cuadrícula */}
-        <div className={styles.gridBg}></div>
       </div>
 
       {/* Footer */}
