@@ -12,6 +12,9 @@ from app.schemas.rating import (
     ErrorResponse
 )
 
+# Import routers
+from app.routers import auth, favorites, progress
+
 app = FastAPI(
     title=settings.project_name,
     version=settings.version,
@@ -20,10 +23,18 @@ app = FastAPI(
 
     ## Features
 
+    * **Authentication**: User registration and login with JWT
     * **Courses**: Browse and search intelligent courses
     * **Ratings**: Rate courses and view statistics
+    * **Progress**: Track course completion and progress
+    * **Favorites**: Save and manage favorite courses
     * **Teachers**: Course instructors information
     * **Lessons**: Structured course content
+
+    ## Authentication
+
+    Register a new account or login to receive a JWT token.
+    Use the token in Authorization header: `Bearer <token>`
 
     ## Rating System
 
@@ -34,6 +45,10 @@ app = FastAPI(
     """,
     openapi_tags=[
         {
+            "name": "authentication",
+            "description": "User registration, login and profile management"
+        },
+        {
             "name": "courses",
             "description": "Operations with courses"
         },
@@ -42,11 +57,24 @@ app = FastAPI(
             "description": "Course rating operations"
         },
         {
+            "name": "progress",
+            "description": "Track user progress in courses"
+        },
+        {
+            "name": "favorites",
+            "description": "Manage favorite courses"
+        },
+        {
             "name": "health",
             "description": "Health check endpoints"
         }
     ]
 )
+
+# Include routers
+app.include_router(auth.router)
+app.include_router(favorites.router)
+app.include_router(progress.router)
 
 
 def get_course_service(db: Session = Depends(get_db)) -> CourseService:
