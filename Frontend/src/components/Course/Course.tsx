@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Image from 'next/image';
 import styles from "./Course.module.scss";
 import { Course as CourseType } from "@/types";
 import { StarRating } from "@/components/StarRating/StarRating";
@@ -59,7 +60,15 @@ export const Course = ({
   return (
     <article className={styles.courseCard}>
       <div className={styles.thumbnailContainer}>
-        <img src={thumbnail} alt={name} className={styles.thumbnail} />
+        <Image
+          src={thumbnail}
+          alt={name}
+          className={styles.thumbnail}
+          width={400}
+          height={225}
+          loading="lazy"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        />
         {badge && (
           <span className={`${styles.badge} ${styles[badge.type]}`}>
             {badge.label}

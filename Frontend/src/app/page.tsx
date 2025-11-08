@@ -7,6 +7,7 @@ import { Course as CourseComponent } from "@/components/Course/Course";
 import { Navbar } from "@/components/Navbar/Navbar";
 import { Hero } from "@/components/Hero/Hero";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
+import { Categories } from "@/components/Categories/Categories";
 import { Filters } from "@/components/Filters/Filters";
 import { Testimonials } from "@/components/Testimonials/Testimonials";
 import { Footer } from "@/components/Footer/Footer";
@@ -52,8 +53,11 @@ export default function Home() {
         {/* Search Bar */}
         <SearchBar />
 
+        {/* Categories */}
+        <Categories />
+
         {/* Main Content with Filters */}
-        <main className={styles.contentSection}>
+        <main className={styles.contentSection} id="cursos">
           <div className={styles.container}>
             {/* Filters Sidebar */}
             <Filters />
