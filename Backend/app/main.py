@@ -16,14 +16,14 @@ app = FastAPI(
     title=settings.project_name,
     version=settings.version,
     description="""
-    Platziflix API - Platform for online courses
+    Mindia API - Donde la mente y la tecnología se encuentran para aprender
 
     ## Features
 
-    * **Courses**: Browse and search courses
+    * **Courses**: Browse and search intelligent courses
     * **Ratings**: Rate courses and view statistics
     * **Teachers**: Course instructors information
-    * **Lessons**: Course content structure
+    * **Lessons**: Structured course content
 
     ## Rating System
 
@@ -58,7 +58,7 @@ def get_course_service(db: Session = Depends(get_db)) -> CourseService:
 
 @app.get("/")
 def root() -> dict[str, str]:
-    return {"message": "Bienvenido a Platziflix API"}
+    return {"message": "Bienvenido a Mindia API - Donde la mente y la tecnología se encuentran para aprender"}
 
 
 @app.get("/health", tags=["health"])

@@ -19,13 +19,13 @@ export default async function Home() {
     <div className={styles.page}>
       {/* Banner superior */}
       <header className={styles.banner}>
-        <span className={styles.bannerRed}>PLATZI</span>
-        <span className={styles.bannerBlack}>FLIX</span>
-        <span className={styles.bannerSub}>CURSOS</span>
+        <span className={styles.bannerPrimary}>MIN</span>
+        <span className={styles.bannerAccent}>DIA</span>
+        <span className={styles.bannerSub}>Aprende con inteligencia</span>
       </header>
       {/* Nombres laterales */}
-      <div className={styles.verticalLeft}>PLATZI</div>
-      <div className={styles.verticalRight}>FLIX</div>
+      <div className={styles.verticalLeft}>MIN</div>
+      <div className={styles.verticalRight}>DIA</div>
       {/* Grid de cursos */}
       <main className={styles.main}>
         <div className={styles.coursesGrid}>
