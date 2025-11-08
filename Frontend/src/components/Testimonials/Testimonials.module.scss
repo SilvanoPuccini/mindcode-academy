@@ -31,6 +31,65 @@
   filter: drop-shadow(0 0 20px color('accent-glow'));
 }
 
+.carouselWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+
+  @media (max-width: 768px) {
+    gap: 0;
+  }
+}
+
+.navBtn {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: color('accent');
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+
+  &:hover {
+    background: rgba(6, 182, 212, 0.15);
+    border-color: color('accent');
+    box-shadow: 0 0 20px color('accent-glow');
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
+.navPrev {
+  @media (max-width: 768px) {
+    left: 0.5rem;
+  }
+}
+
+.navNext {
+  @media (max-width: 768px) {
+    right: 0.5rem;
+  }
+}
+
 .carousel {
   position: relative;
   height: 400px;
@@ -38,6 +97,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 1;
+  touch-action: pan-y;
 }
 
 .card {

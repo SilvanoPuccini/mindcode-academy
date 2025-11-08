@@ -3,7 +3,7 @@
 .page {
   min-height: 100vh;
   padding: 0;
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);
   position: relative;
   overflow-x: hidden;
 }
@@ -232,7 +232,7 @@
   font-family: var(--font-outfit);
   font-size: 2.8rem;
   font-weight: 900;
-  color: color('text-white');
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
 
   @media (max-width: 768px) {
@@ -251,7 +251,7 @@
 .sectionSubtitle {
   font-family: var(--font-inter);
   font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -267,7 +267,7 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 4rem 2rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
   font-family: var(--font-inter);
   font-size: 1.125rem;
 }

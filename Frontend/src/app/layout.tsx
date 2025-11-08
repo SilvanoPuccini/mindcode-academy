@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit, Inter } from "next/font/google";
 import { CourseProvider } from "@/contexts/CourseContext";
 import { ToastProvider } from "@/contexts/ToastContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ToastContainer } from "@/components/Toast/Toast";
 import { ScrollToTop } from "@/components/ScrollToTop/ScrollToTop";
 import "../styles/reset.scss";
@@ -113,13 +114,15 @@ export default function RootLayout({
         <meta name="theme-color" content="#06B6D4" />
       </head>
       <body className={`${outfit.variable} ${inter.variable}`}>
-        <ToastProvider>
-          <CourseProvider>
-            {children}
-            <ToastContainer />
-            <ScrollToTop />
-          </CourseProvider>
-        </ToastProvider>
+        <ThemeProvider>
+          <ToastProvider>
+            <CourseProvider>
+              {children}
+              <ToastContainer />
+              <ScrollToTop />
+            </CourseProvider>
+          </ToastProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

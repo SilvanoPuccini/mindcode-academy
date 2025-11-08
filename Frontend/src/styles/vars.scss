@@ -40,8 +40,64 @@ $colors: (
   @return map-get($colors, $color-name);
 }
 
+// ============================================
+// CSS Custom Properties for Dark Mode
+// ============================================
+
+:root {
+  // Light Mode (Default)
+  --bg-primary: #ffffff;
+  --bg-secondary: #F9FAFB;
+  --bg-tertiary: #f2f2f2;
+  --bg-card: #ffffff;
+
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+
+  --border-color: rgba(0, 0, 0, 0.1);
+  --border-light: rgba(0, 0, 0, 0.05);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 6px 24px rgba(0, 0, 0, 0.10);
+  --shadow-lg: 0 12px 32px rgba(30, 58, 138, 0.15);
+
+  --overlay-bg: rgba(255, 255, 255, 0.9);
+  --blur-bg: rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="dark"] {
+  // Dark Mode
+  --bg-primary: #0F172A;
+  --bg-secondary: #1E293B;
+  --bg-tertiary: #334155;
+  --bg-card: #1E293B;
+
+  --text-primary: #F1F5F9;
+  --text-secondary: #CBD5E1;
+  --text-tertiary: #94A3B8;
+
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-light: rgba(255, 255, 255, 0.05);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 6px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 32px rgba(6, 182, 212, 0.25);
+
+  --overlay-bg: rgba(15, 23, 42, 0.9);
+  --blur-bg: rgba(15, 23, 42, 0.8);
+}
+
+// Smooth theme transition
+* {
+  transition: background-color 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+}
+
 // Usage example:
 // .my-element {
 //   color: color('primary');
-//   background-color: color('white');
+//   background-color: var(--bg-primary);
 // }

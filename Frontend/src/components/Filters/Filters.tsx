@@ -1,6 +1,7 @@
 "use client";
 
 import { useCourses } from '@/contexts/CourseContext';
+import { useRipple } from '@/hooks/useRipple';
 import styles from './Filters.module.scss';
 
 const categories = [
@@ -17,6 +18,7 @@ const durations = ['< 2 horas', '2-5 horas', '5-10 horas', '> 10 horas'];
 
 export function Filters() {
   const { filters, setFilters } = useCourses();
+  const rippleProps = useRipple();
 
   const toggleLevel = (level: string) => {
     const newLevels = filters.levels.includes(level)
@@ -53,7 +55,9 @@ export function Filters() {
     <aside className={styles.filters}>
       <div className={styles.header}>
         <h3 className={styles.title}>Filtros</h3>
-        <button className={styles.clearBtn} onClick={handleClearFilters}>Limpiar</button>
+        <button className={`${styles.clearBtn} ripple-container`} onClick={handleClearFilters} {...rippleProps}>
+          Limpiar
+        </button>
       </div>
 
       {/* Categories */}
@@ -63,8 +67,9 @@ export function Filters() {
           {categories.map(category => (
             <button
               key={category.id}
-              className={`${styles.categoryBtn} ${filters.category === category.id ? styles.active : ''}`}
+              className={`${styles.categoryBtn} ${filters.category === category.id ? styles.active : ''} ripple-container`}
               onClick={() => handleCategoryChange(category.id)}
+              {...rippleProps}
             >
               <span>{category.name}</span>
               <span className={styles.count}>{category.count}</span>
