@@ -18,7 +18,7 @@
   font-weight: 700;
   text-align: center;
   margin-bottom: 3rem;
-  color: white;
+  color: var(--text-primary);
 
   @media (max-width: 768px) {
     font-size: 2rem;
@@ -53,9 +53,9 @@
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--bg-card);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--border-color);
   border-radius: 20px;
   padding: 2rem 1.5rem;
   display: flex;
@@ -67,6 +67,7 @@
   position: relative;
   overflow: hidden;
   animation: slideUp 0.6s ease-out backwards;
+  box-shadow: var(--shadow-md);
 
   @media (max-width: 768px) {
     padding: 1.5rem 1rem;
@@ -79,25 +80,25 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.1), transparent);
+    background: radial-gradient(circle at center, color('accent-glow'), transparent);
     opacity: 0;
     transition: opacity 0.4s ease;
   }
 
   &:hover {
     transform: translateY(-8px) rotate(2deg) scale(1.05);
-    border-color: rgba(255, 255, 255, 0.3);
+    border-color: color('accent');
     box-shadow:
-      0 20px 40px rgba(0, 0, 0, 0.3),
-      0 0 30px rgba(102, 126, 234, 0.3);
+      var(--shadow-lg),
+      0 0 30px color('accent-glow');
 
     &::before {
-      opacity: 1;
+      opacity: 0.1;
     }
 
     .iconCircle {
       transform: scale(1.1) rotate(10deg);
-      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 10px 30px color('accent-glow');
     }
 
     .icon {
@@ -106,10 +107,10 @@
   }
 
   &.active {
-    background: rgba(102, 126, 234, 0.15);
-    border-color: rgba(102, 126, 234, 0.5);
+    background: var(--bg-tertiary);
+    border-color: color('accent');
     box-shadow:
-      0 10px 30px rgba(102, 126, 234, 0.3),
+      0 10px 30px color('accent-glow'),
       inset 0 0 20px rgba(102, 126, 234, 0.1);
 
     .iconCircle {
@@ -152,7 +153,7 @@
   font-family: var(--font-inter);
   font-size: 1rem;
   font-weight: 600;
-  color: white;
+  color: var(--text-primary);
   text-align: center;
   margin: 0;
 
