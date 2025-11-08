@@ -7,6 +7,9 @@ from .course import Course
 from .lesson import Lesson
 from .course_teacher import course_teachers
 from .course_rating import CourseRating
+from .user import User
+from .user_favorite import UserFavorite
+from .user_course_progress import UserCourseProgress
 
 # Export all models for easy importing
 __all__ = [
@@ -16,5 +19,8 @@ __all__ = [
     'Course',
     'Lesson',
     'course_teachers',
-    'CourseRating'
+    'CourseRating',
+    'User',
+    'UserFavorite',
+    'UserCourseProgress',
 ] 

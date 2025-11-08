@@ -1,0 +1,212 @@
+@import '../../styles/vars.scss';
+
+.footer {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(6, 182, 212, 0.2);
+  padding: 4rem 2rem 2rem;
+  margin-top: 6rem;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 3rem;
+  margin-bottom: 3rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.logo {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-family: var(--font-outfit);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.logoMind {
+  background: linear-gradient(135deg, color('primary') 0%, color('secondary') 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 10px color('primary-glow'));
+}
+
+.logoIA {
+  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 10px color('accent-glow'));
+}
+
+.description {
+  color: var(--text-secondary);
+  font-family: var(--font-inter);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.social {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.socialLink {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  transition: all 0.3s;
+
+  &:hover {
+    background: rgba(6, 182, 212, 0.15);
+    border-color: color('accent');
+    color: color('accent');
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px color('accent-glow');
+  }
+}
+
+.columnTitle {
+  font-family: var(--font-outfit);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+
+  a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-family: var(--font-inter);
+    font-size: 0.95rem;
+    transition: all 0.3s;
+    display: inline-block;
+
+    &:hover {
+      color: color('accent');
+      transform: translateX(5px);
+      filter: drop-shadow(0 0 5px color('accent-glow'));
+    }
+  }
+}
+
+.newsletterText {
+  color: var(--text-secondary);
+  font-family: var(--font-inter);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.newsletterForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.newsletterInput {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 0.9rem 1.2rem;
+  color: var(--text-primary);
+  font-family: var(--font-inter);
+  font-size: 0.95rem;
+  transition: all 0.3s;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  &:focus {
+    outline: none;
+    border-color: color('accent');
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 20px color('accent-glow');
+  }
+}
+
+.newsletterBtn {
+  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 0.9rem 1.5rem;
+  color: var(--text-primary);
+  font-family: var(--font-inter);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(6, 182, 212, 0.6);
+    filter: brightness(1.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.bottom {
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.copyright {
+  color: var(--text-tertiary);
+  font-family: var(--font-inter);
+  font-size: 0.9rem;
+}
+
+.brandGradient {
+  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}

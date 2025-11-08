@@ -12,18 +12,29 @@ from app.schemas.rating import (
     ErrorResponse
 )
 
+# Import routers
+from app.routers import auth, favorites, progress
+
 app = FastAPI(
     title=settings.project_name,
     version=settings.version,
     description="""
-    Platziflix API - Platform for online courses
+    Mindia API - Donde la mente y la tecnología se encuentran para aprender
 
     ## Features
 
-    * **Courses**: Browse and search courses
+    * **Authentication**: User registration and login with JWT
+    * **Courses**: Browse and search intelligent courses
     * **Ratings**: Rate courses and view statistics
+    * **Progress**: Track course completion and progress
+    * **Favorites**: Save and manage favorite courses
     * **Teachers**: Course instructors information
-    * **Lessons**: Course content structure
+    * **Lessons**: Structured course content
+
+    ## Authentication
+
+    Register a new account or login to receive a JWT token.
+    Use the token in Authorization header: `Bearer <token>`
 
     ## Rating System
 
@@ -34,6 +45,10 @@ app = FastAPI(
     """,
     openapi_tags=[
         {
+            "name": "authentication",
+            "description": "User registration, login and profile management"
+        },
+        {
             "name": "courses",
             "description": "Operations with courses"
         },
@@ -42,11 +57,24 @@ app = FastAPI(
             "description": "Course rating operations"
         },
         {
+            "name": "progress",
+            "description": "Track user progress in courses"
+        },
+        {
+            "name": "favorites",
+            "description": "Manage favorite courses"
+        },
+        {
             "name": "health",
             "description": "Health check endpoints"
         }
     ]
 )
+
+# Include routers
+app.include_router(auth.router)
+app.include_router(favorites.router)
+app.include_router(progress.router)
 
 
 def get_course_service(db: Session = Depends(get_db)) -> CourseService:
@@ -58,7 +86,7 @@ def get_course_service(db: Session = Depends(get_db)) -> CourseService:
 
 @app.get("/")
 def root() -> dict[str, str]:
-    return {"message": "Bienvenido a Platziflix API"}
+    return {"message": "Bienvenido a Mindia API - Donde la mente y la tecnología se encuentran para aprender"}
 
 
 @app.get("/health", tags=["health"])

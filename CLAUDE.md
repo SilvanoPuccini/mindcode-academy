@@ -1,8 +1,8 @@
-# Platziflix - Proyecto Multi-plataforma
+# Mind IA - Proyecto Multi-plataforma
 
 ## Arquitectura del Sistema
 
-Platziflix es una plataforma de cursos online con arquitectura multi-plataforma que incluye:
+Mind IA es una plataforma de cursos online con arquitectura multi-plataforma que incluye:
 - **Backend**: API REST con FastAPI + PostgreSQL
 - **Frontend**: Aplicación web con Next.js 15
 - **Mobile**: Apps nativas Android (Kotlin) + iOS (Swift)
@@ -56,10 +56,33 @@ claude-code/
 
 ## API Endpoints
 
+### Cursos
 - `GET /` - Bienvenida
 - `GET /health` - Health check + DB connectivity
 - `GET /courses` - Lista todos los cursos
 - `GET /courses/{slug}` - Detalle de curso por slug
+
+### Ratings (Sistema de Calificaciones)
+- `GET /courses/{id}/ratings` - Obtener ratings de un curso
+- `POST /courses/{id}/ratings` - Agregar rating (body: user_id, rating)
+- `PUT /courses/{id}/ratings/{user_id}` - Actualizar rating existente
+- `DELETE /courses/{id}/ratings/{user_id}` - Eliminar rating (soft delete)
+- `GET /courses/{id}/ratings/stats` - Estadísticas (promedio, distribución)
+- `GET /courses/{id}/ratings/user/{user_id}` - Rating específico de usuario
+
+### Autenticación
+- `POST /auth/register` - Registrar nuevo usuario
+- `POST /auth/login` - Iniciar sesión (retorna JWT)
+- `GET /auth/me` - Obtener perfil del usuario autenticado
+
+### Favoritos
+- `GET /favorites` - Lista de cursos favoritos del usuario
+- `POST /favorites/{course_id}` - Agregar curso a favoritos
+- `DELETE /favorites/{course_id}` - Quitar curso de favoritos
+
+### Progreso
+- `GET /progress` - Progreso del usuario en todos los cursos
+- `POST /progress` - Actualizar progreso de una clase
 
 ## Comandos de Desarrollo
 
@@ -103,13 +126,39 @@ yarn lint         # Linter
 
 ## Funcionalidades Implementadas
 
+### Backend
+- ✅ API REST con FastAPI
+- ✅ Sistema de autenticación JWT
+- ✅ Sistema de ratings y reseñas con soft delete
+- ✅ Gestión de favoritos por usuario
+- ✅ Tracking de progreso de cursos
+- ✅ Base de datos PostgreSQL con migraciones Alembic
+- ✅ Health checks de API y DB
+- ✅ Documentación automática con Swagger
+- ✅ Testing completo con pytest
+
+### Frontend
 - ✅ Catálogo de cursos con grid estilo Netflix
 - ✅ Detalle de cursos (profesores, lecciones, clases)
+- ✅ Sistema de calificación con estrellas
+- ✅ Favoritos por usuario con persistencia
 - ✅ Navegación por slug SEO-friendly
 - ✅ Reproductor de video integrado
-- ✅ Health checks de API y DB
+- ✅ Sistema de notificaciones (Toast)
+- ✅ Context API para estado global
+- ✅ TypeScript strict mode
+- ✅ Testing con Vitest + React Testing Library
+
+### Mobile
 - ✅ Apps móviles nativas (Android + iOS)
-- ✅ Testing en todos los componentes
+- ✅ Consumo de API REST
+- ✅ UI moderna con Jetpack Compose y SwiftUI
+
+### DevOps
+- ✅ Docker Compose para desarrollo
+- ✅ CI/CD con GitHub Actions
+- ✅ Tests automáticos en PR y push
+- ✅ Makefile con comandos útiles
 
 ## Patrones de Desarrollo
 
@@ -151,5 +200,122 @@ cd Backend && make seed-fresh
 cd Backend && make logs
 ```
 
-Esta memoria contiene toda la información necesaria para continuar el desarrollo del proyecto Platziflix.
-- Cualquier comando que necesites ejecutar para el Backend debe ser dentro del contenedor de docker API, antes de ejecutarlo certifica que esté funcionando el contenedor y revisa el archivo makefile con los comandos que existen y úsalos
+## Testing
+
+### Backend Tests
+```bash
+cd Backend
+make test                    # Ejecutar todos los tests
+make test ARGS="-v"          # Verbose mode
+make test ARGS="--cov"       # Con coverage report
+```
+
+**Ubicación**: `Backend/app/tests/`
+
+**Tipos de tests**:
+- `test_rating_db_constraints.py` - Tests de constraints de DB
+- `test_course_rating_service.py` - Tests unitarios del servicio
+- `test_rating_endpoints.py` - Tests de integración de endpoints
+
+**Configuración**:
+- `Backend/pytest.ini` - Configuración de pytest
+- `Backend/app/tests/conftest.py` - Fixtures compartidos
+
+### Frontend Tests
+```bash
+cd Frontend
+yarn test                    # Ejecutar todos los tests
+yarn test --coverage         # Con coverage
+yarn test --watch            # Modo watch
+```
+
+**Ubicación**: `Frontend/src/**/*.test.{ts,tsx}`
+
+**Tipos de tests**:
+- Component tests (Course, StarRating, VideoPlayer)
+- Integration tests (Pages)
+- Context tests
+
+**Configuración**:
+- `Frontend/vitest.config.ts` - Configuración de Vitest
+- `Frontend/src/test/setup.ts` - Setup global de tests
+
+## CI/CD
+
+### GitHub Actions
+**Ubicación**: `.github/workflows/tests.yml`
+
+**Jobs**:
+1. **backend-tests**: Tests de Python + PostgreSQL
+2. **frontend-tests**: Tests de Next.js + TypeScript (ESLint, type check, tests)
+3. **integration-health-check**: Health check de la API
+4. **test-summary**: Resumen de resultados
+
+**Triggers**:
+- Push a `main` y `develop`
+- Pull requests hacia `main` y `develop`
+
+**Nota**: Los tests NO se ejecutan en ramas `claude/**` para evitar notificaciones excesivas.
+
+## Troubleshooting
+
+### Backend no inicia
+```bash
+# Verificar estado de containers
+cd Backend && docker-compose ps
+
+# Ver logs
+make logs
+
+# Reiniciar todo
+make stop && make start
+```
+
+### Migraciones fallan
+```bash
+# Verificar que DB está levantada
+docker-compose ps
+
+# Ver logs de DB
+docker-compose logs db
+
+# Intentar migración manual
+docker-compose exec api bash -c "cd /app && uv run alembic upgrade head"
+```
+
+### Frontend no conecta con Backend
+1. Verificar que Backend está corriendo: `curl http://localhost:8000/health`
+2. Revisar variables de entorno en Frontend
+3. Verificar CORS en Backend (configurado en `main.py`)
+
+### Tests fallan
+```bash
+# Backend: Asegurarse que la DB de test está configurada
+# Frontend: Limpiar caché
+cd Frontend && yarn test --clearCache
+```
+
+## Notas Importantes
+
+### Docker
+- **TODOS** los comandos del Backend deben ejecutarse dentro del contenedor Docker
+- Antes de ejecutar comandos, verifica que el contenedor esté funcionando: `docker-compose ps`
+- Revisa el `Makefile` para ver comandos disponibles
+
+### Base de Datos
+- La DB usa **soft delete** en las entidades principales
+- Todas las migraciones deben ser reversibles
+- Los seeds son idempotentes (se pueden ejecutar múltiples veces)
+
+### Frontend
+- **TypeScript strict mode** habilitado
+- CSS Modules para evitar conflictos de estilos
+- Context API para estado global (evitar prop drilling)
+- Next.js Image optimization automático
+
+### API
+- Documentación interactiva: http://localhost:8000/docs
+- Todas las respuestas son JSON
+- Autenticación JWT en headers: `Authorization: Bearer <token>`
+
+Esta memoria contiene toda la información necesaria para continuar el desarrollo del proyecto Mind IA.
