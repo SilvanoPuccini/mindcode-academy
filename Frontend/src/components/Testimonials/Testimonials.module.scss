@@ -15,7 +15,7 @@
   font-size: 3rem;
   font-weight: 900;
   text-align: center;
-  color: color('text-white');
+  color: var(--text-primary);
   margin-bottom: 4rem;
 
   @media (max-width: 768px) {
@@ -203,7 +203,7 @@
   font-family: var(--font-outfit);
   font-size: 1.2rem;
   font-weight: 700;
-  color: color('text-white');
+  color: var(--text-primary);
 }
 
 .role {

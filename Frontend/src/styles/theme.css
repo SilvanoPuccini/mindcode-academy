@@ -3,25 +3,25 @@
 /* ============================================ */
 
 :root {
-  /* Light Mode (Default) */
-  --bg-primary: #ffffff;
-  --bg-secondary: #F9FAFB;
-  --bg-tertiary: #f2f2f2;
-  --bg-card: #ffffff;
+  /* Light Mode (Default) - Estilo Platzi */
+  --bg-primary: #F5F7FA;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #E8EDF2;
+  --bg-card: #FFFFFF;
 
-  --text-primary: #1F2937;
-  --text-secondary: #6B7280;
+  --text-primary: #121212;
+  --text-secondary: #5A5A5A;
   --text-tertiary: #9CA3AF;
 
-  --border-color: rgba(0, 0, 0, 0.1);
-  --border-light: rgba(0, 0, 0, 0.05);
+  --border-color: #E0E6ED;
+  --border-light: #F0F3F7;
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 6px 24px rgba(0, 0, 0, 0.10);
-  --shadow-lg: 0 12px 32px rgba(30, 58, 138, 0.15);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
 
-  --overlay-bg: rgba(255, 255, 255, 0.9);
-  --blur-bg: rgba(255, 255, 255, 0.8);
+  --overlay-bg: rgba(255, 255, 255, 0.95);
+  --blur-bg: rgba(255, 255, 255, 0.9);
 }
 
 [data-theme="dark"] {
