@@ -6,6 +6,7 @@ import Link from "next/link";
 import { CourseDetail } from "@/types";
 import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { StarRating } from "@/components/StarRating/StarRating";
+import { ShareButtons } from "@/components/ShareButtons/ShareButtons";
 import styles from "./CourseDetail.module.scss";
 
 interface CourseDetailComponentProps {
@@ -94,6 +95,14 @@ export const CourseDetailComponent: FC<CourseDetailComponentProps> = ({ course }
                     <span className={styles.statIcon}>🎓</span>
                     <span className={styles.statText}>Certificado</span>
                   </div>
+                </div>
+
+                <div className={styles.shareContainer}>
+                  <ShareButtons
+                    url={typeof window !== 'undefined' ? window.location.href : `https://mindia.com/course/${course.slug}`}
+                    title={course.title}
+                    description={course.description}
+                  />
                 </div>
               </div>
 

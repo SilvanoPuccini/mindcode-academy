@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useCourses } from '@/contexts/CourseContext';
+import { useRipple } from '@/hooks/useRipple';
 import styles from './SearchBar.module.scss';
 
 export function SearchBar() {
   const { setSearchQuery } = useCourses();
   const [localQuery, setLocalQuery] = useState('');
   const [focused, setFocused] = useState(false);
+  const rippleProps = useRipple();
 
   // Debounce effect - actualiza el contexto después de 300ms
   useEffect(() => {
@@ -41,13 +43,13 @@ export function SearchBar() {
             onBlur={() => setFocused(false)}
           />
           {localQuery && (
-            <button className={styles.clearBtn} onClick={handleClear}>
+            <button className={`${styles.clearBtn} ripple-container`} onClick={handleClear} {...rippleProps}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path d="M18 6L6 18M6 6l12 12"/>
               </svg>
             </button>
           )}
-          <button className={styles.searchBtn}>
+          <button className={`${styles.searchBtn} ripple-container`} {...rippleProps}>
             Buscar
           </button>
         </div>
