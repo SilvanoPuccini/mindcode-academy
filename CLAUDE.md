@@ -1,8 +1,8 @@
-# Platziflix - Proyecto Multi-plataforma
+# Mind IA - Proyecto Multi-plataforma
 
 ## Arquitectura del Sistema
 
-Platziflix es una plataforma de cursos online con arquitectura multi-plataforma que incluye:
+Mind IA es una plataforma de cursos online con arquitectura multi-plataforma que incluye:
 - **Backend**: API REST con FastAPI + PostgreSQL
 - **Frontend**: Aplicación web con Next.js 15
 - **Mobile**: Apps nativas Android (Kotlin) + iOS (Swift)
@@ -318,4 +318,4 @@ cd Frontend && yarn test --clearCache
 - Todas las respuestas son JSON
 - Autenticación JWT en headers: `Authorization: Bearer <token>`
 
-Esta memoria contiene toda la información necesaria para continuar el desarrollo del proyecto Platziflix.
+Esta memoria contiene toda la información necesaria para continuar el desarrollo del proyecto Mind IA.
