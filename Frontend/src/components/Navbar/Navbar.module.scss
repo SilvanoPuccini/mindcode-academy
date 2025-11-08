@@ -74,6 +74,9 @@
   font-weight: 500;
   transition: all 0.3s;
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 
   &::after {
     content: '';
@@ -93,6 +96,33 @@
     &::after {
       width: 100%;
     }
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, color('primary') 0%, color('secondary') 100%);
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(162, 89, 255, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px rgba(162, 89, 255, 0.4);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(162, 89, 255, 0.6);
   }
 }
 

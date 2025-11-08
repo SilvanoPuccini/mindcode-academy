@@ -12,6 +12,7 @@ import { Filters } from "@/components/Filters/Filters";
 import { Testimonials } from "@/components/Testimonials/Testimonials";
 import { Footer } from "@/components/Footer/Footer";
 import { ScrollProgress } from "@/components/ScrollProgress/ScrollProgress";
+import { SkeletonCourse } from "@/components/SkeletonCourse/SkeletonCourse";
 import { useCourses } from "@/contexts/CourseContext";
 import Link from "next/link";
 
@@ -31,7 +32,8 @@ export default function Home() {
       } catch (error) {
         console.error("Error fetching courses:", error);
       } finally {
-        setLoading(false);
+        // Simular mínimo de carga para UX suave
+        setTimeout(() => setLoading(false), 500);
       }
     }
 
@@ -75,9 +77,15 @@ export default function Home() {
 
               <div className={styles.coursesGrid}>
                 {loading ? (
-                  <p>Cargando cursos...</p>
+                  <>
+                    {Array.from({ length: 6 }).map((_, index) => (
+                      <SkeletonCourse key={index} />
+                    ))}
+                  </>
                 ) : filteredCourses.length === 0 ? (
-                  <p>No se encontraron cursos</p>
+                  <div className={styles.emptyMessage}>
+                    <p>No se encontraron cursos con los filtros seleccionados</p>
+                  </div>
                 ) : (
                   filteredCourses.map((course) => (
                     <Link href={`/course/${course.slug}`} key={course.id}>
