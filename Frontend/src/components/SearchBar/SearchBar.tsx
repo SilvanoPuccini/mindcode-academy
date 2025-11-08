@@ -1,11 +1,27 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useCourses } from '@/contexts/CourseContext';
 import styles from './SearchBar.module.scss';
 
 export function SearchBar() {
-  const [query, setQuery] = useState('');
+  const { setSearchQuery } = useCourses();
+  const [localQuery, setLocalQuery] = useState('');
   const [focused, setFocused] = useState(false);
+
+  // Debounce effect - actualiza el contexto después de 300ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(localQuery);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [localQuery, setSearchQuery]);
+
+  const handleClear = () => {
+    setLocalQuery('');
+    setSearchQuery('');
+  };
 
   return (
     <div className={styles.searchSection}>
@@ -19,13 +35,13 @@ export function SearchBar() {
             type="text"
             placeholder="Busca cursos de Machine Learning, Web Development, Data Science..."
             className={styles.searchInput}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            value={localQuery}
+            onChange={(e) => setLocalQuery(e.target.value)}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
           />
-          {query && (
-            <button className={styles.clearBtn} onClick={() => setQuery('')}>
+          {localQuery && (
+            <button className={styles.clearBtn} onClick={handleClear}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                 <path d="M18 6L6 18M6 6l12 12"/>
               </svg>

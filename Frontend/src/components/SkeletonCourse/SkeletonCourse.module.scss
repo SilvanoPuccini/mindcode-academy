@@ -1,0 +1,86 @@
+@import '../../styles/vars.scss';
+
+.skeletonCard {
+  background: color('white');
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+  width: 420px;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid color('light-gray');
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.skeletonThumbnail {
+  width: 100%;
+  height: 260px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeletonInfo {
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeletonTitle {
+  height: 28px;
+  width: 80%;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+}
+
+.skeletonText {
+  height: 16px;
+  width: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+
+  &.short {
+    width: 60%;
+  }
+}
+
+.skeletonRating {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.skeletonStars {
+  height: 20px;
+  width: 120px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+}
+
+.shimmer {
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}

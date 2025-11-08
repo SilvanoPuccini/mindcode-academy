@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useCourses } from '@/contexts/CourseContext';
 import styles from './Filters.module.scss';
 
 const categories = [
@@ -16,28 +16,44 @@ const levels = ['Principiante', 'Intermedio', 'Avanzado'];
 const durations = ['< 2 horas', '2-5 horas', '5-10 horas', '> 10 horas'];
 
 export function Filters() {
-  const [selectedCategory, setSelectedCategory] = useState(1);
-  const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
-  const [selectedDurations, setSelectedDurations] = useState<string[]>([]);
-  const [minRating, setMinRating] = useState(0);
+  const { filters, setFilters } = useCourses();
 
   const toggleLevel = (level: string) => {
-    setSelectedLevels(prev =>
-      prev.includes(level) ? prev.filter(l => l !== level) : [...prev, level]
-    );
+    const newLevels = filters.levels.includes(level)
+      ? filters.levels.filter(l => l !== level)
+      : [...filters.levels, level];
+    setFilters({ ...filters, levels: newLevels });
   };
 
   const toggleDuration = (duration: string) => {
-    setSelectedDurations(prev =>
-      prev.includes(duration) ? prev.filter(d => d !== duration) : [...prev, duration]
-    );
+    const newDurations = filters.durations.includes(duration)
+      ? filters.durations.filter(d => d !== duration)
+      : [...filters.durations, duration];
+    setFilters({ ...filters, durations: newDurations });
+  };
+
+  const handleCategoryChange = (categoryId: number) => {
+    setFilters({ ...filters, category: categoryId });
+  };
+
+  const handleRatingChange = (rating: number) => {
+    setFilters({ ...filters, minRating: rating });
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      category: 1,
+      levels: [],
+      durations: [],
+      minRating: 0,
+    });
   };
 
   return (
     <aside className={styles.filters}>
       <div className={styles.header}>
         <h3 className={styles.title}>Filtros</h3>
-        <button className={styles.clearBtn}>Limpiar</button>
+        <button className={styles.clearBtn} onClick={handleClearFilters}>Limpiar</button>
       </div>
 
       {/* Categories */}
@@ -47,8 +63,8 @@ export function Filters() {
           {categories.map(category => (
             <button
               key={category.id}
-              className={`${styles.categoryBtn} ${selectedCategory === category.id ? styles.active : ''}`}
-              onClick={() => setSelectedCategory(category.id)}
+              className={`${styles.categoryBtn} ${filters.category === category.id ? styles.active : ''}`}
+              onClick={() => handleCategoryChange(category.id)}
             >
               <span>{category.name}</span>
               <span className={styles.count}>{category.count}</span>
@@ -65,7 +81,7 @@ export function Filters() {
             <label key={level} className={styles.checkbox}>
               <input
                 type="checkbox"
-                checked={selectedLevels.includes(level)}
+                checked={filters.levels.includes(level)}
                 onChange={() => toggleLevel(level)}
               />
               <span className={styles.checkmark}></span>
@@ -83,7 +99,7 @@ export function Filters() {
             <label key={duration} className={styles.checkbox}>
               <input
                 type="checkbox"
-                checked={selectedDurations.includes(duration)}
+                checked={filters.durations.includes(duration)}
                 onChange={() => toggleDuration(duration)}
               />
               <span className={styles.checkmark}></span>
@@ -102,12 +118,12 @@ export function Filters() {
             min="0"
             max="5"
             step="0.5"
-            value={minRating}
-            onChange={(e) => setMinRating(Number(e.target.value))}
+            value={filters.minRating}
+            onChange={(e) => handleRatingChange(Number(e.target.value))}
             className={styles.slider}
           />
           <div className={styles.ratingValue}>
-            {minRating > 0 ? `${minRating}★ o más` : 'Todos'}
+            {filters.minRating > 0 ? `${filters.minRating}★ o más` : 'Todos'}
           </div>
         </div>
       </div>
