@@ -1,5 +1,5 @@
 """
-Seed data script for Platziflix database.
+Seed data script for MindCode Academy database.
 This script creates REAL sample data for testing and development.
 """
 
@@ -205,28 +205,81 @@ def create_sample_data():
         # ==================== CREATE LESSONS FOR EACH COURSE ====================
         lessons_data = [
             # JavaScript Course
-            {"course": courses[0], "name": "Introducción a JavaScript", "description": "Historia y fundamentos del lenguaje", "slug": "introduccion-javascript", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk"},
-            {"course": courses[0], "name": "Variables y Tipos de Datos", "description": "let, const, var y tipos primitivos", "slug": "variables-tipos-datos", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk"},
-            {"course": courses[0], "name": "Funciones y Arrow Functions", "description": "Declaración, expresión y funciones flecha", "slug": "funciones-arrow-functions", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk"},
-            {"course": courses[0], "name": "Async/Await y Promises", "description": "Programación asíncrona moderna", "slug": "async-await-promises", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk"},
+            {"course": courses[0], "name": "Introducción a JavaScript", "description": "Historia y fundamentos del lenguaje", "slug": "introduccion-javascript", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 9},
+            {"course": courses[0], "name": "Variables y Tipos de Datos", "description": "let, const, var y tipos primitivos", "slug": "variables-tipos-datos", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 12},
+            {"course": courses[0], "name": "Funciones y Arrow Functions", "description": "Declaración, expresión y funciones flecha", "slug": "funciones-arrow-functions", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 14},
+            {"course": courses[0], "name": "Async/Await y Promises", "description": "Programación asíncrona moderna", "slug": "async-await-promises", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 20},
 
             # Python Course
-            {"course": courses[1], "name": "Introducción a Python", "description": "Configuración y primer programa", "slug": "introduccion-python", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk"},
-            {"course": courses[1], "name": "Estructuras de Control", "description": "if, for, while y comprehensions", "slug": "estructuras-control-python", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk"},
-            {"course": courses[1], "name": "Funciones y Módulos", "description": "Organización de código Python", "slug": "funciones-modulos-python", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk"},
+            {"course": courses[1], "name": "Introducción a Python", "description": "Configuración y primer programa", "slug": "introduccion-python", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 8},
+            {"course": courses[1], "name": "Estructuras de Control", "description": "if, for, while y comprehensions", "slug": "estructuras-control-python", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 15},
+            {"course": courses[1], "name": "Funciones y Módulos", "description": "Organización de código Python", "slug": "funciones-modulos-python", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 13},
 
             # React Course
-            {"course": courses[2], "name": "Fundamentos de React", "description": "JSX, componentes y props", "slug": "fundamentos-react", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk"},
-            {"course": courses[2], "name": "Hooks en React", "description": "useState, useEffect, useContext", "slug": "hooks-react", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk"},
-            {"course": courses[2], "name": "React Router", "description": "Navegación en aplicaciones React", "slug": "react-router", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk"},
+            {"course": courses[2], "name": "Fundamentos de React", "description": "JSX, componentes y props", "slug": "fundamentos-react", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 11},
+            {"course": courses[2], "name": "Hooks en React", "description": "useState, useEffect, useContext", "slug": "hooks-react", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 18},
+            {"course": courses[2], "name": "React Router", "description": "Navegación en aplicaciones React", "slug": "react-router", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 12},
 
             # Node.js Course
-            {"course": courses[3], "name": "Introducción a Node.js", "description": "Event loop y módulos", "slug": "introduccion-nodejs", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk"},
-            {"course": courses[3], "name": "Express.js Básico", "description": "Creación de APIs REST", "slug": "express-basico", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk"},
+            {"course": courses[3], "name": "Introducción a Node.js", "description": "Event loop y módulos", "slug": "introduccion-nodejs", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 10},
+            {"course": courses[3], "name": "Express.js Básico", "description": "Creación de APIs REST", "slug": "express-basico", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 17},
 
             # AI Course
-            {"course": courses[4], "name": "Introducción a IA", "description": "Conceptos y aplicaciones", "slug": "introduccion-ia", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk"},
-            {"course": courses[4], "name": "Machine Learning Básico", "description": "Algoritmos supervisados", "slug": "machine-learning-basico", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk"},
+            {"course": courses[4], "name": "Introducción a IA", "description": "Conceptos y aplicaciones", "slug": "introduccion-ia", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 9},
+            {"course": courses[4], "name": "Machine Learning Básico", "description": "Algoritmos supervisados", "slug": "machine-learning-basico", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 22},
+
+            # UX/UI Course
+            {"course": courses[5], "name": "Fundamentos de UX", "description": "Research, personas y journey maps", "slug": "fundamentos-ux", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 10},
+            {"course": courses[5], "name": "UI Design Systems", "description": "Componentes, tokens y guías de estilo", "slug": "ui-design-systems", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 16},
+            {"course": courses[5], "name": "Prototipado en Figma", "description": "Wireframes y prototipos interactivos", "slug": "prototipado-figma", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 14},
+
+            # DevOps Course
+            {"course": courses[6], "name": "Introducción a DevOps", "description": "Cultura, CI/CD y automatización", "slug": "introduccion-devops", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 9},
+            {"course": courses[6], "name": "Docker y Contenedores", "description": "Imágenes, volúmenes y compose", "slug": "docker-contenedores", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 19},
+            {"course": courses[6], "name": "Kubernetes Esencial", "description": "Pods, deployments y servicios", "slug": "kubernetes-esencial", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 25},
+            {"course": courses[6], "name": "Cloud en AWS", "description": "EC2, S3, Lambda y RDS", "slug": "cloud-aws", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 21},
+
+            # Databases Course
+            {"course": courses[7], "name": "SQL Fundamentals", "description": "SELECT, JOINs, GROUP BY y subqueries", "slug": "sql-fundamentals", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 12},
+            {"course": courses[7], "name": "Diseño de Base de Datos", "description": "Modelado ER, normalización e índices", "slug": "diseno-base-datos", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 17},
+            {"course": courses[7], "name": "PostgreSQL Avanzado", "description": "Window functions, CTEs y optimización de queries", "slug": "postgresql-avanzado", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 24},
+            {"course": courses[7], "name": "NoSQL con MongoDB", "description": "Documentos, colecciones y agregaciones", "slug": "nosql-mongodb", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 15},
+            {"course": courses[7], "name": "Redis y Caching", "description": "Estructuras in-memory y estrategias de cache", "slug": "redis-caching", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 11},
+
+            # TypeScript Course
+            {"course": courses[8], "name": "Tipos y Interfaces", "description": "Type annotations, interfaces y type aliases", "slug": "tipos-interfaces-ts", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 11},
+            {"course": courses[8], "name": "Generics Avanzados", "description": "Constraints, utility types y condicionales", "slug": "generics-avanzados", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 20},
+            {"course": courses[8], "name": "TypeScript en Proyectos Reales", "description": "Configuración strict y migración gradual", "slug": "ts-proyectos-reales", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 18},
+
+            # Git Course
+            {"course": courses[9], "name": "Git Fundamentals", "description": "Commits, branches y merge", "slug": "git-fundamentals", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 10},
+            {"course": courses[9], "name": "Flujos de Trabajo Profesional", "description": "GitFlow, trunk-based y conventional commits", "slug": "flujos-trabajo-git", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 16},
+            {"course": courses[9], "name": "GitHub Actions y CI/CD", "description": "Workflows, secrets y automatización", "slug": "github-actions-cicd", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 19},
+
+            # Vue Course
+            {"course": courses[10], "name": "Composition API", "description": "setup, refs y reactividad en Vue 3", "slug": "composition-api-vue", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 14},
+            {"course": courses[10], "name": "Componentes y Props", "description": "Comunicación entre componentes y slots", "slug": "componentes-props-vue", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 12},
+            {"course": courses[10], "name": "Pinia y Estado Global", "description": "Stores, getters y actions", "slug": "pinia-estado-global", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 17},
+
+            # Cybersecurity Course
+            {"course": courses[11], "name": "Fundamentos de Seguridad", "description": "CIA triad, amenazas y vectores de ataque", "slug": "fundamentos-seguridad", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 10},
+            {"course": courses[11], "name": "Seguridad Web (OWASP)", "description": "XSS, CSRF, SQL injection y mitigaciones", "slug": "seguridad-web-owasp", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 23},
+            {"course": courses[11], "name": "Criptografía Aplicada", "description": "Hashing, cifrado y gestión de secretos", "slug": "criptografia-aplicada", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 18},
+
+            # Flutter Course
+            {"course": courses[12], "name": "Dart desde Cero", "description": "Sintaxis, null safety y async/await", "slug": "dart-desde-cero", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 9},
+            {"course": courses[12], "name": "Widgets y Layout", "description": "Stateless vs Stateful, Column, Row y Stack", "slug": "widgets-layout-flutter", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 15},
+            {"course": courses[12], "name": "Navegación y Estado", "description": "GoRouter y gestión de estado con Riverpod", "slug": "navegacion-estado-flutter", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 16},
+
+            # Blockchain Course
+            {"course": courses[13], "name": "Fundamentos de Blockchain", "description": "Bloques, hashing y consenso", "slug": "fundamentos-blockchain", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 11},
+            {"course": courses[13], "name": "Smart Contracts con Solidity", "description": "ERC-20, ERC-721 y patrones seguros", "slug": "smart-contracts-solidity", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 22},
+            {"course": courses[13], "name": "dApps y Web3.js", "description": "Conexión de frontend con contratos", "slug": "dapps-web3", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 19},
+
+            # R / Data Science Course
+            {"course": courses[14], "name": "R Fundamentals", "description": "Vectores, data frames y tidyverse", "slug": "r-fundamentals", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 10},
+            {"course": courses[14], "name": "Visualización con ggplot2", "description": "Gramática de gráficos y estética", "slug": "visualizacion-ggplot2", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 13},
+            {"course": courses[14], "name": "Modelos Estadísticos en R", "description": "Regresiones y testing de hipótesis", "slug": "modelos-estadisticos-r", "video_url": "https://www.youtube.com/watch?v=W6NZfCO5SIk", "duration_minutes": 21},
         ]
 
         for lesson_data in lessons_data:
@@ -236,6 +289,7 @@ def create_sample_data():
                 description=lesson_data["description"],
                 slug=lesson_data["slug"],
                 video_url=lesson_data["video_url"],
+                duration=lesson_data["duration_minutes"],
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),
             )
@@ -334,7 +388,9 @@ def clear_all_data():
 
     try:
         # Delete in reverse order to avoid foreign key constraints
-        from app.models import CourseRating
+        from app.models import CourseRating, UserCourseProgress, UserFavorite
+        db.query(UserCourseProgress).delete()
+        db.query(UserFavorite).delete()
         db.query(CourseRating).delete()
         db.query(Lesson).delete()
         db.execute(course_teachers.delete())
