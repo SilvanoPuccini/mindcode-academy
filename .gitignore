@@ -1,1 +1,14 @@
 *.pyc
+__pycache__/
+.venv/
+
+# local AI tooling metadata (machine-specific, never public)
+.atl/
+
+# stray lockfiles from the wrong package manager
+Backend/package-lock.json
+Frontend/package-lock.json
+
+# local env files with real secrets/credentials
+Backend/.env
+Frontend/.env.local
