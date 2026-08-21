@@ -39,7 +39,8 @@ describe('StarRating Component', () => {
     it('applies correct size class', () => {
       const { container } = render(<StarRating rating={3} size="large" />);
 
-      expect(container.firstChild).toHaveClass('large');
+      // CSS Modules hash the class names (e.g. "_large_43f671"), match by prefix
+      expect(container.firstElementChild?.className).toMatch(/_large_/);
     });
 
     it('applies custom className', () => {
@@ -103,19 +104,19 @@ describe('StarRating Component', () => {
     it('renders small size correctly', () => {
       const { container } = render(<StarRating rating={3} size="small" />);
 
-      expect(container.firstChild).toHaveClass('small');
+      expect(container.firstElementChild?.className).toMatch(/_small_/);
     });
 
     it('renders medium size correctly (default)', () => {
       const { container } = render(<StarRating rating={3} size="medium" />);
 
-      expect(container.firstChild).toHaveClass('medium');
+      expect(container.firstElementChild?.className).toMatch(/_medium_/);
     });
 
     it('renders large size correctly', () => {
       const { container } = render(<StarRating rating={3} size="large" />);
 
-      expect(container.firstChild).toHaveClass('large');
+      expect(container.firstElementChild?.className).toMatch(/_large_/);
     });
   });
 
@@ -137,7 +138,7 @@ describe('StarRating Component', () => {
       const { container } = render(<StarRating rating={3} />);
 
       // Verificar que hay exactamente 5 elementos star
-      const stars = container.querySelectorAll('.star');
+      const stars = container.querySelectorAll('[class*="_star_"]');
       expect(stars).toHaveLength(5);
     });
   });
@@ -162,7 +163,8 @@ describe('StarRating Component', () => {
     it('stars have aria-hidden attribute', () => {
       const { container } = render(<StarRating rating={3} />);
 
-      const stars = container.querySelectorAll('.star svg');
+      const stars = container.querySelectorAll('[class*="_star_"] svg');
+      expect(stars.length).toBeGreaterThan(0);
       stars.forEach((star) => {
         expect(star).toHaveAttribute('aria-hidden', 'true');
       });
