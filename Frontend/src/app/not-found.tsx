@@ -56,7 +56,7 @@ export default function NotFound() {
         // Draw particle
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(102, 126, 234, ${particle.opacity})`;
+        ctx.fillStyle = `rgba(234, 88, 12, ${particle.opacity})`;
         ctx.fill();
       });
 
@@ -91,7 +91,7 @@ export default function NotFound() {
         <p className={styles.message}>
           Parece que nuestra IA no pudo encontrar esta página.
           <br />
-          ¿Tal vez estaba entrenando un modelo y se olvidó de guardar la ruta? 🤖
+          ¿Tal vez estaba entrenando un modelo y se olvidó de guardar la ruta?
         </p>
 
         <Link href="/" className={styles.button}>

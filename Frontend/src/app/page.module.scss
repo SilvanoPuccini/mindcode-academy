@@ -3,7 +3,9 @@
 .page {
   min-height: 100vh;
   padding: 0;
-  background: var(--bg-primary);
+  // Transparent so the global cuadrille layer
+  // (styles/_grid-bg.scss) shows through.
+  background: transparent;
   position: relative;
   overflow-x: hidden;
 }
@@ -12,14 +14,17 @@
 .contentSection {
   position: relative;
   z-index: 1;
-  padding: 3rem 2rem;
+  padding: var(--space-5) var(--space-4);
+  // Keep "Explora la plataforma" clear of the
+  // fixed navbar when navigating to #catalogo.
+  scroll-margin-top: 96px;
 }
 
 .container {
   max-width: 1400px;
   margin: 0 auto;
   display: flex;
-  gap: 2.5rem;
+  gap: var(--space-4);
   align-items: flex-start;
 
   @media (max-width: 1024px) {
@@ -33,14 +38,35 @@
 }
 
 .sectionHeader {
-  margin-bottom: 2.5rem;
-  text-align: center;
+  margin-bottom: var(--space-5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.sectionEyebrow {
+  display: block;
+  font-family: var(--font-inter);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: color('accent');
+  margin-bottom: 0.5rem;
 }
 
 .sectionTitle {
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: 2.8rem;
-  font-weight: 900;
+  font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 0.5rem;
 
@@ -62,20 +88,76 @@
   font-size: 1.1rem;
   color: var(--text-secondary);
   font-weight: 500;
+  max-width: 60ch;
+}
+
+.loadMoreWrap {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-4);
+}
+
+.loadMoreBtn {
+  @include btn-ghost;
+  min-width: 200px;
+}
+
+.sortControl {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding-bottom: 0.5rem;
+}
+
+.sortLabel {
+  font-family: var(--font-inter);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.sortSelect {
+  @include btn-ghost;
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.25rem;
+  cursor: pointer;
+
+  &:hover {
+    transform: none;
+  }
 }
 
 .coursesGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 2.5rem;
+  gap: var(--space-4);
   justify-content: center;
   align-items: flex-start;
+}
+
+// Anchor wrapping each CourseComponent card.
+// Resets the browser's default link underline;
+// the "linkeable" affordance comes back via
+// hover/focus-visible on the title itself
+// (see .courseTitle in Course.module.scss).
+.courseLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: var(--radius-lg);
 }
 
 .emptyMessage {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 4rem 2rem;
+  padding: var(--space-6) var(--space-4);
   color: var(--text-secondary);
   font-family: var(--font-inter);
   font-size: 1.125rem;

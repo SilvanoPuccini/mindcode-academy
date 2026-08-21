@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { ChevronUp } from 'lucide-react';
 import styles from './ScrollToTop.module.scss';
 
 export function ScrollToTop() {
@@ -35,18 +36,7 @@ export function ScrollToTop() {
       onClick={scrollToTop}
       aria-label="Volver arriba"
     >
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M18 15l-6-6-6 6" />
-      </svg>
+      <ChevronUp size={24} aria-hidden="true" />
     </button>
   );
 }

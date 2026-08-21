@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { Search, X } from 'lucide-react';
 import { useCourses } from '@/contexts/CourseContext';
 import { useRipple } from '@/hooks/useRipple';
+import { SEARCH_INPUT_ID } from '@/hooks/useSearchFocus';
 import styles from './SearchBar.module.scss';
 
 export function SearchBar() {
@@ -25,17 +27,38 @@ export function SearchBar() {
     setSearchQuery('');
   };
 
+  // Submit (button click or Enter key) applies the
+  // query immediately - no debounce wait - and
+  // brings the catalog into view. Smooth only when
+  // the user allows motion.
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSearchQuery(localQuery);
+    const catalog = document.getElementById('catalogo');
+    if (!catalog) return;
+    const prefersSmooth = window.matchMedia(
+      '(prefers-reduced-motion: no-preference)'
+    ).matches;
+    catalog.scrollIntoView({
+      behavior: prefersSmooth ? 'smooth' : 'auto',
+      block: 'start',
+    });
+  };
+
   return (
-    <div className={styles.searchSection}>
+    <div className={styles.searchSection} id="buscador">
       <div className={styles.container}>
-        <div className={`${styles.searchBox} ${focused ? styles.focused : ''}`}>
-          <svg className={styles.searchIcon} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="M21 21l-4.35-4.35"/>
-          </svg>
+        <form
+          role="search"
+          className={`${styles.searchBox} ${focused ? styles.focused : ''}`}
+          onSubmit={handleSubmit}
+        >
+          <Search size={24} className={styles.searchIcon} aria-hidden="true" />
           <input
+            id={SEARCH_INPUT_ID}
             type="text"
             placeholder="Busca cursos de Machine Learning, Web Development, Data Science..."
+            aria-label="Buscar cursos"
             className={styles.searchInput}
             value={localQuery}
             onChange={(e) => setLocalQuery(e.target.value)}
@@ -43,16 +66,24 @@ export function SearchBar() {
             onBlur={() => setFocused(false)}
           />
           {localQuery && (
-            <button className={`${styles.clearBtn} ripple-container`} onClick={handleClear} {...rippleProps}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M18 6L6 18M6 6l12 12"/>
-              </svg>
+            <button
+              type="button"
+              className={`${styles.clearBtn} ripple-container`}
+              onClick={handleClear}
+              aria-label="Limpiar búsqueda"
+              {...rippleProps}
+            >
+              <X size={20} aria-hidden="true" />
             </button>
           )}
-          <button className={`${styles.searchBtn} ripple-container`} {...rippleProps}>
+          <button
+            type="submit"
+            className={`${styles.searchBtn} ripple-container`}
+            {...rippleProps}
+          >
             Buscar
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );

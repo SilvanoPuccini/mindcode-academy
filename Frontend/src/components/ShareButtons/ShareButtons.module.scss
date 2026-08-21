@@ -6,29 +6,14 @@
 }
 
 .shareBtn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.7rem 1.5rem;
-  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
-  border: none;
-  border-radius: 12px;
-  color: #FFFFFF;
-  font-family: var(--font-inter);
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+  @include btn-secondary;
 
   svg {
-    transition: transform 0.3s ease;
+    transition: transform var(--speed-fast) ease;
   }
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(6, 182, 212, 0.6);
-    filter: brightness(1.1);
 
     svg {
       transform: rotate(15deg);
@@ -58,17 +43,24 @@
   }
 }
 
+// Rendered through a portal into document.body (see ShareButtons.tsx),
+// so this is positioned in fixed viewport coordinates rather than
+// relative to the trigger's container - that's what lets it escape
+// the hero section's stacking context and stay clear of the
+// viewport edges regardless of where the trigger button sits on the
+// page. The base top/right below are just a sane fallback before JS
+// computes the exact clamped position.
 .dropdown {
-  position: absolute;
-  top: calc(100% + 0.5rem);
-  right: 0;
+  position: fixed;
+  top: 5rem;
+  right: 1rem;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   padding: 1.5rem;
   min-width: 320px;
-  z-index: 999;
+  z-index: 1001;
   animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   @media (max-width: 768px) {
@@ -111,7 +103,7 @@
   margin-bottom: 1.5rem;
 
   h3 {
-    font-family: var(--font-outfit);
+    font-family: var(--font-space);
     font-size: 1.3rem;
     font-weight: 700;
     color: var(--text-primary);
@@ -121,7 +113,7 @@
 .closeBtn {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
   background: var(--bg-tertiary);
   color: var(--text-secondary);
@@ -152,7 +144,7 @@
   padding: 1rem 1.25rem;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   color: var(--text-primary);
   font-family: var(--font-inter);
   font-size: 1rem;
@@ -203,7 +195,7 @@
 
   &.copy {
     &:hover {
-      background: rgba(124, 58, 237, 0.1);
+      background: rgba(245, 158, 11, 0.1);
       border-color: color('secondary');
       color: color('secondary');
     }

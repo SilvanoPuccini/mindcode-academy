@@ -1,7 +1,9 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Course } from '@/types';
+import { getToken } from '@/services/authApi';
+import { getFavoriteCourseIds, toggleFavorite as toggleFavoriteApi } from '@/services/favoritesApi';
 
 interface Filters {
   category: number;
@@ -15,10 +17,12 @@ interface CourseContextType {
   setSearchQuery: (query: string) => void;
   filters: Filters;
   setFilters: (filters: Filters) => void;
+  allCourses: Course[];
   filteredCourses: Course[];
   setAllCourses: (courses: Course[]) => void;
   favorites: number[];
-  toggleFavorite: (courseId: number) => void;
+  favoritesLoading: boolean;
+  toggleFavorite: (courseId: number) => Promise<void>;
 }
 
 const CourseContext = createContext<CourseContextType | undefined>(undefined);
@@ -32,26 +36,57 @@ export function CourseProvider({ children }: { children: ReactNode }) {
     durations: [],
     minRating: 0,
   });
-  const [favorites, setFavorites] = useState<number[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('mindIA_favorites');
-      return saved ? JSON.parse(saved) : [];
-    }
-    return [];
-  });
+  // Favorites now live on the backend (POST /favorites/toggle/{id},
+  // GET /favorites/course-ids), keyed to the logged-in user's JWT.
+  // Logged-out visitors simply see an empty list; clicking the heart
+  // button hits a 401 and apiFetch() redirects to /login.
+  const [favorites, setFavorites] = useState<number[]>([]);
+  const [favoritesLoading, setFavoritesLoading] = useState(true);
 
-  const toggleFavorite = (courseId: number) => {
-    setFavorites(prev => {
-      const newFavorites = prev.includes(courseId)
-        ? prev.filter(id => id !== courseId)
-        : [...prev, courseId];
+  useEffect(() => {
+    let cancelled = false;
 
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('mindIA_favorites', JSON.stringify(newFavorites));
+    async function loadFavorites() {
+      if (!getToken()) {
+        setFavoritesLoading(false);
+        return;
       }
 
-      return newFavorites;
-    });
+      try {
+        const courseIds = await getFavoriteCourseIds();
+        if (!cancelled) setFavorites(courseIds);
+      } catch (error) {
+        console.error('Error loading favorites:', error);
+      } finally {
+        if (!cancelled) setFavoritesLoading(false);
+      }
+    }
+
+    loadFavorites();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const toggleFavorite = async (courseId: number) => {
+    const wasFavorite = favorites.includes(courseId);
+
+    // Optimistic update
+    setFavorites(prev =>
+      wasFavorite ? prev.filter(id => id !== courseId) : [...prev, courseId]
+    );
+
+    try {
+      await toggleFavoriteApi(courseId);
+    } catch (error) {
+      // Revert on failure (network error, 404, etc.)
+      // Note: a 401 is already handled by apiFetch (session
+      // cleared + redirect to /login) before reaching here.
+      setFavorites(prev =>
+        wasFavorite ? [...prev, courseId] : prev.filter(id => id !== courseId)
+      );
+      throw error;
+    }
   };
 
   const filteredCourses = allCourses.filter(course => {
@@ -83,9 +118,11 @@ export function CourseProvider({ children }: { children: ReactNode }) {
         setSearchQuery,
         filters,
         setFilters,
+        allCourses,
         filteredCourses,
         setAllCourses,
         favorites,
+        favoritesLoading,
         toggleFavorite,
       }}
     >

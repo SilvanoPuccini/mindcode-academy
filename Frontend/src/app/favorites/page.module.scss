@@ -1,8 +1,9 @@
 @import '@/styles/vars.scss';
 
+// Transparent root: the global cuadrille layer
+// (styles/_grid-bg.scss) shows through here.
 .page {
   min-height: 100vh;
-  background: var(--bg-dark);
   padding-top: 100px;
   position: relative;
   overflow: hidden;
@@ -23,11 +24,11 @@
 }
 
 .title {
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: 3.5rem;
-  font-weight: 800;
+  font-weight: 700;
   margin-bottom: 1rem;
-  color: white;
+  color: var(--text-primary);
 
   .highlight {
     background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
@@ -53,14 +54,14 @@
 .subtitle {
   font-family: var(--font-inter);
   font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
 }
 
 .loading {
   text-align: center;
   font-family: var(--font-inter);
   font-size: 1.125rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-secondary);
   padding: 4rem 2rem;
 }
 
@@ -81,20 +82,9 @@
   }
 }
 
-/* Fondo de cuadrícula */
-.gridBg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image:
-    linear-gradient(rgba(162, 89, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(162, 89, 255, 0.03) 1px, transparent 1px);
-  background-size: 50px 50px;
-  z-index: 0;
-  pointer-events: none;
-}
+/* Fondo de cuadrícula: handled globally by
+   styles/_grid-bg.scss, so the page no longer
+   mounts its own duplicate layer. */
 
 @keyframes fadeInDown {
   from {

@@ -4,6 +4,7 @@ import { useState, useMemo, memo } from 'react';
 import Image from 'next/image';
 import styles from "./Course.module.scss";
 import { Course as CourseType } from "@/types";
+import { Star, Flame, Sparkles } from "lucide-react";
 import { StarRating } from "@/components/StarRating/StarRating";
 import { useCourses } from "@/contexts/CourseContext";
 import { useToast } from "@/contexts/ToastContext";
@@ -23,19 +24,23 @@ const CourseComponent = ({
   const [isAnimating, setIsAnimating] = useState(false);
   const isFavorite = favorites.includes(id);
 
-  const handleFavoriteClick = (e: React.MouseEvent) => {
+  const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsAnimating(true);
 
     const wasInFavorites = isFavorite;
-    toggleFavorite(id);
 
-    // Show toast based on action
-    if (wasInFavorites) {
-      showToast("Eliminado de favoritos", "info");
-    } else {
-      showToast("Agregado a favoritos", "success");
+    try {
+      await toggleFavorite(id);
+      // Show toast based on the action that just succeeded
+      if (wasInFavorites) {
+        showToast("Eliminado de favoritos", "info");
+      } else {
+        showToast("Agregado a favoritos", "success");
+      }
+    } catch {
+      showToast("No se pudo actualizar tus favoritos", "error");
     }
 
     setTimeout(() => setIsAnimating(false), 600);
@@ -44,13 +49,13 @@ const CourseComponent = ({
   // Memoize badge calculation to prevent unnecessary recalculations
   const badge = useMemo(() => {
     if (average_rating && average_rating >= 4.5 && total_ratings && total_ratings > 50) {
-      return { type: 'top', label: '⭐ TOP RATED' };
+      return { type: 'top', label: 'TOP RATED', Icon: Star };
     }
     if (total_ratings && total_ratings > 100) {
-      return { type: 'trending', label: '🔥 TRENDING' };
+      return { type: 'trending', label: 'TRENDING', Icon: Flame };
     }
     if (id % 3 === 0) { // Example logic for new courses
-      return { type: 'new', label: '✨ NUEVO' };
+      return { type: 'new', label: 'NUEVO', Icon: Sparkles };
     }
     return null;
   }, [average_rating, total_ratings, id]);
@@ -69,6 +74,7 @@ const CourseComponent = ({
         />
         {badge && (
           <span className={`${styles.badge} ${styles[badge.type]}`}>
+            <badge.Icon size={14} aria-hidden="true" />
             {badge.label}
           </span>
         )}

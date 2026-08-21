@@ -2,16 +2,16 @@ import styles from './loading.module.scss';
 
 /**
  * Loading UI component for page-level loading states
- * Shows MIND IA branded loading screen with animated spinner
+ * Shows MindCode Academy branded loading screen with animated spinner
  */
 export default function Loading() {
   return (
     <div className={styles.loadingContainer}>
       <div className={styles.loadingContent}>
-        {/* MIND IA Logo */}
+        {/* MindCode Academy Logo */}
         <div className={styles.logoContainer}>
-          <h1 className={styles.logoPrimary}>MIND</h1>
-          <h1 className={styles.logoAccent}>IA</h1>
+          <h1 className={styles.logoPrimary}>Mind</h1>
+          <h1 className={styles.logoAccent}>Code</h1>
         </div>
 
         {/* Animated Spinner */}

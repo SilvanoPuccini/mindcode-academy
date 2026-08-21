@@ -1,5 +1,6 @@
 "use client";
 
+import { CheckCircle2, XCircle, Info, X } from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
 import styles from './Toast.module.scss';
 
@@ -17,9 +18,9 @@ export function ToastContainer() {
           onClick={() => removeToast(toast.id)}
         >
           <span className={styles.icon}>
-            {toast.type === 'success' && '✓'}
-            {toast.type === 'error' && '✕'}
-            {toast.type === 'info' && 'ℹ'}
+            {toast.type === 'success' && <CheckCircle2 size={20} aria-hidden="true" />}
+            {toast.type === 'error' && <XCircle size={20} aria-hidden="true" />}
+            {toast.type === 'info' && <Info size={20} aria-hidden="true" />}
           </span>
           <span className={styles.message}>{toast.message}</span>
           <button
@@ -27,7 +28,7 @@ export function ToastContainer() {
             onClick={() => removeToast(toast.id)}
             aria-label="Cerrar"
           >
-            ×
+            <X size={16} aria-hidden="true" />
           </button>
         </div>
       ))}

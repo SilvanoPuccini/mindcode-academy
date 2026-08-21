@@ -15,12 +15,12 @@ interface Course {
  * Includes static pages and dynamic course pages
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://mindia.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://mindcode-academy.com';
 
   // Fetch all courses to generate dynamic routes
   let courses: Course[] = [];
   try {
-    const res = await fetch('http://localhost:8000/courses', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/courses`, {
       next: { revalidate: 3600 } // Revalidate every hour
     });
     if (res.ok) {

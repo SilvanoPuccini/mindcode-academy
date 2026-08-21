@@ -1,6 +1,6 @@
 /**
  * Rating Types & Interfaces
- * Sistema de calificaciones para cursos de Platziflix
+ * Sistema de calificaciones para cursos de MindCode Academy
  */
 
 // Calificación de un curso por un usuario

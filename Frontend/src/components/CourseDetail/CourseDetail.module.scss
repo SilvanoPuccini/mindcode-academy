@@ -2,7 +2,7 @@
 
 .pageContainer {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  background: linear-gradient(160deg, #1C1008 0%, #0F172A 55%, #0F172A 100%);
   padding-bottom: 100px;
 }
 
@@ -25,7 +25,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(180deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
+    background: linear-gradient(180deg, rgba(234, 88, 12, 0.1) 0%, transparent 100%);
     pointer-events: none;
   }
 }
@@ -36,7 +36,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at 50% 0%, rgba(102, 126, 234, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle at 50% 0%, rgba(234, 88, 12, 0.15) 0%, transparent 70%);
 }
 
 .heroContent {
@@ -64,20 +64,20 @@
 }
 
 .heroTitle {
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 900;
+  font-weight: 700;
   color: white;
   line-height: 1.1;
   margin: 0;
-  text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+  text-shadow: 0 0 30px rgba(234, 88, 12, 0.5);
 }
 
 .heroTeacher {
   font-family: var(--font-inter);
   font-size: 1.5rem;
   font-weight: 600;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #EA580C 0%, #F59E0B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -106,11 +106,12 @@
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50px;
+  border-radius: var(--radius-sm);
 }
 
 .statIcon {
-  font-size: 1.5rem;
+  color: color('secondary');
+  flex-shrink: 0;
 }
 
 .statText {
@@ -130,7 +131,7 @@
   position: relative;
   width: 100%;
   max-width: 600px;
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -173,22 +174,29 @@
 .playButton {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #EA580C 0%, #F59E0B 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
   color: white;
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
-  transition: transform 0.3s ease;
+  box-shadow: 0 10px 30px rgba(234, 88, 12, 0.5);
+  transition: transform var(--speed-normal) ease;
+
+  svg {
+    margin-left: 4px;
+  }
 }
 
 // Main Content
 .mainContent {
   position: relative;
   z-index: 2;
-  padding: 3rem 0;
+  // Fallback bottom padding for the space the fixed sticky CTA bar
+  // occupies, in case JS hasn't measured its real height yet (first
+  // paint, no-JS). CourseDetail.tsx overrides this inline with the
+  // bar's actual measured height once mounted.
+  padding: 3rem 0 9rem;
 }
 
 .tabs {
@@ -236,7 +244,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #EA580C 0%, #F59E0B 100%);
     animation: slideIn 0.3s ease-out;
   }
 }
@@ -254,7 +262,7 @@
 }
 
 .sectionTitle {
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: 2rem;
   font-weight: 700;
   color: white;
@@ -269,7 +277,7 @@
 }
 
 .subsectionTitle {
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: 1.5rem;
   font-weight: 600;
   color: white;
@@ -290,27 +298,36 @@
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     color: var(--text-primary);
     position: relative;
     padding-left: 3rem;
 
-    &::before {
-      content: '✓';
+    // Circle badge
+    &::after {
+      content: '';
       position: absolute;
       left: 1rem;
       top: 50%;
       transform: translateY(-50%);
       width: 24px;
       height: 24px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #EA580C 0%, #F59E0B 100%);
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 0.9rem;
+    }
+
+    // CSS-drawn checkmark inside the badge
+    &::before {
+      content: '';
+      position: absolute;
+      left: calc(1rem + 9px);
+      top: 50%;
+      width: 6px;
+      height: 11px;
+      border-right: 2.5px solid #fff;
+      border-bottom: 2.5px solid #fff;
+      transform: translateY(-65%) rotate(45deg);
+      z-index: 1;
     }
   }
 }
@@ -322,7 +339,7 @@
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   align-items: center;
 }
 
@@ -330,7 +347,7 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #EA580C 0%, #F59E0B 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -345,7 +362,7 @@
 }
 
 .instructorName {
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: 1.5rem;
   font-weight: 700;
   color: white;
@@ -378,7 +395,7 @@
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-decoration: none;
   align-items: flex-start;
@@ -386,8 +403,8 @@
   &:hover {
     transform: translateX(8px);
     background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(102, 126, 234, 0.5);
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+    border-color: rgba(234, 88, 12, 0.5);
+    box-shadow: 0 10px 30px rgba(234, 88, 12, 0.2);
   }
 }
 
@@ -395,9 +412,9 @@
   flex-shrink: 0;
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #EA580C 0%, #F59E0B 100%);
   color: white;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -413,7 +430,7 @@
 }
 
 .classTitle {
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: 1.2rem;
   font-weight: 600;
   color: white;
@@ -431,11 +448,11 @@
   font-family: var(--font-inter);
   font-size: 0.9rem;
   font-weight: 600;
-  color: rgba(102, 126, 234, 1);
+  color: rgba(234, 88, 12, 1);
   align-self: flex-start;
   padding: 0.25rem 0.75rem;
-  background: rgba(102, 126, 234, 0.15);
-  border-radius: 20px;
+  background: rgba(234, 88, 12, 0.15);
+  border-radius: var(--radius-lg);
 }
 
 // Reviews Tab
@@ -456,7 +473,7 @@
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
 }
 
 .reviewHeader {
@@ -470,7 +487,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #EA580C 0%, #F59E0B 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -488,7 +505,7 @@
 }
 
 .reviewName {
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: 1.1rem;
   font-weight: 600;
   color: white;
@@ -521,45 +538,26 @@
   left: 0;
   right: 0;
   z-index: 100;
-  padding: 1.5rem 0;
-  background: rgba(15, 12, 41, 0.95);
+  padding: var(--space-3) 0;
+  background: rgba(15, 23, 42, 0.92);
   backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
 }
 
 .ctaButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
+  @include btn-primary;
+  gap: var(--space-2);
   width: 100%;
   max-width: 500px;
   margin: 0 auto;
   padding: 1.25rem 3rem;
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: 1.2rem;
-  font-weight: 700;
-  color: white;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  border-radius: 50px;
-  cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
-  }
-
-  &:active {
-    transform: translateY(-1px);
-  }
 }
 
 .ctaIcon {
-  font-size: 1.5rem;
+  flex-shrink: 0;
 }
 
 .ctaText {

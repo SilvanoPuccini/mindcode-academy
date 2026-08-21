@@ -16,7 +16,7 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
@@ -92,10 +92,10 @@
   }
 
   &.info {
-    border-left: 4px solid #3b82f6;
+    border-left: 4px solid #F59E0B;
 
     .icon {
-      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      background: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%);
       color: white;
     }
   }

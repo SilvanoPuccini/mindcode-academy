@@ -2,17 +2,31 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
+import { Moon, Sun, Search as SearchIcon, X } from 'lucide-react';
 import styles from './Navbar.module.scss';
 import { useCourses } from '@/contexts/CourseContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useRipple } from '@/hooks/useRipple';
+import { useAuth } from '@/hooks/useAuth';
+import { focusSearchInput, SEARCH_HASH } from '@/hooks/useSearchFocus';
+import { Logo } from '@/components/Logo/Logo';
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { favorites } = useCourses();
   const { theme, toggleTheme } = useTheme();
+  const { user, isAuthenticated, logout } = useAuth();
   const rippleProps = useRipple();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleLogout = () => {
+    logout();
+    setMobileMenuOpen(false);
+    router.push('/');
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,14 +52,25 @@ export function Navbar() {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
+  // On the home page the SearchBar is already mounted,
+  // so just scroll to it and focus it. On any other
+  // page (course detail, class, favorites...) navigate
+  // home with the #buscador hash first; the home page's
+  // own effect (app/page.tsx) picks up the hash on
+  // mount and focuses the input once it's rendered.
+  const handleSearchClick = () => {
+    if (pathname === '/') {
+      focusSearchInput();
+    } else {
+      router.push(`/${SEARCH_HASH}`);
+    }
+  };
+
   return (
     <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}>
       <div className={styles.container}>
         {/* Logo */}
-        <Link href="/" className={styles.logo}>
-          <span className={styles.logoMind}>MIND</span>
-          <span className={styles.logoIA}>IA</span>
-        </Link>
+        <Logo />
 
         {/* Hamburger Button - Mobile Only */}
         <button
@@ -61,14 +86,13 @@ export function Navbar() {
 
         {/* Menu - Desktop */}
         <div className={styles.menu}>
-          <Link href="/#cursos" className={styles.menuItem}>Cursos</Link>
+          <Link href="/#catalogo" className={styles.menuItem}>Cursos</Link>
           <Link href="/favorites" className={styles.menuItem}>
             Favoritos
             {favorites.length > 0 && (
               <span className={styles.badge}>{favorites.length}</span>
             )}
           </Link>
-          <Link href="#profesores" className={styles.menuItem}>Profesores</Link>
           <Link href="#categorias" className={styles.menuItem}>Categorías</Link>
         </div>
 
@@ -82,35 +106,44 @@ export function Navbar() {
             {...rippleProps}
           >
             {theme === 'light' ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-              </svg>
+              <Moon size={20} aria-hidden="true" />
             ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="5"/>
-                <line x1="12" y1="1" x2="12" y2="3"/>
-                <line x1="12" y1="21" x2="12" y2="23"/>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                <line x1="1" y1="12" x2="3" y2="12"/>
-                <line x1="21" y1="12" x2="23" y2="12"/>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-              </svg>
+              <Sun size={20} aria-hidden="true" />
             )}
           </button>
-          <button className={`${styles.btnSearch} ripple-container`} {...rippleProps}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="M21 21l-4.35-4.35"/>
-            </svg>
+          <button
+            className={`${styles.btnSearch} ripple-container`}
+            onClick={handleSearchClick}
+            aria-label="Buscar cursos"
+            {...rippleProps}
+          >
+            <SearchIcon size={20} aria-hidden="true" />
           </button>
-          <button className={`${styles.btnSecondary} ripple-container`} {...rippleProps}>
-            Iniciar Sesión
-          </button>
-          <button className={`${styles.btnPrimary} ripple-container`} {...rippleProps}>
-            Registrarse
-          </button>
+          {isAuthenticated && user ? (
+            <div className={styles.userMenu}>
+              <span className={styles.userAvatar} aria-hidden="true">
+                {user.name.charAt(0).toUpperCase()}
+              </span>
+              <span className={styles.userName}>{user.name}</span>
+              <button
+                type="button"
+                className={`${styles.btnLogout} ripple-container`}
+                onClick={handleLogout}
+                {...rippleProps}
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link href="/login" className={`${styles.btnLogin} ripple-container`} {...rippleProps}>
+                Iniciar Sesión
+              </Link>
+              <Link href="/register" className={`${styles.btnRegister} ripple-container`} {...rippleProps}>
+                Registrarse
+              </Link>
+            </>
+          )}
         </div>
       </div>
 
@@ -120,19 +153,14 @@ export function Navbar() {
       {/* Mobile Menu */}
       <div className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ''}`}>
         <div className={styles.mobileMenuHeader}>
-          <Link href="/" className={styles.logo} onClick={toggleMobileMenu}>
-            <span className={styles.logoMind}>MIND</span>
-            <span className={styles.logoIA}>IA</span>
-          </Link>
+          <Logo onClick={toggleMobileMenu} />
           <button className={styles.closeBtn} onClick={toggleMobileMenu} aria-label="Cerrar menú">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 6L6 18M6 6l12 12"/>
-            </svg>
+            <X size={24} aria-hidden="true" />
           </button>
         </div>
 
         <nav className={styles.mobileNav}>
-          <Link href="/#cursos" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
+          <Link href="/#catalogo" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
             Cursos
           </Link>
           <Link href="/favorites" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
@@ -141,9 +169,6 @@ export function Navbar() {
               <span className={styles.badge}>{favorites.length}</span>
             )}
           </Link>
-          <Link href="#profesores" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
-            Profesores
-          </Link>
           <Link href="#categorias" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
             Categorías
           </Link>
@@ -151,39 +176,59 @@ export function Navbar() {
 
         <div className={styles.mobileActions}>
           <button
+            className={`${styles.btnSearch} ripple-container`}
+            onClick={() => {
+              toggleMobileMenu();
+              handleSearchClick();
+            }}
+            aria-label="Buscar cursos"
+            {...rippleProps}
+          >
+            <SearchIcon size={20} aria-hidden="true" />
+            <span className={styles.themeLabel}>Buscar</span>
+          </button>
+
+          <button
             className={`${styles.btnTheme} ripple-container`}
             onClick={toggleTheme}
             aria-label={theme === 'light' ? 'Activar modo oscuro' : 'Activar modo claro'}
             {...rippleProps}
           >
             {theme === 'light' ? (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-              </svg>
+              <Moon size={20} aria-hidden="true" />
             ) : (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="5"/>
-                <line x1="12" y1="1" x2="12" y2="3"/>
-                <line x1="12" y1="21" x2="12" y2="23"/>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                <line x1="1" y1="12" x2="3" y2="12"/>
-                <line x1="21" y1="12" x2="23" y2="12"/>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-              </svg>
+              <Sun size={20} aria-hidden="true" />
             )}
             <span className={styles.themeLabel}>
               {theme === 'light' ? 'Modo Oscuro' : 'Modo Claro'}
             </span>
           </button>
 
-          <button className={`${styles.btnSecondary} ripple-container`} {...rippleProps}>
-            Iniciar Sesión
-          </button>
-          <button className={`${styles.btnPrimary} ripple-container`} {...rippleProps}>
-            Registrarse
-          </button>
+          {isAuthenticated && user ? (
+            <div className={styles.mobileUserMenu}>
+              <span className={styles.userAvatar} aria-hidden="true">
+                {user.name.charAt(0).toUpperCase()}
+              </span>
+              <span className={styles.userName}>{user.name}</span>
+              <button
+                type="button"
+                className={`${styles.btnLogout} ripple-container`}
+                onClick={handleLogout}
+                {...rippleProps}
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link href="/login" className={`${styles.btnLogin} ripple-container`} onClick={toggleMobileMenu} {...rippleProps}>
+                Iniciar Sesión
+              </Link>
+              <Link href="/register" className={`${styles.btnRegister} ripple-container`} onClick={toggleMobileMenu} {...rippleProps}>
+                Registrarse
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </nav>

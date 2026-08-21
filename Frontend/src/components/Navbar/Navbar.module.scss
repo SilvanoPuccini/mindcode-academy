@@ -6,16 +6,19 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: 1.2rem 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0.9rem 0;
+  transition:
+    padding var(--speed-normal) ease,
+    background-color var(--speed-normal) ease,
+    box-shadow var(--speed-normal) ease;
   background: transparent;
 
   &.scrolled {
     background: var(--blur-bg);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-color);
-    box-shadow: var(--shadow-md);
-    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+    padding: 0.6rem 0;
   }
 }
 
@@ -28,37 +31,9 @@
   justify-content: space-between;
 }
 
-.logo {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  text-decoration: none;
-  font-family: var(--font-outfit);
-  font-size: 1.8rem;
-  font-weight: 900;
-  letter-spacing: 0.1em;
-  transition: transform 0.3s;
-
-  &:hover {
-    transform: scale(1.05);
-  }
-}
-
-.logoMind {
-  background: linear-gradient(135deg, color('primary') 0%, color('secondary') 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 10px color('primary-glow'));
-}
-
-.logoIA {
-  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 10px color('accent-glow'));
-}
+// Logo/wordmark styles now live in
+// components/Logo/Logo.module.scss (shared with the
+// standalone auth pages).
 
 .menu {
   display: flex;
@@ -76,7 +51,7 @@
   font-family: var(--font-inter);
   font-size: 1rem;
   font-weight: 500;
-  transition: all 0.3s;
+  transition: color var(--speed-fast) ease;
   position: relative;
   display: flex;
   align-items: center;
@@ -90,12 +65,17 @@
     width: 0;
     height: 2px;
     background: linear-gradient(90deg, color('accent') 0%, color('secondary') 100%);
-    transition: width 0.3s;
+    transition: width var(--speed-normal) ease;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 2px;
   }
 
   &:hover {
-    color: color('accent');
-    filter: drop-shadow(0 0 8px color('accent-glow'));
+    color: color('primary');
 
     &::after {
       width: 100%;
@@ -114,19 +94,19 @@
   font-weight: 700;
   background: linear-gradient(135deg, color('primary') 0%, color('secondary') 100%);
   color: white;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(162, 89, 255, 0.4);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.4);
   animation: pulse 2s ease-in-out infinite;
 }
 
 @keyframes pulse {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 2px 8px rgba(162, 89, 255, 0.4);
+    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.4);
   }
   50% {
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(162, 89, 255, 0.6);
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.6);
   }
 }
 
@@ -141,34 +121,28 @@
 }
 
 .btnTheme {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
   padding: 0.6rem;
-  color: color('accent');
+  color: color('primary');
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    background-color var(--speed-fast) ease,
+    border-color var(--speed-fast) ease,
+    transform var(--speed-fast) ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  overflow: hidden;
 
-  svg {
-    position: relative;
-    z-index: 1;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
 
   &:hover {
-    background: rgba(124, 58, 237, 0.15);
-    border-color: color('secondary');
-    box-shadow: 0 0 20px color('secondary-glow');
-    transform: scale(1.1) rotate(10deg);
-
-    svg {
-      transform: rotate(-10deg);
-    }
+    background: color('primary-light');
+    border-color: color('accent-border');
   }
 
   &:active {
@@ -177,67 +151,87 @@
 }
 
 .btnSearch {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
   padding: 0.6rem;
-  color: color('accent');
+  color: color('primary');
   cursor: pointer;
-  transition: all 0.3s;
+  transition:
+    background-color var(--speed-fast) ease,
+    border-color var(--speed-fast) ease,
+    transform var(--speed-fast) ease;
   display: flex;
   align-items: center;
   justify-content: center;
 
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
   &:hover {
-    background: rgba(6, 182, 212, 0.15);
-    border-color: color('accent');
-    box-shadow: 0 0 20px color('accent-glow');
-    transform: scale(1.1);
+    background: color('primary-light');
+    border-color: color('accent-border');
+  }
+
+  &:active {
+    transform: scale(0.95);
   }
 }
 
-.btnSecondary {
-  background: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+// Auth actions: ghost for login (low emphasis),
+// orange gradient for register (primary action).
+.btnLogin {
+  @include btn-ghost;
   padding: 0.7rem 1.5rem;
+  font-size: 0.95rem;
+}
+
+.btnRegister {
+  @include btn-primary;
+  padding: 0.7rem 1.8rem;
+  font-size: 0.95rem;
+}
+
+// Logged-in state: avatar + name + logout, replacing the
+// login/register buttons once there's an active session.
+.userMenu {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.userAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
+  color: white;
+  font-family: var(--font-space);
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.userName {
   color: var(--text-primary);
   font-family: var(--font-inter);
   font-size: 0.95rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-
-  &:hover {
-    background: var(--bg-tertiary);
-    border-color: color('accent');
-    color: color('accent');
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
-  }
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.btnPrimary {
-  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
-  border: none;
-  border-radius: 12px;
-  padding: 0.7rem 1.8rem;
-  color: #FFFFFF;
-  font-family: var(--font-inter);
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(6, 182, 212, 0.6);
-    filter: brightness(1.1);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
+.btnLogout {
+  @include btn-ghost;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
 }
 
 // ============================================
@@ -264,7 +258,7 @@
     width: 100%;
     height: 3px;
     background: color('accent');
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform-origin: center;
   }
@@ -342,7 +336,7 @@
 .closeBtn {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
   background: var(--bg-tertiary);
   color: var(--text-primary);
@@ -354,9 +348,8 @@
 
   &:hover {
     background: var(--bg-card);
-    border-color: color('accent');
-    color: color('accent');
-    transform: rotate(90deg);
+    border-color: color('accent-border');
+    color: color('primary');
   }
 }
 
@@ -395,16 +388,36 @@
   padding: 1.5rem;
   border-top: 1px solid var(--border-color);
 
-  .btnTheme {
+  .btnTheme,
+  .btnSearch {
     width: 100%;
     justify-content: center;
     gap: 0.5rem;
   }
 
-  .btnSecondary,
-  .btnPrimary {
+  .btnLogin,
+  .btnRegister,
+  .btnLogout {
     width: 100%;
     text-align: center;
+  }
+}
+
+.mobileUserMenu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0 0.75rem;
+
+  .userAvatar {
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+  }
+
+  .userName {
+    max-width: 100%;
   }
 }
 

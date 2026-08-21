@@ -5,7 +5,7 @@ import { MetadataRoute } from 'next';
  * Controls how search engines crawl the site
  */
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://mindia.com';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://mindcode-academy.com';
 
   return {
     rules: [

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit, Inter } from "next/font/google";
+import { Space_Grotesk, Inter } from "next/font/google";
 import { CourseProvider } from "@/contexts/CourseContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
@@ -7,11 +7,11 @@ import { ToastContainer } from "@/components/Toast/Toast";
 import { ScrollToTop } from "@/components/ScrollToTop/ScrollToTop";
 import "../styles/reset.scss";
 
-// Outfit Bold - Para títulos y branding
-const outfit = Outfit({
-  variable: "--font-outfit",
+// Space Grotesk - Display font for headings and branding
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space",
   subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
 });
 
 // Inter Regular - Para texto base
@@ -22,10 +22,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://mindia.com'),
+  metadataBase: new URL('https://mindcode-academy.com'),
   title: {
-    default: "MIND IA - Aprende con inteligencia artificial",
-    template: "%s | MIND IA",
+    default: "MindCode Academy - Aprende con inteligencia artificial",
+    template: "%s | MindCode Academy",
   },
   description: "Donde la mente y la inteligencia artificial se encuentran para aprender. Plataforma de cursos online con tecnología de IA para potenciar tu aprendizaje.",
   keywords: [
@@ -41,11 +41,11 @@ export const metadata: Metadata = {
     "machine learning",
     "cursos interactivos",
     "educación online",
-    "MIND IA",
+    "MindCode Academy",
   ],
-  authors: [{ name: "MIND IA" }],
-  creator: "MIND IA",
-  publisher: "MIND IA",
+  authors: [{ name: "MindCode Academy" }],
+  creator: "MindCode Academy",
+  publisher: "MindCode Academy",
   robots: {
     index: true,
     follow: true,
@@ -60,37 +60,37 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_ES",
-    url: "https://mindia.com",
-    siteName: "MIND IA",
-    title: "MIND IA - Aprende con inteligencia artificial",
+    url: "https://mindcode-academy.com",
+    siteName: "MindCode Academy",
+    title: "MindCode Academy - Aprende con inteligencia artificial",
     description: "Donde la mente y la inteligencia artificial se encuentran para aprender.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "MIND IA - Plataforma de cursos online",
+        alt: "MindCode Academy - Plataforma de cursos online",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "MIND IA - Aprende con inteligencia artificial",
+    title: "MindCode Academy - Aprende con inteligencia artificial",
     description: "Donde la mente y la inteligencia artificial se encuentran para aprender.",
     images: ["/og-image.png"],
-    creator: "@mindia",
+    creator: "@mindcodeacademy",
   },
   viewport: {
     width: "device-width",
     initialScale: 1,
     maximumScale: 5,
-    themeColor: "#06B6D4",
+    themeColor: "#EA580C",
   },
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "MIND IA",
+    title: "MindCode Academy",
   },
   icons: {
     icon: "/icons/icon-192.png",
@@ -110,10 +110,12 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="MIND IA" />
-        <meta name="theme-color" content="#06B6D4" />
+        <meta name="apple-mobile-web-app-title" content="MindCode Academy" />
+        <meta name="theme-color" content="#EA580C" />
       </head>
-      <body className={`${outfit.variable} ${inter.variable}`}>
+      <body className={`${spaceGrotesk.variable} ${inter.variable}`}>
+        {/* Site-wide decorative cuadrille layer (styles/_grid-bg.scss) */}
+        <div className="grid-bg-layer" aria-hidden="true" />
         <ThemeProvider>
           <ToastProvider>
             <CourseProvider>

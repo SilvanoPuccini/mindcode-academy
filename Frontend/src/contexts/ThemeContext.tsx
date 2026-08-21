@@ -13,11 +13,9 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>('light');
-  const [mounted, setMounted] = useState(false);
 
   // Cargar tema desde localStorage al montar
   useEffect(() => {
-    setMounted(true);
     const savedTheme = localStorage.getItem('theme') as Theme | null;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -33,11 +31,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     document.documentElement.setAttribute('data-theme', newTheme);
   };
 
-  // Prevenir flash de contenido sin estilo
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
+  // El Provider SIEMPRE envuelve a los hijos: el primer render usa el
+  // tema por defecto y el efecto lo sincroniza después de montar.
+  // (Renderizar condicionalmente fuera del Provider rompe useTheme.)
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}

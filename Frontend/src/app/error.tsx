@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect } from 'react';
+import { AlertCircle, RefreshCw, Home } from 'lucide-react';
 import styles from './error.module.scss';
 
 /**
  * Error boundary component for handling runtime errors
- * Provides user-friendly error messages with MIND IA branding
+ * Provides user-friendly error messages with MindCode Academy branding
  */
 export default function Error({
   error,
@@ -24,27 +25,13 @@ export default function Error({
       <div className={styles.errorContent}>
         {/* Error Icon */}
         <div className={styles.iconContainer}>
-          <svg
-            className={styles.errorIcon}
-            width="120"
-            height="120"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="12" />
-            <line x1="12" y1="16" x2="12.01" y2="16" />
-          </svg>
+          <AlertCircle size={120} className={styles.errorIcon} strokeWidth={1.5} aria-hidden="true" />
         </div>
 
-        {/* MIND IA Logo */}
+        {/* MindCode Academy Logo */}
         <div className={styles.logoContainer}>
-          <h1 className={styles.logoPrimary}>MIND</h1>
-          <h1 className={styles.logoAccent}>IA</h1>
+          <h1 className={styles.logoPrimary}>Mind</h1>
+          <h1 className={styles.logoAccent}>Code</h1>
         </div>
 
         {/* Error Message */}
@@ -67,37 +54,12 @@ export default function Error({
         {/* Action Buttons */}
         <div className={styles.actionButtons}>
           <button onClick={reset} className={styles.retryButton}>
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="23 4 23 10 17 10" />
-              <polyline points="1 20 1 14 7 14" />
-              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
-            </svg>
+            <RefreshCw size={20} aria-hidden="true" />
             Intentar de nuevo
           </button>
 
           <a href="/" className={styles.homeButton}>
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-              <polyline points="9 22 9 12 15 12 15 22" />
-            </svg>
+            <Home size={20} aria-hidden="true" />
             Ir al inicio
           </a>
         </div>

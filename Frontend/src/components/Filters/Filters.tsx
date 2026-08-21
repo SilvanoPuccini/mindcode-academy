@@ -1,24 +1,24 @@
 "use client";
 
+import { useMemo } from 'react';
+import { Star } from 'lucide-react';
 import { useCourses } from '@/contexts/CourseContext';
+import { buildCategories } from '@/lib/course-taxonomy';
 import { useRipple } from '@/hooks/useRipple';
 import styles from './Filters.module.scss';
-
-const categories = [
-  { id: 1, name: 'Todos', count: 500 },
-  { id: 2, name: 'Web Development', count: 120 },
-  { id: 3, name: 'Machine Learning', count: 85 },
-  { id: 4, name: 'Data Science', count: 95 },
-  { id: 5, name: 'Mobile Development', count: 70 },
-  { id: 6, name: 'UX/UI Design', count: 60 },
-];
 
 const levels = ['Principiante', 'Intermedio', 'Avanzado'];
 const durations = ['< 2 horas', '2-5 horas', '5-10 horas', '> 10 horas'];
 
 export function Filters() {
-  const { filters, setFilters } = useCourses();
+  const { allCourses, filters, setFilters } = useCourses();
   const rippleProps = useRipple();
+
+  // Derived from real courses - id 1 is reserved for "Todos"
+  const categories = useMemo(() => [
+    { id: 1, label: 'Todos', count: allCourses.length },
+    ...buildCategories(allCourses),
+  ], [allCourses]);
 
   const toggleLevel = (level: string) => {
     const newLevels = filters.levels.includes(level)
@@ -71,7 +71,7 @@ export function Filters() {
               onClick={() => handleCategoryChange(category.id)}
               {...rippleProps}
             >
-              <span>{category.name}</span>
+              <span>{category.label}</span>
               <span className={styles.count}>{category.count}</span>
             </button>
           ))}
@@ -128,7 +128,13 @@ export function Filters() {
             className={styles.slider}
           />
           <div className={styles.ratingValue}>
-            {filters.minRating > 0 ? `${filters.minRating}★ o más` : 'Todos'}
+            {filters.minRating > 0 ? (
+              <>
+                {filters.minRating} <Star size={12} fill="currentColor" aria-hidden="true" /> o más
+              </>
+            ) : (
+              'Todos'
+            )}
           </div>
         </div>
       </div>

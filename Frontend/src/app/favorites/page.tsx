@@ -4,38 +4,45 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./page.module.scss";
 import { Course as CourseType } from "@/types";
+import { HeartCrack, LogIn } from "lucide-react";
 import { Course as CourseComponent } from "@/components/Course/Course";
 import { Navbar } from "@/components/Navbar/Navbar";
 import { Footer } from "@/components/Footer/Footer";
 import { ScrollProgress } from "@/components/ScrollProgress/ScrollProgress";
 import { EmptyState } from "@/components/EmptyState/EmptyState";
 import { useCourses } from "@/contexts/CourseContext";
+import { publicFetch } from "@/lib/api";
+import { getToken } from "@/services/authApi";
 
 export default function FavoritesPage() {
-  const { favorites, setAllCourses } = useCourses();
-  const [loading, setLoading] = useState(true);
+  const { favorites, favoritesLoading, setAllCourses } = useCourses();
+  const [coursesLoading, setCoursesLoading] = useState(true);
   const [allCourses, setLocalCourses] = useState<CourseType[]>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Read after mount only: getToken() touches localStorage,
+    // which is unavailable during SSR/first paint.
+    setIsLoggedIn(!!getToken());
+  }, []);
 
   useEffect(() => {
     async function getCourses() {
       try {
-        const res = await fetch("http://localhost:8000/courses", { cache: "no-store" });
-        if (!res.ok) {
-          throw new Error("Failed to fetch courses");
-        }
-        const data: CourseType[] = await res.json();
+        const data = await publicFetch<CourseType[]>("/courses", { cache: "no-store" });
         setAllCourses(data);
         setLocalCourses(data);
       } catch (error) {
         console.error("Error fetching courses:", error);
       } finally {
-        setLoading(false);
+        setCoursesLoading(false);
       }
     }
 
     getCourses();
   }, [setAllCourses]);
 
+  const loading = coursesLoading || favoritesLoading;
   const favoriteCourses = allCourses.filter(course => favorites.includes(course.id));
 
   return (
@@ -56,13 +63,21 @@ export default function FavoritesPage() {
 
           {loading ? (
             <div className={styles.loading}>Cargando tus favoritos...</div>
+          ) : !isLoggedIn ? (
+            <EmptyState
+              icon={<LogIn size={56} aria-hidden="true" />}
+              title="Iniciá sesión para ver tus favoritos"
+              message="Tus cursos favoritos se guardan en tu cuenta. Iniciá sesión para acceder a ellos desde cualquier dispositivo."
+              actionLabel="Iniciar sesión"
+              actionHref="/login"
+            />
           ) : favorites.length === 0 ? (
             <EmptyState
-              icon="💔"
+              icon={<HeartCrack size={56} aria-hidden="true" />}
               title="No tienes favoritos aún"
               message="Explora nuestro catálogo y guarda tus cursos preferidos para acceder a ellos fácilmente."
               actionLabel="Explorar cursos"
-              actionHref="/#cursos"
+              actionHref="/#catalogo"
             />
           ) : (
             <div className={styles.coursesGrid}>
@@ -81,9 +96,6 @@ export default function FavoritesPage() {
             </div>
           )}
         </div>
-
-        {/* Fondo decorativo */}
-        <div className={styles.gridBg}></div>
       </div>
 
       <Footer />

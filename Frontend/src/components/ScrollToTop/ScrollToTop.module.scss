@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -23,7 +23,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow:
     0 4px 15px rgba(0, 0, 0, 0.2),
-    0 0 30px rgba(162, 89, 255, 0.3),
+    0 0 30px rgba(234, 88, 12, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 
   &.visible {
@@ -37,7 +37,7 @@
     background: rgba(255, 255, 255, 0.15);
     box-shadow:
       0 8px 25px rgba(0, 0, 0, 0.3),
-      0 0 40px rgba(162, 89, 255, 0.5),
+      0 0 40px rgba(234, 88, 12, 0.5),
       inset 0 1px 0 rgba(255, 255, 255, 0.15);
 
     svg {

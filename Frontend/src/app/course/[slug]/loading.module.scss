@@ -11,7 +11,7 @@
 
 .loadingCard {
   background: color('white');
-  border-radius: 18px;
+  border-radius: var(--radius-lg);
   padding: 3rem;
   box-shadow: 0 6px 24px rgba(0,0,0,0.10);
   border: 2px solid color('light-gray');

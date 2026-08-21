@@ -1,8 +1,9 @@
+import { ReactNode } from 'react';
 import Link from 'next/link';
 import styles from './EmptyState.module.scss';
 
 interface EmptyStateProps {
-  icon: string;
+  icon: ReactNode;
   title: string;
   message: string;
   actionLabel?: string;

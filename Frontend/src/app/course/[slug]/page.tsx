@@ -1,15 +1,16 @@
 import { notFound } from "next/navigation";
 import { CourseDetail } from "@/types";
 import { CourseDetailComponent } from "@/components/CourseDetail/CourseDetail";
+import { ScrollToTopOnMount } from "@/components/ScrollToTopOnMount/ScrollToTopOnMount";
 
 interface CoursePageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 async function getCourseData(slug: string): Promise<CourseDetail> {
-  const response = await fetch(`http://localhost:8000/courses/${slug}`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/courses/${slug}`, {
     cache: "no-store", // Ensures fresh data on each request
   });
 
@@ -25,7 +26,8 @@ async function getCourseData(slug: string): Promise<CourseDetail> {
 }
 
 export default async function CoursePage({ params }: CoursePageProps) {
-  const courseData = await getCourseData(params.slug);
+  const { slug } = await params;
+  const courseData = await getCourseData(slug);
 
   // JSON-LD Schema para SEO
   const jsonLd = {
@@ -35,8 +37,8 @@ export default async function CoursePage({ params }: CoursePageProps) {
     description: courseData.description,
     provider: {
       '@type': 'Organization',
-      name: 'MIND IA',
-      sameAs: 'https://mindia.com',
+      name: 'MindCode Academy',
+      sameAs: 'https://mindcode-academy.com',
     },
     hasCourseInstance: {
       '@type': 'CourseInstance',
@@ -64,6 +66,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
   return (
     <>
+      <ScrollToTopOnMount />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -74,10 +77,11 @@ export default async function CoursePage({ params }: CoursePageProps) {
 }
 
 export async function generateMetadata({ params }: CoursePageProps) {
-  const courseData = await getCourseData(params.slug);
+  const { slug } = await params;
+  const courseData = await getCourseData(slug);
 
   return {
-    title: `${courseData.title} - Curso Online`,
+    title: `${courseData.name} - Curso Online`,
     description: courseData.description,
   };
 }

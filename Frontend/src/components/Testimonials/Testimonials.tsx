@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import styles from './Testimonials.module.scss';
 import { useSwipe } from '@/hooks/useSwipe';
 
@@ -11,7 +12,7 @@ const testimonials = [
     name: "María González",
     role: "Desarrolladora Full Stack",
     image: "https://i.pravatar.cc/150?img=1",
-    text: "MIND IA transformó mi carrera. Los cursos son increíblemente prácticos y los profesores son expertos en sus áreas.",
+    text: "MindCode Academy transformó mi carrera. Los cursos son increíblemente prácticos y los profesores son expertos en sus áreas.",
     rating: 5
   },
   {
@@ -68,9 +69,7 @@ export function Testimonials() {
             onClick={handleSwipeRight}
             aria-label="Previous testimonial"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M15 18l-6-6 6-6"/>
-            </svg>
+            <ChevronLeft size={24} aria-hidden="true" />
           </button>
 
           <div className={styles.carousel} {...swipeHandlers}>
@@ -87,7 +86,7 @@ export function Testimonials() {
                 <p className={styles.text}>{testimonial.text}</p>
                 <div className={styles.stars}>
                   {[...Array(testimonial.rating)].map((_, i) => (
-                    <span key={i}>★</span>
+                    <Star key={i} size={18} fill="currentColor" aria-hidden="true" />
                   ))}
                 </div>
                 <div className={styles.author}>
@@ -113,9 +112,7 @@ export function Testimonials() {
             onClick={handleSwipeLeft}
             aria-label="Next testimonial"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
+            <ChevronRight size={24} aria-hidden="true" />
           </button>
         </div>
 

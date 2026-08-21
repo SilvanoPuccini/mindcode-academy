@@ -11,7 +11,7 @@
 
 .notFoundCard {
   background: color('white');
-  border-radius: 18px;
+  border-radius: var(--radius-lg);
   padding: 3rem;
   box-shadow: 0 6px 24px rgba(0,0,0,0.10);
   border: 2px solid color('light-gray');
@@ -22,7 +22,7 @@
 
 .title {
   font-size: 2.5rem;
-  font-weight: 800;
+  font-weight: 700;
   color: color('text-primary');
   margin-bottom: 1rem;
 }
@@ -39,7 +39,7 @@
   background: color('primary');
   color: color('white');
   text-decoration: none;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 1rem 2rem;
   font-size: 1rem;
   font-weight: 600;

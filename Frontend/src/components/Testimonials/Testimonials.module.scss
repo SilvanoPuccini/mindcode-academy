@@ -11,9 +11,9 @@
 }
 
 .title {
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: 3rem;
-  font-weight: 900;
+  font-weight: 700;
   text-align: center;
   color: var(--text-primary);
   margin-bottom: 4rem;
@@ -42,39 +42,29 @@
   }
 }
 
+// Same warm glass recipe as the Categories
+// carousel arrows (styles/_controls.scss):
+// one visual language for every carousel.
 .navBtn {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: color('accent');
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  flex-shrink: 0;
+  @include arrow-glass;
   z-index: 10;
-  backdrop-filter: blur(10px);
-
-  &:hover {
-    background: rgba(6, 182, 212, 0.15);
-    border-color: color('accent');
-    box-shadow: 0 0 20px color('accent-glow');
-    transform: scale(1.1);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
 
   @media (max-width: 768px) {
-    width: 40px;
-    height: 40px;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @media (max-width: 768px) {
+      &:hover {
+        transform: translateY(-50%) translateY(-1px);
+      }
+
+      &:active {
+        transform: translateY(-50%) scale(0.94);
+      }
+    }
   }
 }
 
@@ -108,20 +98,20 @@
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 25px;
+  border-radius: var(--radius-lg);
   padding: 3rem 2.5rem;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 
   &.active {
     box-shadow:
-      0 20px 60px rgba(6, 182, 212, 0.3),
+      0 20px 60px rgba(234, 88, 12, 0.3),
       0 0 0 1px color('accent-border');
   }
 }
 
 .quote {
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: 6rem;
   line-height: 1;
   background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
@@ -151,14 +141,10 @@
 .stars {
   display: flex;
   gap: 0.3rem;
-  margin-bottom: 2rem;
-  font-size: 1.5rem;
+  margin-bottom: var(--space-3);
+  color: color('secondary');
 
-  span {
-    background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  svg {
     filter: drop-shadow(0 0 8px color('accent-glow'));
     animation: starPulse 2s ease-in-out infinite;
 
@@ -200,7 +186,7 @@
 }
 
 .name {
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -223,20 +209,27 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+  // Token-based: white alpha dots were
+  // invisible on the light theme background.
+  background: var(--border-color);
   border: none;
   cursor: pointer;
   transition: all 0.3s;
 
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
   &:hover {
-    background: rgba(6, 182, 212, 0.5);
+    background: rgba(234, 88, 12, 0.5);
     transform: scale(1.2);
   }
 
   &.activeDot {
-    background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
-    box-shadow: 0 0 15px color('accent-glow');
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    box-shadow: 0 0 15px var(--primary-glow);
     width: 30px;
-    border-radius: 10px;
+    border-radius: var(--radius-sm);
   }
 }

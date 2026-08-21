@@ -4,6 +4,10 @@
   padding: 2rem;
   position: relative;
   z-index: 10;
+  // Keep the search box clear of the fixed navbar
+  // when navigating to #buscador from the search
+  // icon in the Navbar.
+  scroll-margin-top: 96px;
 }
 
 .container {
@@ -18,7 +22,7 @@
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
   border: 2px solid rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   padding: 0.5rem 0.5rem 0.5rem 1.5rem;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
@@ -26,13 +30,13 @@
   &.focused {
     border-color: color('accent');
     box-shadow:
-      0 12px 40px rgba(6, 182, 212, 0.4),
-      0 0 0 4px rgba(6, 182, 212, 0.1);
+      0 12px 40px rgba(234, 88, 12, 0.4),
+      0 0 0 4px rgba(234, 88, 12, 0.1);
     background: rgba(255, 255, 255, 0.12);
   }
 
   &:hover {
-    border-color: rgba(6, 182, 212, 0.4);
+    border-color: rgba(234, 88, 12, 0.4);
   }
 }
 
@@ -61,7 +65,7 @@
 .clearBtn {
   background: rgba(255, 255, 255, 0.1);
   border: none;
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
   width: 32px;
   height: 32px;
   display: flex;
@@ -80,26 +84,19 @@
 }
 
 .searchBtn {
-  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
-  border: none;
-  border-radius: 15px;
+  @include btn-primary;
   padding: 0.9rem 2rem;
-  color: #FFFFFF;
-  font-family: var(--font-inter);
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
   flex-shrink: 0;
 
-  &:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 25px rgba(6, 182, 212, 0.6);
-    filter: brightness(1.1);
+  svg {
+    transition: transform var(--speed-fast) ease;
+  }
+
+  &:hover svg {
+    transform: translateX(3px);
   }
 
   &:active {
-    transform: scale(0.98);
+    transform: translateY(0);
   }
 }

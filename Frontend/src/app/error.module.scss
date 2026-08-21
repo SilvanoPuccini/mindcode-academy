@@ -26,7 +26,7 @@
   // Glassmorphism card
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(20px);
-  border-radius: 24px;
+  border-radius: var(--radius-lg);
   padding: 3rem 2rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow:
@@ -70,7 +70,7 @@
   display: flex;
   gap: 0.75rem;
   align-items: center;
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
 }
 
 .logoPrimary {
@@ -79,7 +79,7 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   font-size: 2.5rem;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.15em;
   line-height: 1;
   filter: drop-shadow(0 0 15px color('primary-glow'));
@@ -91,16 +91,16 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   font-size: 2.5rem;
-  font-weight: 900;
+  font-weight: 700;
   letter-spacing: 0.15em;
   line-height: 1;
   filter: drop-shadow(0 0 15px color('accent-glow'));
 }
 
 .errorTitle {
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: 2rem;
-  font-weight: 800;
+  font-weight: 700;
   color: #FFFFFF;
   margin: 0;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -120,7 +120,7 @@
   width: 100%;
   margin-top: 1rem;
   background: rgba(0, 0, 0, 0.3);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
   text-align: left;
@@ -140,10 +140,13 @@
   }
 
   &::before {
-    content: '▶';
+    content: '';
     display: inline-block;
     margin-right: 0.5rem;
-    transition: transform 0.2s;
+    border-left: 6px solid currentColor;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    transition: transform var(--speed-fast) ease;
   }
 
   details[open] &::before {
@@ -157,7 +160,7 @@
   color: #F87171;
   background: rgba(0, 0, 0, 0.5);
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   margin-top: 0.5rem;
   overflow-x: auto;
   white-space: pre-wrap;
@@ -183,7 +186,7 @@
   font-size: 1rem;
   font-weight: 600;
   padding: 0.875rem 1.75rem;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   border: none;
   cursor: pointer;
   display: inline-flex;
@@ -208,16 +211,18 @@
 
 .retryButton {
   background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
-  color: white;
+  // Amber surface mandates near-black text for
+  // contrast (white fails AA on amber).
+  color: color('secondary-text');
   box-shadow:
-    0 4px 15px rgba(6, 182, 212, 0.3),
-    0 0 20px rgba(6, 182, 212, 0.2);
+    0 4px 15px rgba(234, 88, 12, 0.3),
+    0 0 20px rgba(234, 88, 12, 0.2);
 
   &:hover {
     transform: translateY(-2px);
     box-shadow:
-      0 6px 20px rgba(6, 182, 212, 0.4),
-      0 0 30px rgba(6, 182, 212, 0.3);
+      0 6px 20px rgba(234, 88, 12, 0.4),
+      0 0 30px rgba(234, 88, 12, 0.3);
   }
 
   &:active {
@@ -248,8 +253,8 @@
   inset: 0;
   z-index: 0;
   background-image:
-    linear-gradient(transparent 31px, rgba(6, 182, 212, 0.1) 32px),
-    linear-gradient(90deg, transparent 31px, rgba(124, 58, 237, 0.1) 32px);
+    linear-gradient(transparent 31px, rgba(234, 88, 12, 0.1) 32px),
+    linear-gradient(90deg, transparent 31px, rgba(245, 158, 11, 0.1) 32px);
   background-size: 64px 64px;
   opacity: 0.5;
 
@@ -259,7 +264,7 @@
     inset: 0;
     background: radial-gradient(
       circle at 50% 50%,
-      rgba(6, 182, 212, 0.15) 0%,
+      rgba(234, 88, 12, 0.15) 0%,
       transparent 50%
     );
     animation: pulseGrid 4s ease-in-out infinite;

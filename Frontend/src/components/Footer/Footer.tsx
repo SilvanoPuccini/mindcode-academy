@@ -9,8 +9,8 @@ export function Footer() {
           {/* Column 1: About */}
           <div className={styles.column}>
             <div className={styles.logo}>
-              <span className={styles.logoMind}>MIND</span>
-              <span className={styles.logoIA}>IA</span>
+              <span className={styles.logoMind}>Mind</span>
+              <span className={styles.logoIA}>Code</span>
             </div>
             <p className={styles.description}>
               Aprende con inteligencia artificial. La mejor plataforma de cursos online para impulsar tu carrera.
@@ -80,7 +80,7 @@ export function Footer() {
         {/* Bottom */}
         <div className={styles.bottom}>
           <p className={styles.copyright}>
-            © 2025 <span className={styles.brandGradient}>MIND IA</span>. Todos los derechos reservados.
+            © 2026 <span className={styles.brandGradient}>MindCode Academy</span>. Todos los derechos reservados.
           </p>
         </div>
       </div>

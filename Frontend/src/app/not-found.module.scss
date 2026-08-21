@@ -5,7 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  background: linear-gradient(160deg, #1C1008 0%, #0F172A 55%, #0F172A 100%);
   position: relative;
   overflow: hidden;
   padding: 2rem;
@@ -34,11 +34,11 @@
 }
 
 .code {
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: clamp(6rem, 15vw, 12rem);
-  font-weight: 900;
+  font-weight: 700;
   margin: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #EA580C 0%, #F59E0B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -53,7 +53,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #EA580C 0%, #F59E0B 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -64,12 +64,12 @@
 }
 
 .title {
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: clamp(1.8rem, 4vw, 3rem);
   font-weight: 700;
   color: white;
   margin: 0 0 1.5rem;
-  text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+  text-shadow: 0 0 20px rgba(234, 88, 12, 0.5);
 }
 
 .message {
@@ -82,27 +82,15 @@
 }
 
 .button {
-  display: inline-block;
+  @include btn-primary;
   position: relative;
   padding: 1rem 3rem;
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: 1.1rem;
-  font-weight: 600;
-  color: white;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  border-radius: 50px;
-  text-decoration: none;
-  cursor: pointer;
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow:
-      0 15px 40px rgba(102, 126, 234, 0.5),
-      0 0 30px rgba(102, 126, 234, 0.3);
+    background: #C2410C;
 
     .buttonGlow {
       opacity: 1;
@@ -110,7 +98,7 @@
   }
 
   &:active {
-    transform: translateY(-1px);
+    transform: translateY(0);
   }
 }
 
@@ -150,10 +138,10 @@
 }
 
 .statValue {
-  font-family: var(--font-outfit);
+  font-family: var(--font-space);
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #EA580C 0%, #F59E0B 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -180,9 +168,9 @@
 
 @keyframes glow {
   from {
-    filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.5));
+    filter: drop-shadow(0 0 20px rgba(234, 88, 12, 0.5));
   }
   to {
-    filter: drop-shadow(0 0 40px rgba(102, 126, 234, 0.8));
+    filter: drop-shadow(0 0 40px rgba(234, 88, 12, 0.8));
   }
 }
