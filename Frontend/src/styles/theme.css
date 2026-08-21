@@ -1,27 +1,85 @@
 /* ============================================ */
-/* MINDIA - CSS Custom Properties for Dark Mode */
+/* MINDCODE ACADEMY - Design Tokens              */
+/* Warm palette: orange primary, amber accent,   */
+/* red danger. Slate neutrals.                   */
 /* ============================================ */
 
 :root {
-  /* Light Mode (Default) - Estilo Platzi */
-  --bg-primary: #F5F7FA;
+  /* Light Mode (Default)
+     Warm canvas (#FDFBF8) instead of pure white so
+     the orange cuadrille integrates naturally; cards
+     stay white-ish (--bg-card) for surface contrast. */
+  --bg-primary: #FDFBF8;
   --bg-secondary: #FFFFFF;
-  --bg-tertiary: #E8EDF2;
+  --bg-tertiary: #EFEAE3;
   --bg-card: #FFFFFF;
 
+  /* Text: primary ~16:1, secondary ~8:1, tertiary
+     ~4.6:1 on white - all clear AA, body text AAA. */
   --text-primary: #121212;
-  --text-secondary: #5A5A5A;
-  --text-tertiary: #9CA3AF;
+  --text-secondary: #4F4F4F;
+  --text-tertiary: #6B7280;
 
-  --border-color: #E0E6ED;
-  --border-light: #F0F3F7;
+  /* Slightly stronger hairlines so surfaces keep
+     definition against the warm canvas. */
+  --border-color: #D8DEE6;
+  --border-light: #E9EDF2;
 
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  /* Brand - Primary (orange-600) */
+  --primary: #EA580C;
+  --primary-hover: #C2410C;
+  --primary-light: rgba(234, 88, 12, 0.08);
+  --primary-border: rgba(234, 88, 12, 0.25);
+  --primary-glow: rgba(234, 88, 12, 0.22);
 
-  --overlay-bg: rgba(255, 255, 255, 0.95);
-  --blur-bg: rgba(255, 255, 255, 0.9);
+  /* Brand - Accent (amber-500, highlights/stars/small accents) */
+  --accent: #F59E0B;
+  --accent-light: rgba(245, 158, 11, 0.1);
+  --accent-border: rgba(245, 158, 11, 0.3);
+  --accent-glow: rgba(245, 158, 11, 0.3);
+
+  /* Brand - Secondary (amber-500, supporting button actions) */
+  --secondary: #F59E0B;
+  --secondary-text: #1C1917;
+
+  /* Brand - Tertiary (solid ink button, inverts in dark mode) */
+  --tertiary: #0A0A0A;
+  --tertiary-text: #FFFFFF;
+
+  /* Brand - Danger (red-600, errors and popular badges) */
+  --danger: #DC2626;
+  --danger-light: rgba(220, 38, 38, 0.08);
+  --danger-border: rgba(220, 38, 38, 0.25);
+  --danger-glow: rgba(220, 38, 38, 0.22);
+
+  /* Soft layered shadows - a touch more present so
+     white cards read as surfaces on the warm canvas. */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(0, 0, 0, 0.07);
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.13);
+  --shadow-primary: 0 4px 14px rgba(234, 88, 12, 0.25);
+
+  /* Warmed overlays */
+  --overlay-bg: rgba(255, 251, 247, 0.95);
+  --blur-bg: rgba(255, 251, 247, 0.88);
+
+  /* Radius scale */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  /* Spacing scale */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 3rem;
+  --space-6: 4rem;
+
+  /* Motion */
+  --speed-fast: 150ms;
+  --speed-normal: 250ms;
 }
 
 [data-theme="dark"] {
@@ -38,9 +96,35 @@
   --border-color: rgba(255, 255, 255, 0.1);
   --border-light: rgba(255, 255, 255, 0.05);
 
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 6px 24px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 12px 32px rgba(6, 182, 212, 0.25);
+  /* Brighter brand colors for contrast on dark surfaces */
+  --primary: #FB923C;
+  --primary-hover: #F97316;
+  --primary-light: rgba(251, 146, 60, 0.12);
+  --primary-border: rgba(251, 146, 60, 0.3);
+  --primary-glow: rgba(251, 146, 60, 0.26);
+
+  --accent: #FBBF24;
+  --accent-light: rgba(251, 191, 36, 0.12);
+  --accent-border: rgba(251, 191, 36, 0.32);
+  --accent-glow: rgba(251, 191, 36, 0.3);
+
+  /* Brand - Secondary (brighter amber for dark surfaces) */
+  --secondary: #FBBF24;
+  --secondary-text: #1C1917;
+
+  /* Brand - Tertiary (inverted: light surface, dark text) */
+  --tertiary: #F8FAFC;
+  --tertiary-text: #0F172A;
+
+  --danger: #F87171;
+  --danger-light: rgba(248, 113, 113, 0.12);
+  --danger-border: rgba(248, 113, 113, 0.3);
+  --danger-glow: rgba(248, 113, 113, 0.26);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.5);
+  --shadow-primary: 0 4px 14px rgba(251, 146, 60, 0.28);
 
   --overlay-bg: rgba(15, 23, 42, 0.9);
   --blur-bg: rgba(15, 23, 42, 0.8);

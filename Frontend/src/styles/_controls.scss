@@ -1,0 +1,77 @@
+// ============================================
+// MINDCODE ACADEMY - Shared Interactive Controls
+// Single source of truth for carousel arrows
+// and pager controls: warm glass square with
+// orange icon, hover glow, reduced-motion
+// fallbacks and visible focus ring.
+// Used by Categories and Testimonials carousels.
+// ============================================
+
+// --------------------------------------------
+// Glass arrow recipe: translucent orange
+// surface + blur + hairline warm border.
+// 40px square, radius-sm corners, primary
+// icon color, glow on hover.
+// --------------------------------------------
+@mixin arrow-glass {
+  flex-shrink: 0;
+  width: 40px;
+  min-height: 40px;
+  height: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  background: rgba(234, 88, 12, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(234, 88, 12, 0.25);
+  color: var(--primary);
+  transition:
+    background-color var(--speed-fast) ease,
+    box-shadow var(--speed-fast) ease,
+    opacity var(--speed-fast) ease;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform var(--speed-fast) ease,
+      background-color var(--speed-fast) ease,
+      box-shadow var(--speed-fast) ease,
+      opacity var(--speed-fast) ease;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: scale(0.94);
+    }
+  }
+
+  &:hover {
+    background: rgba(234, 88, 12, 0.16);
+    box-shadow: 0 0 20px rgba(234, 88, 12, 0.35);
+  }
+
+  // Reduced motion keeps the glow feedback,
+  // just without any movement.
+  @media (prefers-reduced-motion: reduce) {
+    &:hover {
+      box-shadow: 0 0 14px rgba(234, 88, 12, 0.25);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    pointer-events: none;
+    background: rgba(234, 88, 12, 0.08);
+    box-shadow: none;
+  }
+}

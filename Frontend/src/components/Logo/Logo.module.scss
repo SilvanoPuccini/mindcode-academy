@@ -1,0 +1,43 @@
+@import '../../styles/vars.scss';
+
+// Same visual recipe as the Navbar wordmark
+// (Navbar.module.scss), extracted so auth pages
+// (login/register/forgot-password) can link back
+// to the home page with a consistent brand mark.
+.logo {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  text-decoration: none;
+  font-family: var(--font-space);
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  transition: transform 0.3s;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+}
+
+.logoMind {
+  background: linear-gradient(135deg, color('primary') 0%, color('secondary') 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 10px color('primary-glow'));
+}
+
+.logoIA {
+  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 10px color('accent-glow'));
+}

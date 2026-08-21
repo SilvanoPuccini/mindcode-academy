@@ -1,0 +1,224 @@
+// ============================================
+// MINDCODE ACADEMY - Button System v3
+// Gradient surfaces + warm glow + shine sweep.
+// Square (8px) buttons, five color roles.
+// One CTA per section: primary orange gradient.
+// Secondary amber always carries near-black
+// text for contrast. Tertiary inverts in
+// dark mode. Ghost for dismissive actions.
+// All animated parts are gated behind
+// prefers-reduced-motion.
+// ============================================
+
+// --------------------------------------------
+// Base: shared structure, states and motion.
+// Transform/shadow transitions are gated
+// behind prefers-reduced-motion.
+// --------------------------------------------
+@mixin btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-inter);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color var(--speed-fast) ease,
+    border-color var(--speed-fast) ease,
+    color var(--speed-fast) ease,
+    opacity var(--speed-fast) ease;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform var(--speed-fast) ease,
+      box-shadow var(--speed-fast) ease,
+      background-color var(--speed-fast) ease,
+      border-color var(--speed-fast) ease,
+      color var(--speed-fast) ease;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+}
+
+// --------------------------------------------
+// Shared v3 effects: warm glow on hover,
+// shine sweep strip and press feedback.
+//
+// The sweep strip is 70% of the button width
+// so a -150% -> 150% translateX travel starts
+// and ends fully outside the overflow clip.
+// $glow: hover shadow tint, unique per variant.
+// --------------------------------------------
+@mixin btn-fx($glow) {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: 0;
+    width: 70%;
+    height: 120%;
+    background: linear-gradient(
+      105deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.25) 50%,
+      transparent 100%
+    );
+    transform: translateX(-150%) skewX(-20deg);
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition:
+      transform var(--speed-fast) ease,
+      box-shadow var(--speed-fast) ease,
+      background-color var(--speed-fast) ease,
+      border-color var(--speed-fast) ease,
+      color var(--speed-fast) ease;
+
+    &::after {
+      transition: transform 600ms ease;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px $glow;
+    }
+
+    &:hover::after {
+      transform: translateX(150%) skewX(-20deg);
+    }
+
+    &:active {
+      transform: translateY(0) scale(0.98);
+      box-shadow: none;
+    }
+  }
+
+  // Reduced motion: keep state feedback via the
+  // warm glow only, no movement, no sweep.
+  @media (prefers-reduced-motion: reduce) {
+    &:hover {
+      box-shadow: 0 4px 14px $glow;
+    }
+  }
+}
+
+// --------------------------------------------
+// Primary: orange-to-red gradient CTA.
+// Dark mode starts lighter (#FB923C) so the
+// surface keeps its warmth on dark backgrounds.
+// Glow tint: rgba(234, 88, 12, 0.35)
+// --------------------------------------------
+@mixin btn-primary {
+  @include btn-base;
+  background: linear-gradient(135deg, #F97316 0%, #EA580C 45%, #DC2626 100%);
+  border: none;
+  color: #FFFFFF;
+
+  [data-theme='dark'] & {
+    background: linear-gradient(135deg, #FB923C 0%, #EA580C 45%, #DC2626 100%);
+  }
+
+  @include btn-fx(rgba(234, 88, 12, 0.35));
+}
+
+// --------------------------------------------
+// Secondary: amber gradient supporting action.
+// Near-black text is mandatory on amber.
+// Dark mode uses a brighter amber start.
+// Glow tint: rgba(245, 158, 11, 0.35)
+// --------------------------------------------
+@mixin btn-secondary {
+  @include btn-base;
+  background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%);
+  border: none;
+  color: #1C1917;
+
+  [data-theme='dark'] & {
+    background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+  }
+
+  @include btn-fx(rgba(245, 158, 11, 0.35));
+}
+
+// --------------------------------------------
+// Tertiary: ink gradient, white text.
+// Dark mode inverts: light gradient surface,
+// dark text. Glow flips to a soft white halo.
+// Glow tint: rgba(0, 0, 0, 0.3)
+// --------------------------------------------
+@mixin btn-tertiary {
+  @include btn-base;
+  background: linear-gradient(135deg, #27272A 0%, #0A0A0A 100%);
+  border: none;
+  color: #FFFFFF;
+
+  [data-theme='dark'] & {
+    background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+    color: #0F172A;
+  }
+
+  @include btn-fx(rgba(0, 0, 0, 0.3));
+
+  [data-theme='dark'] &:hover {
+    box-shadow: 0 8px 24px rgba(255, 255, 255, 0.18);
+  }
+}
+
+// --------------------------------------------
+// Ghost: transparent with 1px border.
+// Stays flat on purpose: no gradient, no
+// shine sweep. For low-emphasis actions.
+// --------------------------------------------
+@mixin btn-ghost {
+  @include btn-base;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+
+  &:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+}
+
+// --------------------------------------------
+// Danger: subtle red gradient for destructive
+// actions and hot states. White text passes
+// contrast on both stops in both themes.
+// Glow tint: rgba(220, 38, 38, 0.35)
+// --------------------------------------------
+@mixin btn-danger {
+  @include btn-base;
+  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  border: none;
+  color: #FFFFFF;
+
+  @include btn-fx(rgba(220, 38, 38, 0.35));
+}

@@ -1,0 +1,96 @@
+// ============================================
+// MINDCODE ACADEMY - Global cuadrille background
+// Ported from loading.module.scss .gridBg so
+// the signature grid pattern lives site-wide.
+// Fixed decorative layer behind all content
+// (z-index -1 paints above the body canvas but
+// below every content element).
+// Light mode shows a clear warm cuadrille on
+// white; dark mode keeps the deeper original.
+// The pulsing glow stays subtle in both themes.
+// ============================================
+
+// The page canvas moves to <body> so route
+// containers can stay transparent and let the
+// cuadrille show through.
+body {
+  background-color: var(--bg-primary);
+}
+
+.grid-bg-layer {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+
+  // Light mode: clearly visible warm cuadrille.
+  background-image:
+    linear-gradient(transparent 31px, rgba(234, 88, 12, 0.14) 32px),
+    linear-gradient(90deg, transparent 31px, rgba(245, 158, 11, 0.11) 32px);
+  background-size: 64px 64px;
+
+  [data-theme='dark'] & {
+    background-image:
+      linear-gradient(transparent 31px, rgba(234, 88, 12, 0.09) 32px),
+      linear-gradient(90deg, transparent 31px, rgba(245, 158, 11, 0.09) 32px);
+  }
+
+  // Soft radial pulse in both themes. Light runs
+  // a very subtle breathing glow (~0.05 -> 0.09
+  // effective alpha); dark keeps the original
+  // deeper pulse.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(234, 88, 12, 0.09) 0%,
+      transparent 50%
+    );
+    animation: gridBgPulseLight 8s ease-in-out infinite;
+  }
+
+  [data-theme='dark'] &::after {
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(234, 88, 12, 0.15) 0%,
+      transparent 50%
+    );
+    animation-name: gridBgPulseDark;
+  }
+}
+
+// Light pulse: gradient peak alpha is 0.09, so an
+// opacity floor of ~0.55 oscillates the effective
+// glow between roughly 0.05 and 0.09.
+@keyframes gridBgPulseLight {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes gridBgPulseDark {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid-bg-layer::after {
+    animation: none;
+    opacity: 0.2;
+  }
+
+  [data-theme='dark'] .grid-bg-layer::after {
+    opacity: 0.25;
+  }
+}
