@@ -48,7 +48,8 @@ describe("Course Component", () => {
   it("renders thumbnail with correct alt text", () => {
     render(<Course {...mockCourse} />);
 
-    const thumbnail = screen.getByRole("img");
+    // Scope by accessible name: StarRating also exposes an img role via its aria-label
+    const thumbnail = screen.getByRole("img", { name: mockCourse.name });
     expect(thumbnail).toHaveAttribute("alt", mockCourse.name);
   });
 

@@ -10,7 +10,7 @@ vi.mock('next/navigation', () => ({
 describe('RegisterPage', () => {
   it('renders the shared Logo linking back to home', () => {
     render(<RegisterPage />);
-    const logoLink = screen.getByRole('link', { name: /mind\s*ia/i });
+    const logoLink = screen.getByRole('link', { name: /mind\s*code/i });
     expect(logoLink).toHaveAttribute('href', '/');
   });
 
