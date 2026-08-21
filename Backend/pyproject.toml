@@ -1,9 +1,9 @@
 [project]
-name = "platziflix-backend"
+name = "mindcode-academy-backend"
 version = "0.1.0"
-description = "Backend de Platziflix: plataforma de cursos online con FastAPI."
+description = "Backend de MindCode Academy: plataforma de aprendizaje para desarrolladores con FastAPI."
 authors = [
-    { name = "Equipo Platziflix", email = "dev@platziflix.com" }
+    { name = "Equipo MindCode Academy", email = "dev@mindcode-academy.com" }
 ]
 requires-python = ">=3.11"
 dependencies = [
@@ -15,6 +15,7 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "alembic>=1.13.0",
     "passlib[bcrypt]>=1.7.0",
+    "bcrypt<4.1.0",
     "python-jose[cryptography]>=3.3.0",
     "email-validator>=2.0.0",
 ]

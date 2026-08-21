@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 from typing import List
@@ -19,7 +20,7 @@ app = FastAPI(
     title=settings.project_name,
     version=settings.version,
     description="""
-    Mindia API - Donde la mente y la tecnología se encuentran para aprender
+    MindCode Academy API - Donde el código y el aprendizaje se encuentran para crecer
 
     ## Features
 
@@ -71,6 +72,18 @@ app = FastAPI(
     ]
 )
 
+# CORS: allow the Next.js dev server to call the API from the browser
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Include routers
 app.include_router(auth.router)
 app.include_router(favorites.router)
@@ -86,7 +99,7 @@ def get_course_service(db: Session = Depends(get_db)) -> CourseService:
 
 @app.get("/")
 def root() -> dict[str, str]:
-    return {"message": "Bienvenido a Mindia API - Donde la mente y la tecnología se encuentran para aprender"}
+    return {"message": "Bienvenido a MindCode Academy API - Donde el código y el aprendizaje se encuentran para crecer"}
 
 
 @app.get("/health", tags=["health"])
@@ -165,7 +178,7 @@ def get_class_by_id(class_id: int, db: Session = Depends(get_db)) -> dict:
         "description": lesson.description,
         "slug": lesson.slug,
         "video": lesson.video_url,
-        "duration": 0  # TODO: agregar duración si está disponible
+        "duration": lesson.duration
     }
 
 

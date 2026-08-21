@@ -14,6 +14,7 @@ class Lesson(BaseModel):
     description = Column(Text, nullable=False)
     slug = Column(String(255), nullable=False, index=True)
     video_url = Column(String(500), nullable=False)  # URL to video content
+    duration = Column(Integer, nullable=False, server_default='0')  # Duration in minutes
     
     # Many-to-one relationship with Course
     course = relationship("Course", back_populates="lessons")

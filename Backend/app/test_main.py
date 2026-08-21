@@ -79,7 +79,7 @@ class TestRootEndpoint:
         """Test that root endpoint returns expected welcome message"""
         response = client.get("/")
         assert response.status_code == 200
-        assert response.json() == {"message": "Bienvenido a Platziflix API"}
+        assert response.json() == {"message": "Bienvenido a MindCode Academy API - Donde el código y el aprendizaje se encuentran para crecer"}
 
 
 class TestHealthEndpoint:

@@ -80,7 +80,11 @@ class UserCourseProgress(BaseModel):
             self.progress_percentage = 0.0
 
         # Mark as completed if 100%
-        self.is_completed = self.progress_percentage >= 100.0
+        # Cast to int: the column is Integer (0/1), assigning a bare Python
+        # bool makes psycopg2 emit a SQL boolean literal, which Postgres
+        # rejects against an integer column ("column is of type integer but
+        # expression is of type boolean").
+        self.is_completed = int(self.progress_percentage >= 100.0)
 
     def __repr__(self):
         return (

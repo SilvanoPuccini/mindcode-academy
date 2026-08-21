@@ -93,12 +93,17 @@ class CourseService:
             "thumbnail": course.thumbnail,
             "slug": course.slug,
             "teacher_id": [teacher.id for teacher in course.teachers],
+            "teachers": [
+                {"id": teacher.id, "name": teacher.name}
+                for teacher in course.teachers
+            ],
             "classes": [
                 {
                     "id": lesson.id,
                     "name": lesson.name,
                     "description": lesson.description,
-                    "slug": lesson.slug
+                    "slug": lesson.slug,
+                    "duration": lesson.duration
                 }
                 for lesson in course.lessons
                 if lesson.deleted_at is None
