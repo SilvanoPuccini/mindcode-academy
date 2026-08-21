@@ -12,3 +12,4 @@ Frontend/package-lock.json
 # local env files with real secrets/credentials
 Backend/.env
 Frontend/.env.local
+*.egg-info/
