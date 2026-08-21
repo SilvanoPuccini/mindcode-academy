@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter } from "next/font/google";
 import { CourseProvider } from "@/contexts/CourseContext";
 import { ToastProvider } from "@/contexts/ToastContext";
@@ -80,12 +80,6 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
     creator: "@mindcodeacademy",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    themeColor: "#EA580C",
-  },
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -96,6 +90,14 @@ export const metadata: Metadata = {
     icon: "/icons/icon-192.png",
     apple: "/icons/icon-192.png",
   },
+};
+
+// Next.js 15: viewport config lives in its own export, not inside metadata
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#EA580C",
 };
 
 export default function RootLayout({
