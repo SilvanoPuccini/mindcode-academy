@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
 import { AlertCircle, RefreshCw, Home } from 'lucide-react';
 import styles from './error.module.scss';
 
@@ -58,10 +59,10 @@ export default function Error({
             Intentar de nuevo
           </button>
 
-          <a href="/" className={styles.homeButton}>
+          <Link href="/" className={styles.homeButton}>
             <Home size={20} aria-hidden="true" />
             Ir al inicio
-          </a>
+          </Link>
         </div>
       </div>
 

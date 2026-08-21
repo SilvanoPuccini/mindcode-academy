@@ -3,7 +3,6 @@ import type { LucideIcon } from 'lucide-react';
 import {
   Code2,
   Brain,
-  BarChart3,
   Smartphone,
   Palette,
   Cloud,

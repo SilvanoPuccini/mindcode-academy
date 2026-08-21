@@ -103,7 +103,7 @@ export function ShareButtons({ url, title, description = '' }: ShareButtonsProps
       await navigator.clipboard.writeText(url);
       showToast('Link copiado al portapapeles', 'success');
       setIsOpen(false);
-    } catch (err) {
+    } catch {
       showToast('Error al copiar el link', 'error');
     }
   };

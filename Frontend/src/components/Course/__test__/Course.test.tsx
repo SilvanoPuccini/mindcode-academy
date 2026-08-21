@@ -1,11 +1,12 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import type { ComponentProps } from "react";
 import { Course } from "../Course";
 
 // Mock Next.js Image component
 vi.mock("next/image", () => ({
-  default: (props: any) => {
+  default: (props: ComponentProps<"img">) => {
     // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
     return <img {...props} />;
   },

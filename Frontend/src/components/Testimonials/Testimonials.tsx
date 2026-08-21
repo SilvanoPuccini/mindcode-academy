@@ -82,7 +82,7 @@ export function Testimonials() {
                   opacity: index === current ? 1 : 0.3,
                 }}
               >
-                <div className={styles.quote}>"</div>
+                <div className={styles.quote}>&quot;</div>
                 <p className={styles.text}>{testimonial.text}</p>
                 <div className={styles.stars}>
                   {[...Array(testimonial.rating)].map((_, i) => (
