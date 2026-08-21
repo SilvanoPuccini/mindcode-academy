@@ -37,7 +37,7 @@ jobs:
           context: ./Backend
           push: false
           load: true
-          tags: platziflix-backend:${{ github.sha }}
+          tags: mindcode-academy-backend:${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
@@ -45,7 +45,7 @@ jobs:
         run: |
           cd Backend
           # Override image tag to use the one we just built
-          export BACKEND_IMAGE=platziflix-backend:${{ github.sha }}
+          export BACKEND_IMAGE=mindcode-academy-backend:${{ github.sha }}
           docker-compose up -d
 
       - name: Wait for services to be healthy
@@ -116,12 +116,12 @@ jobs:
           context: ./Backend
           push: false
           load: true
-          tags: platziflix-backend:scan
+          tags: mindcode-academy-backend:scan
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'platziflix-backend:scan'
+          image-ref: 'mindcode-academy-backend:scan'
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
@@ -149,11 +149,11 @@ jobs:
           context: ./Backend
           push: false
           load: true
-          tags: platziflix-backend:size-check
+          tags: mindcode-academy-backend:size-check
 
       - name: Check image size
         run: |
-          SIZE=$(docker image inspect platziflix-backend:size-check --format='{{.Size}}')
+          SIZE=$(docker image inspect mindcode-academy-backend:size-check --format='{{.Size}}')
           SIZE_MB=$(echo "scale=2; $SIZE / 1048576" | bc)
 
           echo "Docker image size: ${SIZE_MB} MB"
@@ -165,8 +165,8 @@ jobs:
 
           # Show image layers
           echo "=== Image Layers ==="
-          docker history platziflix-backend:size-check --human=true --no-trunc
+          docker history mindcode-academy-backend:size-check --human=true --no-trunc
 
       - name: Cleanup
         if: always()
-        run: docker rmi platziflix-backend:size-check || true
+        run: docker rmi mindcode-academy-backend:size-check || true

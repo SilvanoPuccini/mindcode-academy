@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ============================================
-# PLATZIFLIX - Session Start Hook
+# MINDCODE ACADEMY - Session Start Hook
 # ============================================
 # Este hook se ejecuta al inicio de cada sesión de Claude
 # Verifica el estado del ambiente de desarrollo
@@ -9,7 +9,7 @@
 set -e
 
 echo "╔═══════════════════════════════════════════════════╗"
-echo "║   🚀 INICIANDO SESIÓN DE CLAUDE - PLATZIFLIX     ║"
+echo "║  🚀 INICIANDO SESIÓN DE CLAUDE - MINDCODE ACADEMY ║"
 echo "╚═══════════════════════════════════════════════════╝"
 echo ""
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ============================================
-# PLATZIFLIX - Before Commit Hook
+# MINDCODE ACADEMY - Before Commit Hook
 # ============================================
 # Este hook se ejecuta antes de hacer commits
 # Verifica calidad de código y tests
@@ -9,7 +9,7 @@
 set -e
 
 echo "╔═══════════════════════════════════════════════════╗"
-echo "║      🔍 PRE-COMMIT CHECKS - PLATZIFLIX            ║"
+echo "║    🔍 PRE-COMMIT CHECKS - MINDCODE ACADEMY        ║"
 echo "╚═══════════════════════════════════════════════════╝"
 echo ""
 

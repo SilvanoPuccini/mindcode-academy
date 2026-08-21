@@ -1,4 +1,4 @@
-# Plan de Implementación Frontend: Sistema de Ratings para Platziflix
+# Plan de Implementación Frontend: Sistema de Ratings para MindCode Academy
 
 **Versión**: 1.0
 **Fecha**: 2025-10-14
@@ -1958,4 +1958,4 @@ try {
 
 **Documento completo y listo para implementación.**
 **Fecha de creación**: 2025-10-14
-**Preparado para**: Frontend Team - Platziflix
+**Preparado para**: Frontend Team - MindCode Academy

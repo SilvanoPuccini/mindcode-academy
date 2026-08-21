@@ -1,6 +1,6 @@
-# Platziflix Database Migrations
+# MindCode Academy Database Migrations
 
-This document contains all the essential Alembic commands for managing database migrations in the Platziflix project.
+This document contains all the essential Alembic commands for managing database migrations in the MindCode Academy project.
 
 ## 📋 **Prerequisites**
 

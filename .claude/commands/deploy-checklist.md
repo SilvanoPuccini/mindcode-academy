@@ -5,7 +5,7 @@ description: Checklist completo pre-deployment a producción
 
 Verifica que el proyecto está listo para deployment a producción.
 
-# 🚀 PRE-DEPLOYMENT CHECKLIST - PLATZIFLIX
+# 🚀 PRE-DEPLOYMENT CHECKLIST - MINDCODE ACADEMY
 
 ## 1. BACKEND READINESS
 
@@ -156,7 +156,7 @@ Verifica que el proyecto está listo para deployment a producción.
 - [ ] **`.env.production` creado**
 - [ ] **API_URL apunta a producción**
   ```bash
-  NEXT_PUBLIC_API_URL=https://api.platziflix.com
+  NEXT_PUBLIC_API_URL=https://api.mindcode-academy.com
   ```
 
 - [ ] **Feature flags configurados**
@@ -274,7 +274,7 @@ Verifica que el proyecto está listo para deployment a producción.
 
 - [ ] **Images pushed a registry**
   ```bash
-  docker push platziflix-backend:v1.0.0
+  docker push mindcode-academy-backend:v1.0.0
   ```
 
 ### 4.2 CI/CD
@@ -363,7 +363,7 @@ Verifica que el proyecto está listo para deployment a producción.
 
 - [ ] **Health checks pasando**
   ```bash
-  curl https://api.platziflix.com/health
+  curl https://api.mindcode-academy.com/health
   ```
 
 - [ ] **Smoke tests ejecutados**
@@ -410,7 +410,7 @@ Verifica que el proyecto está listo para deployment a producción.
 3. **Ejecutar rollback**
    ```bash
    # Docker
-   docker-compose up -d --scale api=3 platziflix-backend:v0.9.0
+   docker-compose up -d --scale api=3 mindcode-academy-backend:v0.9.0
 
    # Database rollback
    alembic downgrade -1

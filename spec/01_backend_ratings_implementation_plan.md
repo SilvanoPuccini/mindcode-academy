@@ -1481,7 +1481,7 @@ app = FastAPI(
     title=settings.project_name,
     version=settings.version,
     description="""
-    Platziflix API - Platform for online courses
+    MindCode Academy API - Platform for online courses
 
     ## Features
 

@@ -1,4 +1,4 @@
-# Plan de Implementación Técnico: Sistema de Ratings para Platziflix
+# Plan de Implementación Técnico: Sistema de Ratings para MindCode Academy
 
 **Versión**: 1.0
 **Fecha**: 2025-09-17
@@ -453,4 +453,4 @@ describe('StarRating Component', () => {
 
 ---
 
-*Este plan sigue estrictamente los patrones arquitecturales existentes de Platziflix y está diseñado para ser implementado incrementalmente, manteniendo la estabilidad del sistema en cada fase.*
+*Este plan sigue estrictamente los patrones arquitecturales existentes de MindCode Academy y está diseñado para ser implementado incrementalmente, manteniendo la estabilidad del sistema en cada fase.*

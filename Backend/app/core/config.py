@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    project_name: str = "Platziflix"
+    project_name: str = "MindCode Academy"
     version: str = "0.1.0"
     database_url: str = "postgresql://user:password@localhost:5432/platziflix"
 

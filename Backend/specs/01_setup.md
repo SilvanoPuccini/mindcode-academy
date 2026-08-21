@@ -1,4 +1,4 @@
-Crea un proyecto FastAPI básico para una plataforma de cursos llamada Platziflix. Debe tener configuración de base de datos PostgreSQL y un endpoint de health. Primero hazlo funcionar localmente, luego dockerízalo.
+Crea un proyecto FastAPI básico para una plataforma de cursos llamada MindCode Academy. Debe tener configuración de base de datos PostgreSQL y un endpoint de health. Primero hazlo funcionar localmente, luego dockerízalo.
 
 ## PASO 1: Crear estructura básica del proyecto
 

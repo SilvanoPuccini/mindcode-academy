@@ -1,6 +1,6 @@
-# 🚀 Platziflix Database Migrations - Complete Implementation
+# 🚀 MindCode Academy Database Migrations - Complete Implementation
 
-This document summarizes the complete database migration setup implemented for the Platziflix project using Alembic and SQLAlchemy.
+This document summarizes the complete database migration setup implemented for the MindCode Academy project using Alembic and SQLAlchemy.
 
 ## ✅ **Implementation Summary**
 

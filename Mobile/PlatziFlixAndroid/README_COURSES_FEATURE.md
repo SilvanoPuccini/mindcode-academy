@@ -1,7 +1,7 @@
 # Feature: Listado de Cursos
 
 ## Descripción
-Feature completa para mostrar una lista de cursos disponibles en la aplicación PlatziFlixAndroid, implementada siguiendo la arquitectura CLEAR y las mejores prácticas de desarrollo Android.
+Feature completa para mostrar una lista de cursos disponibles en la aplicación MindCode Academy, implementada siguiendo la arquitectura CLEAR y las mejores prácticas de desarrollo Android.
 
 ## Arquitectura
 
@@ -269,4 +269,4 @@ GET /courses
 
 ---
 
-**Desarrollado con ❤️ para PlatziFlixAndroid** 
+**Desarrollado con ❤️ para MindCode Academy** 

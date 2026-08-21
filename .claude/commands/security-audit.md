@@ -3,9 +3,9 @@ name: security-audit
 description: Auditoría de seguridad completa del proyecto
 ---
 
-Realiza una auditoría de seguridad exhaustiva del proyecto Platziflix.
+Realiza una auditoría de seguridad exhaustiva del proyecto MindCode Academy.
 
-# 🔐 SECURITY AUDIT - PLATZIFLIX
+# 🔐 SECURITY AUDIT - MINDCODE ACADEMY
 
 ## 1. BACKEND SECURITY (FastAPI)
 
@@ -284,7 +284,7 @@ ports:
 Genera el siguiente reporte:
 
 ```markdown
-# 🔐 SECURITY AUDIT REPORT - PLATZIFLIX
+# 🔐 SECURITY AUDIT REPORT - MINDCODE ACADEMY
 **Date**: [Fecha]
 **Auditor**: Claude Agent
 

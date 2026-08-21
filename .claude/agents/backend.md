@@ -24,7 +24,7 @@ Eres un especialista en desarrollo backend con expertise en:
 4. **Testing backend**: Generar tests unitarios e integración siguiendo AAA pattern
 5. **Migraciones**: Crear y ejecutar migraciones de DB de forma segura
 
-## Contexto del Proyecto: Platziflix
+## Contexto del Proyecto: MindCode Academy
 - Plataforma educativa con Clean Architecture
 - Stack: FastAPI + PostgreSQL + SQLAlchemy
 - Patrón: API → Service → Repository → Database

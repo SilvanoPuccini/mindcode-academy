@@ -9,7 +9,7 @@ NC := \033[0m # No Color
 
 help:
 	@echo "$(CYAN)╔═══════════════════════════════════════════════════╗$(NC)"
-	@echo "$(CYAN)║        PLATZIFLIX - COMANDOS DISPONIBLES         ║$(NC)"
+	@echo "$(CYAN)║     MINDCODE ACADEMY - COMANDOS DISPONIBLES      ║$(NC)"
 	@echo "$(CYAN)╚═══════════════════════════════════════════════════╝$(NC)"
 	@echo ""
 	@echo "$(GREEN)🚀 SETUP & INICIO:$(NC)"
@@ -51,7 +51,7 @@ help:
 # ============================================
 
 setup:
-	@echo "$(CYAN)🚀 Setup inicial de Platziflix...$(NC)"
+	@echo "$(CYAN)🚀 Setup inicial de MindCode Academy...$(NC)"
 	@echo "$(YELLOW)📦 Backend: Verificando Docker...$(NC)"
 	@command -v docker >/dev/null 2>&1 || { echo "$(RED)❌ Docker no encontrado. Instala Docker Desktop.$(NC)"; exit 1; }
 	@echo "$(GREEN)✓ Docker encontrado$(NC)"
@@ -80,7 +80,7 @@ setup:
 # ============================================
 
 start:
-	@echo "$(CYAN)🚀 Iniciando servicios de Platziflix...$(NC)"
+	@echo "$(CYAN)🚀 Iniciando servicios de MindCode Academy...$(NC)"
 	@echo "$(YELLOW)Starting Backend (Docker)...$(NC)"
 	cd Backend && make start
 	@echo "$(GREEN)✓ Backend running on http://localhost:8000$(NC)"

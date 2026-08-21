@@ -23,7 +23,7 @@ Eres un especialista en desarrollo frontend con expertise en:
 4. **UI/UX**: Implementar interfaces intuitivas y responsive
 5. **Testing frontend**: Generar tests para componentes y funcionalidad
 
-## Contexto del Proyecto: Platziflix
+## Contexto del Proyecto: MindCode Academy
 - Frontend en Next.js con TypeScript
 - Comunicación con backend FastAPI
 - Componentes modulares y reutilizables

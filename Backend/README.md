@@ -1,8 +1,8 @@
-# 🎓 Platziflix - Plataforma de Cursos Online
+# 🎓 MindCode Academy - Plataforma de Aprendizaje para Desarrolladores
 
 ## Descripción del Proyecto
 
-Platziflix es una plataforma online de cursos simple y directa. Cada curso contiene clases con descripciones básicas. Es una implementación minimalista enfocada en la funcionalidad core de distribución de contenido educativo.
+MindCode Academy es una plataforma online de cursos simple y directa. Cada curso contiene clases con descripciones básicas. Es una implementación minimalista enfocada en la funcionalidad core de distribución de contenido educativo.
 
 ## Stack Tecnológico
 

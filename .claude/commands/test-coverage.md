@@ -3,7 +3,7 @@ name: test-coverage
 description: Analiza cobertura de tests y sugiere tests faltantes
 ---
 
-Analiza la cobertura de tests del proyecto Platziflix e identifica gaps de testing.
+Analiza la cobertura de tests del proyecto MindCode Academy e identifica gaps de testing.
 
 ## BACKEND (Backend/app/tests/)
 

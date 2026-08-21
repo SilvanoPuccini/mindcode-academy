@@ -1,4 +1,4 @@
-# Platziflix
+# MindCode Academy
 
 plataforma online de cursos, cada cursos tiene clases, descripciones y no hay mucho mas, eso es el inicio.
 

@@ -1,4 +1,4 @@
-# 🧠 Mind IA
+# 🧠 MindCode Academy
 
 > Plataforma de cursos online multi-plataforma desarrollada con arquitectura moderna
 
@@ -26,7 +26,7 @@
 
 ## 🎯 Descripción
 
-**Mind IA** es una plataforma completa de gestión de cursos online que replica la experiencia visual de Netflix. El proyecto incluye:
+**MindCode Academy** es una plataforma de aprendizaje para desarrolladores que replica la experiencia visual de Netflix. El proyecto incluye:
 
 - 🖥️ **Web App** - Interfaz moderna con Next.js 15 y React 19
 - 📱 **Mobile Apps** - Apps nativas para Android (Kotlin) e iOS (Swift)

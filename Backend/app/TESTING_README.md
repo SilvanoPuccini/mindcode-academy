@@ -1,8 +1,8 @@
-# Testing Implementation - Platziflix API
+# Testing Implementation - MindCode Academy API
 
 ## Resumen
 
-Se han implementado pruebas unitarias completas para los endpoints de la API Platziflix, garantizando que cumplan con los contratos especificados en `specs/00_contracts.md`.
+Se han implementado pruebas unitarias completas para los endpoints de la API MindCode Academy, garantizando que cumplan con los contratos especificados en `specs/00_contracts.md`.
 
 ## Cambios Realizados
 

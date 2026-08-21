@@ -1,6 +1,6 @@
-# 🤖 Claude Configuration for Platziflix
+# 🤖 Claude Configuration for MindCode Academy
 
-Este directorio contiene las configuraciones de Claude Code para optimizar el desarrollo del proyecto Platziflix.
+Este directorio contiene las configuraciones de Claude Code para optimizar el desarrollo del proyecto MindCode Academy.
 
 ## 📁 Estructura
 
@@ -336,4 +336,4 @@ Para agregar nuevos agentes, comandos o hooks:
 
 ---
 
-**¡Configuración completa! Ahora Claude está optimizado para Platziflix 🚀**
+**¡Configuración completa! Ahora Claude está optimizado para MindCode Academy 🚀**
