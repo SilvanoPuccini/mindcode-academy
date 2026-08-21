@@ -7,7 +7,8 @@ interface UseScrollRevealOptions {
 }
 
 interface UseScrollRevealReturn {
-  ref: React.RefObject<HTMLElement>;
+    // React 19: useRef<T>(null) returns RefObject<T | null>
+    ref: React.RefObject<HTMLElement | null>;
   isVisible: boolean;
 }
 
