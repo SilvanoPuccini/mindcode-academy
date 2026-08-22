@@ -59,7 +59,7 @@ jobs:
       - name: Run migrations
         run: |
           cd Backend
-          docker compose exec -T api alembic upgrade head
+          docker compose exec -T api alembic -c app/alembic.ini upgrade head
 
       - name: Test API endpoints
         run: |
