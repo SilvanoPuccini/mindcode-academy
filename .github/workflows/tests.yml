@@ -128,6 +128,11 @@ jobs:
           echo "Waiting for Backend API..."
           timeout 60 bash -c 'until curl -f http://localhost:8000/health; do sleep 2; done'
 
+      - name: Run Alembic migrations
+        run: |
+          cd Backend
+          docker compose exec -T api alembic -c app/alembic.ini upgrade head
+
       - name: Test API health endpoint
         run: |
           response=$(curl -s http://localhost:8000/health)
