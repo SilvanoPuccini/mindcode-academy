@@ -51,7 +51,7 @@ jobs:
           DATABASE_URL: postgresql://platziflix_user:platziflix_password@localhost:5432/platziflix_test
         run: |
           cd Backend
-          alembic upgrade head
+          alembic -c app/alembic.ini upgrade head
 
       - name: Run Backend tests with coverage
         env:

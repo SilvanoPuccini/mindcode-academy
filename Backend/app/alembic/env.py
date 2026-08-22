@@ -21,6 +21,13 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
+# Let DATABASE_URL override the hardcoded sqlalchemy.url from the .ini —
+# needed because the .ini value assumes the Docker Compose network
+# (host "db"), while CI and other environments connect over a different
+# host/port/database.
+if os.environ.get("DATABASE_URL"):
+    config.set_main_option("sqlalchemy.url", os.environ["DATABASE_URL"])
+
 from app.models.base import Base
 
 # Import all models so Alembic can detect them
