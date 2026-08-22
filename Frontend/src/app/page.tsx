@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import styles from "./page.module.scss";
 import { Course } from "@/types";
 import { Course as CourseComponent } from "@/components/Course/Course";
@@ -53,7 +53,7 @@ const CourseCardWrapper = ({ course }: { course: Course }) => {
 };
 
 export default function Home() {
-  const { allCourses, filteredCourses, filters, setAllCourses } = useCourses();
+  const { allCourses, filteredCourses, filters, setFilters, setAllCourses } = useCourses();
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>("rating");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -89,6 +89,31 @@ export default function Home() {
     const frame = requestAnimationFrame(() => focusSearchInput());
     return () => cancelAnimationFrame(frame);
   }, []);
+
+  // Deep link from the Footer's "Cursos" column (e.g. /?categoria=ia-ml):
+  // once courses are loaded we can resolve the category's runtime id via
+  // buildCategories() and reuse the exact same selection mechanism the
+  // Categories carousel uses on click, then scroll the catalog into view.
+  const appliedCategoryParamRef = useRef(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (appliedCategoryParamRef.current) return;
+    if (allCourses.length === 0) return;
+
+    const categoryKey = new URLSearchParams(window.location.search).get('categoria');
+    appliedCategoryParamRef.current = true;
+    if (!categoryKey) return;
+
+    const match = buildCategories(allCourses).find((c) => c.key === categoryKey);
+    if (!match) return;
+
+    setFilters({ category: match.id, levels: [], durations: [], minRating: 0 });
+
+    const catalog = document.getElementById('catalogo');
+    if (!catalog) return;
+    const prefersSmooth = window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+    catalog.scrollIntoView({ behavior: prefersSmooth ? 'smooth' : 'auto', block: 'start' });
+  }, [allCourses, setFilters]);
 
   // Taxonomy consumption: map the selected category id back to its key
   const selectedCategoryKey = useMemo(() => {

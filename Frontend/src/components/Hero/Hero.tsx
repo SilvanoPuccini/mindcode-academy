@@ -52,11 +52,11 @@ export function Hero() {
       <div className={styles.container}>
         <div className={styles.content}>
           <h1 className={styles.title}>
-            Aprende con <span className={styles.highlight}>Inteligencia Artificial</span>
+            Aprendé. Programá. <span className={styles.highlight}>Construí.</span>
           </h1>
           <p className={styles.subtitle}>
-            Descubre cursos de tecnología diseñados para impulsar tu carrera.
-            Contenido premium, profesores expertos, aprendizaje personalizado.
+            Cursos de programación y tecnología para desarrollar habilidades reales
+            y llevar tus ideas del código a la realidad.
           </p>
 
           <div className={styles.cta}>

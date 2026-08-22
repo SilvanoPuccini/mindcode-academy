@@ -1,0 +1,69 @@
+// ============================================
+// MINDCODE ACADEMY - Prose mixin
+// Shared long-form text styling (Ayuda, FAQ,
+// Términos, Privacidad) so headings/paragraphs/
+// lists inside a ContentPage .card look
+// consistent without repeating rules per page.
+// ============================================
+
+@mixin prose {
+  color: var(--text-secondary);
+  font-family: var(--font-inter);
+  font-size: 1rem;
+  line-height: 1.7;
+
+  > * + * {
+    margin-top: 1.25rem;
+  }
+
+  h2 {
+    font-family: var(--font-space);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 2.5rem;
+  }
+
+  h2:first-child {
+    margin-top: 0;
+  }
+
+  h3 {
+    font-family: var(--font-space);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  p {
+    margin: 0;
+  }
+
+  ul,
+  ol {
+    margin: 0;
+    padding-left: 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  li {
+    line-height: 1.6;
+  }
+
+  strong {
+    color: var(--text-primary);
+    font-weight: 700;
+  }
+
+  a {
+    color: color('accent');
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover {
+      color: color('primary-deep');
+    }
+  }
+}

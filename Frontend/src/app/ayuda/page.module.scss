@@ -1,0 +1,65 @@
+@import '@/styles/vars.scss';
+
+.topicsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.topicCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+}
+
+.topicIcon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: color('accent-light');
+  color: color('accent');
+}
+
+.topicTitle {
+  font-family: var(--font-space);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.topicDescription {
+  font-family: var(--font-inter);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.moreHelp {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-light);
+  text-align: center;
+  font-family: var(--font-inter);
+  color: var(--text-secondary);
+
+  a {
+    color: color('accent');
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover {
+      color: color('primary-deep');
+    }
+  }
+}

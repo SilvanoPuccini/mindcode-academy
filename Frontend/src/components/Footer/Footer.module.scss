@@ -80,6 +80,8 @@
   margin-top: 1rem;
 }
 
+// Not links anymore (no real social accounts yet): plain,
+// non-interactive <span>s, dimmed so they don't read as broken buttons.
 .socialLink {
   width: 42px;
   height: 42px;
@@ -90,15 +92,8 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-md);
   color: #94A3B8;
-  transition: all 0.3s;
-
-  &:hover {
-    background: rgba(234, 88, 12, 0.15);
-    border-color: color('accent');
-    color: color('accent');
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px color('accent-glow');
-  }
+  opacity: 0.5;
+  cursor: default;
 }
 
 .columnTitle {
