@@ -7,16 +7,15 @@ WORKDIR /app
 # Install uv for dependency management
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
-# Copy dependency files (without lock file)
+# Copy dependency files and source (setuptools' package discovery needs
+# app/ to exist before "uv sync" builds/installs the local project)
 COPY pyproject.toml ./
+COPY ./app ./app
+COPY ./specs ./specs
 
 # Install dependencies including dev dependencies
 ENV UV_PROJECT_ENVIRONMENT="/usr/local/"
 RUN uv sync --extra dev
-
-# Copy application code
-COPY ./app ./app
-COPY ./specs ./specs
 
 # Expose port 8000
 EXPOSE 8000
