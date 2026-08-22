@@ -46,12 +46,12 @@ jobs:
           cd Backend
           # Override image tag to use the one we just built
           export BACKEND_IMAGE=mindcode-academy-backend:${{ github.sha }}
-          docker-compose up -d
+          docker compose up -d
 
       - name: Wait for services to be healthy
         run: |
           echo "Waiting for PostgreSQL..."
-          timeout 60 bash -c 'until docker-compose -f Backend/docker-compose.yml exec -T db pg_isready -U platziflix_user; do sleep 2; done'
+          timeout 60 bash -c 'until docker compose -f Backend/docker-compose.yml exec -T db pg_isready -U platziflix_user; do sleep 2; done'
 
           echo "Waiting for API..."
           timeout 60 bash -c 'until curl -f http://localhost:8000/health; do sleep 2; done'
@@ -59,7 +59,7 @@ jobs:
       - name: Run migrations
         run: |
           cd Backend
-          docker-compose exec -T api alembic upgrade head
+          docker compose exec -T api alembic upgrade head
 
       - name: Test API endpoints
         run: |
@@ -75,22 +75,22 @@ jobs:
       - name: Run tests inside container
         run: |
           cd Backend
-          docker-compose exec -T api pytest app/tests/ -v
+          docker compose exec -T api pytest app/tests/ -v
 
       - name: Check container logs
         if: failure()
         run: |
           cd Backend
           echo "=== API Logs ==="
-          docker-compose logs api
+          docker compose logs api
           echo "=== DB Logs ==="
-          docker-compose logs db
+          docker compose logs db
 
       - name: Cleanup
         if: always()
         run: |
           cd Backend
-          docker-compose down -v
+          docker compose down -v
 
       # Move cache to avoid growing indefinitely
       - name: Move cache

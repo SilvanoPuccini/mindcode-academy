@@ -121,7 +121,7 @@ jobs:
       - name: Start Backend with Docker Compose
         run: |
           cd Backend
-          docker-compose up -d
+          docker compose up -d
 
       - name: Wait for services to be ready
         run: |
@@ -144,13 +144,13 @@ jobs:
         if: failure()
         run: |
           cd Backend
-          docker-compose logs
+          docker compose logs
 
       - name: Cleanup
         if: always()
         run: |
           cd Backend
-          docker-compose down -v
+          docker compose down -v
 
   test-summary:
     name: Test Summary
