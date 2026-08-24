@@ -6,6 +6,9 @@ class Settings(BaseSettings):
     version: str = "0.1.0"
     database_url: str = "postgresql://user:password@localhost:5432/platziflix"
 
+    # Comma-separated list of allowed CORS origins (e.g. "https://app.vercel.app,http://localhost:3000")
+    cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
+
     # JWT Configuration
     secret_key: str = "your-secret-key-change-this-in-production-must-be-at-least-32-chars"
     algorithm: str = "HS256"
