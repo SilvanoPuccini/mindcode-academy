@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Class } from "@/types";
 import { ApiClientError, apiFetch, publicFetch } from "@/lib/api";
+import { formatDuration } from "@/lib/format-duration";
 import { getToken } from "@/services/authApi";
 import { ScrollToTopOnMount } from "@/components/ScrollToTopOnMount/ScrollToTopOnMount";
 import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
@@ -63,16 +64,6 @@ function orderCourseClasses(classes: Class[]): Class[] {
   );
   if (!allPositioned) return classes;
   return [...classes].sort((a, b) => a.position - b.position);
-}
-
-// The API stores durations in seconds (same
-// convention as the Progress endpoints).
-function formatDuration(totalSeconds: number): string {
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  const pad = (value: number) => value.toString().padStart(2, "0");
-  return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${minutes}:${pad(seconds)}`;
 }
 
 function LoadingSkeleton() {

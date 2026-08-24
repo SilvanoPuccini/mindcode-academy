@@ -13,9 +13,9 @@ export interface CourseRating {
   updated_at: string; // ISO 8601
 }
 
-// Request payload para crear/actualizar rating
+// Request payload to create/update the authenticated user's rating.
+// The backend resolves the author from the JWT, so no user_id here.
 export interface RatingRequest {
-  user_id: number;
   rating: number; // 1-5
 }
 

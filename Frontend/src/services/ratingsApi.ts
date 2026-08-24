@@ -1,13 +1,37 @@
 /**
  * Ratings API Service
- * Maneja todas las peticiones HTTP relacionadas con el sistema de ratings
+ * HTTP calls for the course rating system.
+ *
+ * - GET endpoints are public and keep the plain-fetch + timeout helpers.
+ * - Mutations (POST/PUT/DELETE) target the authenticated user resolved
+ *   server-side from the JWT: they go through apiFetch so the Bearer token
+ *   is attached, and anonymous users are redirected to /login?next=...
+ *   before any request is made.
  */
 
 import type { CourseRating, RatingRequest, RatingStats } from '@/types/rating';
 import { ApiError } from '@/types/rating';
+import { ApiClientError, apiFetch } from '@/lib/api';
+import { getToken } from '@/services/authApi';
 
 // Base URL del backend API
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+/**
+ * Guard for rating mutations: only logged-in users may rate. Without a
+ * session we bounce to /login carrying the current location as ?next= so
+ * the login page can return the user to the course they were rating
+ * (src/lib/safe-redirect.ts resolves it after auth). The thrown error lets
+ * callers abort their flow while the navigation happens.
+ */
+function ensureAuthenticated(): void {
+  if (typeof window === 'undefined') return;
+  if (getToken()) return;
+
+  const currentPath = `${window.location.pathname}${window.location.search}`;
+  window.location.href = `/login?next=${encodeURIComponent(currentPath)}`;
+  throw new ApiClientError('Iniciá sesión para calificar este curso.', 401);
+}
 
 // Opciones extendidas de fetch con timeout
 interface FetchOptions extends RequestInit {
@@ -162,65 +186,49 @@ async function getUserRating(
 
 /**
  * POST /courses/{course_id}/ratings
- * Crea un nuevo rating para un curso
+ * Creates (or upserts) the authenticated user's rating for a course.
+ * Requires a JWT: goes through apiFetch so the Bearer token rides along,
+ * and redirects anonymous users to /login?next=<current page> first.
+ * Errors surface as ApiClientError with the backend `detail` message.
  */
 async function createRating(
   courseId: number,
   request: RatingRequest
 ): Promise<CourseRating> {
-  const url = `${API_BASE_URL}/courses/${courseId}/ratings`;
+  ensureAuthenticated();
 
-  const response = await fetchWithTimeout(url, {
+  return apiFetch<CourseRating>(`/courses/${courseId}/ratings`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify(request),
   });
-
-  return await handleApiResponse<CourseRating>(response);
 }
 
 /**
- * PUT /courses/{course_id}/ratings/{user_id}
- * Actualiza el rating existente de un usuario
+ * PUT /courses/{course_id}/ratings
+ * Updates the authenticated user's existing rating (404 from the API if none).
  */
 async function updateRating(
   courseId: number,
-  userId: number,
   request: RatingRequest
 ): Promise<CourseRating> {
-  const url = `${API_BASE_URL}/courses/${courseId}/ratings/${userId}`;
+  ensureAuthenticated();
 
-  const response = await fetchWithTimeout(url, {
+  return apiFetch<CourseRating>(`/courses/${courseId}/ratings`, {
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify(request),
   });
-
-  return await handleApiResponse<CourseRating>(response);
 }
 
 /**
- * DELETE /courses/{course_id}/ratings/{user_id}
- * Elimina el rating de un usuario
+ * DELETE /courses/{course_id}/ratings
+ * Soft-deletes only the authenticated user's rating for the course.
  */
-async function deleteRating(courseId: number, userId: number): Promise<void> {
-  const url = `${API_BASE_URL}/courses/${courseId}/ratings/${userId}`;
+async function deleteRating(courseId: number): Promise<void> {
+  ensureAuthenticated();
 
-  const response = await fetchWithTimeout(url, {
+  await apiFetch<void>(`/courses/${courseId}/ratings`, {
     method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-    },
   });
-
-  // 204 No Content es exitoso
-  if (response.status !== 204 && !response.ok) {
-    await handleApiResponse<void>(response);
-  }
 }
 
 // Export del servicio como objeto constante

@@ -34,7 +34,7 @@ const classDetail = {
   description: "Descripción de la clase de test",
   slug: "clase-test",
   video: "https://test.com/video.mp4",
-  duration: 1200,
+  duration: 12, // minutes, as the API sends them
   position: 2,
   total_classes: 3,
   course_id: 7,
@@ -51,7 +51,7 @@ const courseDetail = {
   classes: [
     { id: 18, name: "Clase anterior", description: "...", slug: "clase-anterior", position: 1 },
     { id: 19, name: "Clase de Test", description: "...", slug: "clase-test", position: 2 },
-    { id: 20, name: "Clase siguiente", description: "...", slug: "clase-siguiente", position: 3 },
+    { id: 20, name: "Clase siguiente", description: "...", slug: "clase-siguiente", position: 3, duration: 45 },
   ],
 };
 
@@ -145,6 +145,12 @@ describe("ClassPage", () => {
     const player = await screen.findByTestId("mock-video-player");
     expect(player).toHaveTextContent("https://test.com/video.mp4");
     expect(screen.getByText("Clase 2 de 3")).toBeInTheDocument();
+
+    // Durations are MINUTES: the active class renders "12 min" in the main
+    // chip and the roster entry with duration shows "45 min" (no hh:mm:ss).
+    expect(screen.getByText("12 min")).toBeInTheDocument();
+    expect(screen.queryByText("20:00")).not.toBeInTheDocument();
+    expect(await screen.findByText("45 min")).toBeInTheDocument();
 
     // Prev/next use real class ids resolved from the parent course roster.
     expect(await screen.findByText("Clase siguiente")).toBeInTheDocument();

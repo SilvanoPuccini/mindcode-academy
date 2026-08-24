@@ -9,6 +9,7 @@ import { Clock, BookOpen, GraduationCap, Rocket, Play } from "lucide-react";
 import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { StarRating } from "@/components/StarRating/StarRating";
 import { ShareButtons } from "@/components/ShareButtons/ShareButtons";
+import { formatDuration } from "@/lib/format-duration";
 import styles from "./CourseDetail.module.scss";
 
 interface CourseDetailComponentProps {
@@ -78,12 +79,8 @@ export const CourseDetailComponent: FC<CourseDetailComponentProps> = ({ course }
     router.push(`/classes/${firstClassId}`);
   };
 
-  const formatDuration = (duration: number) => {
-    const hours = Math.floor(duration / 3600);
-    const minutes = Math.floor((duration % 3600) / 60);
-    return `${hours}h ${minutes}m`;
-  };
-
+  // Class durations are MINUTES (see lessons.duration in the backend seed);
+  // the shared formatter renders them as "12 min" / "1 h 20 min".
   const totalDuration = course.classes.reduce((acc, cls) => acc + (cls.duration ?? 0), 0);
 
   const breadcrumbItems = [
