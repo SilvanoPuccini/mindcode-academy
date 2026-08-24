@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
     prependData: `@import "vars.scss";`,
     // Silence Sass deprecation noise (@import, legacy JS API) that floods
     // build logs on Vercel and hides real errors.
-    silenceDeprecations: ["import", "legacy-js-api", "global-builtin"],
+    silenceDeprecations: ["import", "legacy-js-api", "global-builtin", "mixed-decls"],
   },
   images: {
     remotePatterns: [
