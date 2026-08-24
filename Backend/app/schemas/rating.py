@@ -8,17 +8,15 @@ from typing import Dict
 
 class RatingRequest(BaseModel):
     """
-    Schema for creating or updating a course rating.
+    Schema for creating or updating the authenticated user's course rating.
+
+    The authoring user is resolved server-side from the JWT
+    (see app/core/dependencies.get_current_user) and never accepted
+    from the request body.
 
     Validation:
-    - user_id must be positive integer
     - rating must be between 1 and 5 (inclusive)
     """
-    user_id: int = Field(
-        ...,
-        gt=0,
-        description="ID of the user submitting the rating"
-    )
     rating: int = Field(
         ...,
         ge=1,

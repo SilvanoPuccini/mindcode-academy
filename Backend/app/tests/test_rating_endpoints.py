@@ -5,7 +5,8 @@ Tests HTTP interface with mocked service layer.
 import pytest
 from unittest.mock import Mock
 from fastapi.testclient import TestClient
-from app.main import app, get_course_service
+from app.main import app, get_course_service, get_current_user
+from app.models import User
 from app.services.course_service import CourseService
 
 
@@ -32,8 +33,35 @@ def mock_course_service():
 
 
 @pytest.fixture
-def client(mock_course_service):
-    """Create test client with mocked dependencies."""
+def mock_current_user():
+    """Create the authenticated user the fake JWT resolves to."""
+    user = Mock(spec=User)
+    user.id = 42
+    return user
+
+
+@pytest.fixture
+def client(mock_course_service, mock_current_user):
+    """Create test client with mocked service and authenticated user."""
+    def get_mock_course_service():
+        return mock_course_service
+
+    def get_mock_current_user():
+        return mock_current_user
+
+    app.dependency_overrides[get_course_service] = get_mock_course_service
+    app.dependency_overrides[get_current_user] = get_mock_current_user
+    client = TestClient(app)
+    yield client
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def unauthenticated_client(mock_course_service):
+    """
+    Client with no auth override: exercises the real get_current_user
+    dependency so mutation endpoints prove they reject anonymous callers.
+    """
     def get_mock_course_service():
         return mock_course_service
 
@@ -44,20 +72,20 @@ def client(mock_course_service):
 
 
 class TestAddCourseRatingEndpoint:
-    """Tests for POST /courses/{course_id}/ratings"""
+    """Tests for POST /courses/{course_id}/ratings (authenticated)"""
 
     def test_add_rating_success(self, client, mock_course_service):
-        """Test successfully adding a new rating."""
+        """Test successfully adding a new rating as the authenticated user."""
         # Arrange
         mock_course_service.add_course_rating.return_value = MOCK_RATING
 
         # Act
         response = client.post(
             "/courses/1/ratings",
-            json={"user_id": 42, "rating": 5}
+            json={"rating": 5}
         )
 
-        # Assert
+        # Assert: the author is the JWT user, not anything from the body
         assert response.status_code == 201
         data = response.json()
         assert data["rating"] == 5
@@ -68,12 +96,43 @@ class TestAddCourseRatingEndpoint:
             rating=5
         )
 
+    def test_add_rating_ignores_client_provided_user_id(self, client, mock_course_service):
+        """Test that a spoofed user_id in the body never reaches the service."""
+        # Arrange
+        mock_course_service.add_course_rating.return_value = MOCK_RATING
+
+        # Act
+        response = client.post(
+            "/courses/1/ratings",
+            json={"user_id": 999, "rating": 4}
+        )
+
+        # Assert
+        assert response.status_code == 201
+        mock_course_service.add_course_rating.assert_called_once_with(
+            course_id=1,
+            user_id=42,
+            rating=4
+        )
+
+    def test_add_rating_requires_authentication(self, unauthenticated_client):
+        """Test that anonymous callers are rejected before hitting the service."""
+        # Act
+        response = unauthenticated_client.post(
+            "/courses/1/ratings",
+            json={"rating": 5}
+        )
+
+        # Assert: HTTPBearer rejects a missing Authorization header with 401
+        # (FastAPI >= 0.126 raises 401 instead of the legacy 403)
+        assert response.status_code == 401
+
     def test_add_rating_invalid_rating_value(self, client, mock_course_service):
         """Test adding rating with invalid value (Pydantic validation)."""
         # Act
         response = client.post(
             "/courses/1/ratings",
-            json={"user_id": 42, "rating": 6}
+            json={"rating": 6}
         )
 
         # Assert
@@ -87,7 +146,7 @@ class TestAddCourseRatingEndpoint:
         # Act
         response = client.post(
             "/courses/999/ratings",
-            json={"user_id": 42, "rating": 5}
+            json={"rating": 5}
         )
 
         # Assert
@@ -99,7 +158,7 @@ class TestAddCourseRatingEndpoint:
         # Act
         response = client.post(
             "/courses/1/ratings",
-            json={"user_id": 42}  # Missing rating
+            json={}
         )
 
         # Assert
@@ -208,10 +267,10 @@ class TestGetUserCourseRatingEndpoint:
 
 
 class TestUpdateCourseRatingEndpoint:
-    """Tests for PUT /courses/{course_id}/ratings/{user_id}"""
+    """Tests for PUT /courses/{course_id}/ratings (authenticated)"""
 
     def test_update_rating_success(self, client, mock_course_service):
-        """Test successfully updating a rating."""
+        """Test successfully updating the authenticated user's rating."""
         # Arrange
         updated_rating = MOCK_RATING.copy()
         updated_rating["rating"] = 3
@@ -219,36 +278,40 @@ class TestUpdateCourseRatingEndpoint:
 
         # Act
         response = client.put(
-            "/courses/1/ratings/42",
-            json={"user_id": 42, "rating": 3}
+            "/courses/1/ratings",
+            json={"rating": 3}
         )
 
-        # Assert
+        # Assert: targets the JWT user's own rating
         assert response.status_code == 200
         data = response.json()
         assert data["rating"] == 3
-
-    def test_update_rating_user_id_mismatch(self, client, mock_course_service):
-        """Test updating with mismatched user_id in path and body."""
-        # Act
-        response = client.put(
-            "/courses/1/ratings/42",
-            json={"user_id": 99, "rating": 3}  # Different user_id
+        mock_course_service.update_course_rating.assert_called_once_with(
+            course_id=1,
+            user_id=42,
+            rating=3
         )
 
-        # Assert
-        assert response.status_code == 400
-        assert "must match" in response.json()["detail"]
+    def test_update_rating_requires_authentication(self, unauthenticated_client):
+        """Test that anonymous callers are rejected before hitting the service."""
+        # Act
+        response = unauthenticated_client.put(
+            "/courses/1/ratings",
+            json={"rating": 3}
+        )
+
+        # Assert: HTTPBearer rejects a missing Authorization header with 401
+        assert response.status_code == 401
 
     def test_update_rating_not_found(self, client, mock_course_service):
-        """Test updating non-existent rating."""
+        """Test updating when the authenticated user has no active rating."""
         # Arrange
         mock_course_service.update_course_rating.side_effect = ValueError("No active rating found")
 
         # Act
         response = client.put(
-            "/courses/1/ratings/42",
-            json={"user_id": 42, "rating": 3}
+            "/courses/1/ratings",
+            json={"rating": 3}
         )
 
         # Assert
@@ -256,27 +319,38 @@ class TestUpdateCourseRatingEndpoint:
 
 
 class TestDeleteCourseRatingEndpoint:
-    """Tests for DELETE /courses/{course_id}/ratings/{user_id}"""
+    """Tests for DELETE /courses/{course_id}/ratings (authenticated)"""
 
     def test_delete_rating_success(self, client, mock_course_service):
-        """Test successfully deleting a rating."""
+        """Test successfully soft deleting the authenticated user's rating."""
         # Arrange
         mock_course_service.delete_course_rating.return_value = True
 
         # Act
-        response = client.delete("/courses/1/ratings/42")
+        response = client.delete("/courses/1/ratings")
 
-        # Assert
+        # Assert: only the JWT user's own rating is targeted
         assert response.status_code == 204
-        mock_course_service.delete_course_rating.assert_called_once_with(1, 42)
+        mock_course_service.delete_course_rating.assert_called_once_with(
+            course_id=1,
+            user_id=42
+        )
+
+    def test_delete_rating_requires_authentication(self, unauthenticated_client):
+        """Test that anonymous callers are rejected before hitting the service."""
+        # Act
+        response = unauthenticated_client.delete("/courses/1/ratings")
+
+        # Assert: HTTPBearer rejects a missing Authorization header with 401
+        assert response.status_code == 401
 
     def test_delete_rating_not_found(self, client, mock_course_service):
-        """Test deleting non-existent rating."""
+        """Test deleting when the authenticated user has no active rating."""
         # Arrange
         mock_course_service.delete_course_rating.return_value = False
 
         # Act
-        response = client.delete("/courses/1/ratings/42")
+        response = client.delete("/courses/1/ratings")
 
         # Assert
         assert response.status_code == 404
