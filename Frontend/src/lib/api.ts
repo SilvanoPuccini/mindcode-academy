@@ -11,8 +11,9 @@
  * - `apiFetch`: for authenticated endpoints (`/favorites/*`, `/progress/*`).
  *   Client-only: reads the JWT saved by `authApi.saveSession` and injects it
  *   as `Authorization: Bearer <token>`. On a 401 it clears the session and
- *   redirects to `/login` — this only makes sense in the browser, so calling
- *   it from a Server Component throws instead of silently doing nothing.
+ *   redirects to `/login`, unless called with `{ skipAuthRedirect: true }`
+ *   (see below). This only makes sense in the browser, so calling it from a
+ *   Server Component throws instead of silently doing nothing.
  */
 
 import { getToken, clearSession } from '@/services/authApi';
@@ -22,7 +23,11 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost
 export class ApiClientError extends Error {
   constructor(
     message: string,
-    public status: number
+    public status: number,
+    /** Parsed JSON body of the error response, when available.
+     *  Lets callers read rich payloads (e.g. the class-gate 401 body
+     *  that carries course/title context for the lock screen). */
+    public payload?: unknown
   ) {
     super(message);
     this.name = 'ApiClientError';
@@ -31,7 +36,8 @@ export class ApiClientError extends Error {
 
 /**
  * Extracts a human-readable message from a FastAPI error payload.
- * `detail` may be a string (HTTP errors) or a validation array (422s).
+ * `detail` may be a string (HTTP errors), a validation array (422s),
+ * or an object carrying its own `msg` (e.g. the class-gate 401 body).
  */
 function extractErrorMessage(data: unknown, fallback: string): string {
   if (!data || typeof data !== 'object') return fallback;
@@ -44,18 +50,31 @@ function extractErrorMessage(data: unknown, fallback: string): string {
     if (typeof first.msg === 'string') return first.msg;
   }
 
+  if (
+    detail &&
+    typeof detail === 'object' &&
+    !Array.isArray(detail) &&
+    typeof (detail as Record<string, unknown>).msg === 'string'
+  ) {
+    return (detail as { msg: string }).msg;
+  }
+
   return fallback;
 }
 
-async function throwForResponse(response: Response): Promise<never> {
-  let message = `HTTP ${response.status}`;
+async function throwForResponse(
+  response: Response,
+  fallbackMessage?: string
+): Promise<never> {
+  let message = fallbackMessage ?? `HTTP ${response.status}`;
+  let payload: unknown = undefined;
   try {
-    const data = await response.json();
-    message = extractErrorMessage(data, message);
+    payload = await response.json();
+    message = extractErrorMessage(payload, message);
   } catch {
     // Non-JSON body: keep the HTTP status message.
   }
-  throw new ApiClientError(message, response.status);
+  throw new ApiClientError(message, response.status, payload);
 }
 
 /**
@@ -79,30 +98,41 @@ export async function publicFetch<T>(path: string, options: RequestInit = {}): P
 
 /**
  * Authenticated fetch for Client Components. Injects the Bearer token from
- * `authApi` (localStorage) when present, and on a 401 clears the session and
- * redirects to `/login`. Never logs or exposes the token.
+ * `authApi` (localStorage) when present. On a 401 it clears the session and,
+ * by default, redirects to `/login`. Pass `{ skipAuthRedirect: true }` to
+ * keep the 401 in-page (the error still carries the parsed body via
+ * `ApiClientError.payload`) — used by the class playback gate so it can
+ * render its own lock screen instead of bouncing to `/login`.
+ * Never logs or exposes the token.
  */
-export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
+export type ApiFetchOptions = RequestInit & { skipAuthRedirect?: boolean };
+
+export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
   if (typeof window === 'undefined') {
     throw new Error('apiFetch() is client-only; use publicFetch() in Server Components.');
   }
 
+  const { skipAuthRedirect = false, ...fetchOptions } = options;
   const token = getToken();
-  const headers = new Headers(options.headers);
+  const headers = new Headers(fetchOptions.headers);
 
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }
-  if (options.body && !headers.has('Content-Type')) {
+  if (fetchOptions.body && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
+  const response = await fetch(`${API_BASE_URL}${path}`, { ...fetchOptions, headers });
 
   if (response.status === 401) {
+    // An invalid/expired token is cleared either way; only the redirect is
+    // optional so gated endpoints can surface their own 401 UI.
     clearSession();
-    window.location.href = '/login';
-    throw new ApiClientError('Sesión expirada. Iniciá sesión nuevamente.', 401);
+    if (!skipAuthRedirect) {
+      window.location.href = '/login';
+    }
+    await throwForResponse(response, 'Sesión expirada. Iniciá sesión nuevamente.');
   }
 
   if (!response.ok) {

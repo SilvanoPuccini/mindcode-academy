@@ -14,8 +14,11 @@ export interface Course {
 }
 
 // Class types
-// List shape (from /courses/{slug}): id, name, description, slug
-// Detail shape (from /classes/{id}): adds title, video, duration
+// List shape (from /courses/{slug}): id, name, description, slug, position
+// Detail shape (from /classes/{id}): adds title, video, duration and the
+// parent-course context consumed by the playback login gate
+// (position, course_id, course_slug, course_name, total_classes).
+// All enrichment fields stay optional so both shapes satisfy Class.
 export interface Class {
   id: number;
   name: string;
@@ -24,6 +27,12 @@ export interface Class {
   title?: string;
   video?: string;
   duration?: number;
+  // Enrichment fields (optional everywhere):
+  position?: number;
+  course_id?: number;
+  course_slug?: string;
+  course_name?: string;
+  total_classes?: number;
 }
 
 // Course Detail type

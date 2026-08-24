@@ -1,50 +1,64 @@
 @import '../../../styles/vars.scss';
 
+// Route-level skeleton for the course detail page.
+// Mirrors the home catalog's section header pattern
+// (eyebrow + gradient-highlighted title + subtitle)
+// and reuses SkeletonCourse for the grid, so a cold
+// API response never renders a blank screen.
 .container {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  background: color('white');
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-3);
 }
 
-.loadingCard {
-  background: color('white');
-  border-radius: var(--radius-lg);
-  padding: 3rem;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.10);
-  border: 2px solid color('light-gray');
-  text-align: center;
-  max-width: 400px;
-  width: 100%;
+.sectionHeader {
+  margin-bottom: var(--space-5);
 }
 
-.spinner {
-  width: 60px;
-  height: 60px;
-  border: 4px solid color('light-gray');
-  border-top: 4px solid color('primary');
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 2rem auto;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.title {
-  font-size: 1.8rem;
+.sectionEyebrow {
+  display: block;
+  font-family: var(--font-inter);
+  font-size: 0.75rem;
   font-weight: 700;
-  color: color('text-primary');
-  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: color('accent');
+  margin-bottom: 0.5rem;
 }
 
-.message {
-  color: color('text-secondary');
-  font-size: 1rem;
+.sectionTitle {
+  font-family: var(--font-space);
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+
+  @media (max-width: 768px) {
+    font-size: 2.2rem;
+  }
+}
+
+.highlight {
+  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 15px color('accent-glow'));
+}
+
+.sectionSubtitle {
+  font-family: var(--font-inter);
+  font-size: 1.1rem;
+  color: var(--text-secondary);
   font-weight: 500;
-  line-height: 1.5;
+  max-width: 60ch;
+}
+
+.coursesGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  justify-content: center;
+  align-items: flex-start;
 }

@@ -1,63 +1,68 @@
-import { Class, Course, CourseDetail } from "@/types";
-import { ArrowLeft, BookOpen, ChevronLeft, ChevronRight, Clock, Play } from "lucide-react";
-import { VideoPlayer } from "@/components/VideoPlayer/VideoPlayer";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import {
+  ArrowLeft,
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Lock,
+  Play,
+} from "lucide-react";
+import { Class } from "@/types";
+import { ApiClientError, apiFetch, publicFetch } from "@/lib/api";
+import { getToken } from "@/services/authApi";
 import { ScrollToTopOnMount } from "@/components/ScrollToTopOnMount/ScrollToTopOnMount";
 import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
-import Link from "next/link";
+import { VideoPlayer } from "@/components/VideoPlayer/VideoPlayer";
 import styles from "./page.module.scss";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
-interface ClassPageProps {
-  params: Promise<{ class_id: string }>;
-}
-
-async function getClassData(class_id: string): Promise<Class> {
-  const res = await fetch(`${API_BASE_URL}/classes/${class_id}`, { cache: "no-store" });
-  if (!res.ok) throw new Error("No se pudo cargar la clase");
-  return res.json();
-}
+type Phase = "loading" | "locked" | "ready" | "error";
 
 /**
- * GET /classes/{id} does not return the parent course (no course_id,
- * no course slug — verified against Backend/app/main.py:get_class_by_id).
- * The Lesson row does have a course_id column, but it isn't exposed by
- * that endpoint, so there's no direct way to ask "which course is this
- * class in". As a workaround using only existing public endpoints, we
- * fetch the course list and search each course's class list for a
- * matching id. The course catalog is small (current seed: ~18 courses),
- * so this stays cheap, and results are cached for 5 minutes since course
- * rosters change rarely — unlike the class fetch above, which stays
- * "no-store" so video/description edits show up immediately.
+ * Rich context returned by GET /classes/{id} on a 401:
+ * {"detail": {msg, course_id, course_slug, course_name, title,
+ *             position, total_classes}}
  */
-async function findParentCourse(classId: number): Promise<CourseDetail | null> {
-  try {
-    const listRes = await fetch(`${API_BASE_URL}/courses`, {
-      next: { revalidate: 300 },
-    });
-    if (!listRes.ok) return null;
-    const courses: Course[] = await listRes.json();
+interface GateDetailBody {
+  msg?: string;
+  course_id?: number;
+  course_slug?: string;
+  course_name?: string;
+  title?: string;
+  position?: number;
+  total_classes?: number;
+}
 
-    const details = await Promise.all(
-      courses.map(async (course) => {
-        try {
-          const res = await fetch(`${API_BASE_URL}/courses/${course.slug}`, {
-            next: { revalidate: 300 },
-          });
-          if (!res.ok) return null;
-          return (await res.json()) as CourseDetail;
-        } catch {
-          return null;
-        }
-      })
-    );
+interface GateInfo {
+  title: string;
+  courseName: string | null;
+  courseSlug: string | null;
+  position: number | null;
+  totalClasses: number | null;
+}
 
-    return (
-      details.find((course) => course?.classes?.some((cls) => cls.id === classId)) ?? null
-    );
-  } catch {
-    return null;
-  }
+interface CourseRoster {
+  name?: string;
+  classes?: Class[];
+}
+
+function getGateDetail(error: ApiClientError): GateDetailBody | null {
+  const detail = (error.payload as { detail?: GateDetailBody } | undefined)?.detail;
+  return detail && typeof detail === "object" ? detail : null;
+}
+
+// Rosters come back ordered by id; sort by position so the sidebar,
+// prev/next navigation and lock badges reflect real playback order.
+function orderCourseClasses(classes: Class[]): Class[] {
+  const allPositioned = classes.every(
+    (cls): cls is Class & { position: number } => typeof cls.position === "number"
+  );
+  if (!allPositioned) return classes;
+  return [...classes].sort((a, b) => a.position - b.position);
 }
 
 // The API stores durations in seconds (same
@@ -70,14 +75,264 @@ function formatDuration(totalSeconds: number): string {
   return hours > 0 ? `${hours}:${pad(minutes)}:${pad(seconds)}` : `${minutes}:${pad(seconds)}`;
 }
 
-export default async function ClassPage({ params }: ClassPageProps) {
-  const { class_id } = await params;
-  const classData = await getClassData(class_id);
-  const parentCourse = await findParentCourse(classData.id);
+function LoadingSkeleton() {
+  return (
+    <div
+      className={styles.skeleton}
+      data-testid="class-page-skeleton"
+      role="status"
+      aria-label="Cargando clase"
+    >
+      <div className={`${styles.skeletonStage} ${styles.shimmer}`} />
+      <div className={styles.skeletonBody}>
+        <div className={`${styles.skeletonLine} ${styles.skeletonLineShort} ${styles.shimmer}`} />
+        <div className={`${styles.skeletonLine} ${styles.skeletonLineTitle} ${styles.shimmer}`} />
+        <div className={`${styles.skeletonLine} ${styles.shimmer}`} />
+        <div className={`${styles.skeletonLine} ${styles.skeletonLineShort} ${styles.shimmer}`} />
+      </div>
+    </div>
+  );
+}
 
-  // Detail payload fields (verified against GET /classes/{id}):
-  // title, description, video, duration (seconds), slug. No course
-  // reference — see findParentCourse() above.
+function LockScreen({ gate, classHref }: { gate: GateInfo; classHref: string }) {
+  const positionLabel =
+    gate.position !== null && gate.totalClasses !== null
+      ? `Clase ${gate.position} de ${gate.totalClasses}`
+      : null;
+
+  return (
+    <section className={styles.lockScreen} data-testid="lock-screen">
+      <span className={styles.lockIconWrap}>
+        <Lock size={26} aria-hidden="true" />
+      </span>
+
+      {gate.courseName && <p className={styles.lockEyebrow}>{gate.courseName}</p>}
+
+      <h1 className={styles.lockTitle}>{gate.title || "Contenido exclusivo"}</h1>
+
+      {positionLabel && (
+        <span className={styles.durationChip}>
+          <Clock size={14} aria-hidden="true" />
+          {positionLabel}
+        </span>
+      )}
+
+      <p className={styles.lockMessage}>
+        Esta clase requiere una cuenta gratuita. Inicia sesión o regístrate para
+        desbloquear todas las clases del curso.
+      </p>
+
+      <div className={styles.lockActions}>
+        <Link href={`/login?next=${classHref}`} className={styles.primaryButton}>
+          Iniciar Sesión
+        </Link>
+        {gate.courseSlug && (
+          <Link href={`/course/${gate.courseSlug}`} className={styles.secondaryButton}>
+            Ver temario
+          </Link>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Course roster sidebar (temario), shared by the playback and lock
+ * screens. While logged out, every class beyond the free preview
+ * (position > 1) gets a small lock badge but stays clickable: users
+ * land on the lock screen with its login CTA.
+ */
+function TemarioSidebar({
+  classes,
+  activeId,
+  activePosition,
+  isLoggedIn,
+}: {
+  classes: Class[];
+  activeId?: number | null;
+  activePosition?: number | null;
+  isLoggedIn: boolean;
+}) {
+  if (classes.length === 0) return null;
+
+  return (
+    <aside className={styles.sidebar} aria-label="Clases del curso">
+      <h2 className={styles.sidebarTitle}>
+        <BookOpen size={18} aria-hidden="true" />
+        Contenido del curso
+      </h2>
+      <ol className={styles.classList}>
+        {classes.map((cls, index) => {
+          const itemNumber = cls.position ?? index + 1;
+          // On the playback screen the active class is matched by id;
+          // on the lock screen we only know its position from the 401 body.
+          const isActive =
+            activeId != null
+              ? cls.id === activeId
+              : activePosition != null && itemNumber === activePosition;
+          const isPlaying = activeId != null && cls.id === activeId;
+          const isLocked = !isLoggedIn && itemNumber > 1 && !isPlaying;
+          const itemDuration =
+            cls.duration && cls.duration > 0 ? formatDuration(cls.duration) : null;
+
+          return (
+            <li key={cls.id}>
+              <Link
+                href={`/classes/${cls.id}`}
+                className={`${styles.classItem} ${isActive ? styles.classItemActive : ""}`}
+                aria-current={isActive ? "true" : undefined}
+              >
+                <span className={styles.classItemNumber}>
+                  {itemNumber.toString().padStart(2, "0")}
+                </span>
+                <span className={styles.classItemName}>{cls.name}</span>
+                {itemDuration && (
+                  <span className={styles.classItemDuration}>{itemDuration}</span>
+                )}
+                {isActive && (
+                  <Play size={14} className={styles.classItemPlaying} aria-hidden="true" />
+                )}
+                {isLocked && (
+                  <>
+                    <Lock size={14} className={styles.classItemLock} aria-hidden="true" />
+                    <span className={styles.srOnly}>Requiere cuenta gratuita</span>
+                  </>
+                )}
+              </Link>
+            </li>
+          );
+        })}
+      </ol>
+    </aside>
+  );
+}
+
+export default function ClassPage() {
+  const params = useParams<{ class_id: string }>();
+  const classId = params?.class_id;
+
+  const [phase, setPhase] = useState<Phase>("loading");
+  const [classData, setClassData] = useState<Class | null>(null);
+  const [gate, setGate] = useState<GateInfo | null>(null);
+  const [courseClasses, setCourseClasses] = useState<Class[]>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Temario lists cached by course slug so prev/next navigation between
+  // classes of the same course doesn't refetch the roster every time.
+  const temarioCacheRef = useRef<Map<string, Class[]>>(new Map());
+
+  useEffect(() => {
+    if (!classId) return;
+
+    let cancelled = false;
+
+    async function loadTemario(courseSlug: string): Promise<void> {
+      const cached = temarioCacheRef.current.get(courseSlug);
+      if (cached) {
+        setCourseClasses(cached);
+        return;
+      }
+
+      try {
+        // The roster is public; even logged-in users fetch it without auth.
+        const course = await publicFetch<CourseRoster>(`/courses/${courseSlug}`);
+        if (cancelled) return;
+        const classes = orderCourseClasses(course.classes ?? []);
+        temarioCacheRef.current.set(courseSlug, classes);
+        setCourseClasses(classes);
+      } catch {
+        // The temario is a nice-to-have: the class itself still plays.
+      }
+    }
+
+    async function load(): Promise<void> {
+      setPhase("loading");
+      setClassData(null);
+      setGate(null);
+
+      const token = getToken();
+      setIsLoggedIn(Boolean(token));
+
+      try {
+        // With a session, go through apiFetch so the Bearer token rides along.
+        // skipAuthRedirect keeps a 401 in-page (lock screen) instead of the
+        // default hard redirect to /login.
+        const data = token
+          ? await apiFetch<Class>(`/classes/${classId}`, { skipAuthRedirect: true })
+          : await publicFetch<Class>(`/classes/${classId}`);
+        if (cancelled) return;
+        setClassData(data);
+        setPhase("ready");
+        if (data.course_slug) void loadTemario(data.course_slug);
+      } catch (error) {
+        if (cancelled) return;
+
+        if (error instanceof ApiClientError && error.status === 401) {
+          const detail = getGateDetail(error);
+          setGate({
+            title: detail?.title ?? "",
+            courseName: detail?.course_name ?? null,
+            courseSlug: detail?.course_slug ?? null,
+            position: detail?.position ?? null,
+            totalClasses: detail?.total_classes ?? null,
+          });
+          setPhase("locked");
+          if (detail?.course_slug) void loadTemario(detail.course_slug);
+        } else {
+          setPhase("error");
+        }
+      }
+    }
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [classId]);
+
+  if (phase === "loading" || !classId) {
+    return (
+      <main className={styles.page}>
+        <article className={styles.card}>
+          <LoadingSkeleton />
+        </article>
+      </main>
+    );
+  }
+
+  if (phase === "locked" && gate) {
+    return (
+      <main className={styles.page}>
+        <article className={styles.card}>
+          <LockScreen gate={gate} classHref={`/classes/${classId}`} />
+          <TemarioSidebar
+            classes={courseClasses}
+            activePosition={gate.position}
+            isLoggedIn={isLoggedIn}
+          />
+        </article>
+      </main>
+    );
+  }
+
+  if (phase !== "ready" || !classData) {
+    return (
+      <main className={styles.page}>
+        <article className={styles.card}>
+          <section className={styles.lockScreen} role="alert">
+            <p className={styles.lockMessage}>
+              No se pudo cargar la clase. Revisá tu conexión e intentá de nuevo.
+            </p>
+            <Link href="/" className={styles.secondaryButton}>
+              Volver al inicio
+            </Link>
+          </section>
+        </article>
+      </main>
+    );
+  }
+
   const title = classData.title ?? classData.name ?? "";
   const video = classData.video ?? "";
   const durationLabel =
@@ -85,11 +340,16 @@ export default async function ClassPage({ params }: ClassPageProps) {
       ? formatDuration(classData.duration)
       : null;
 
-  // Course's class list shape (from GET /courses/{slug}) only has
-  // id/name/description/slug — no duration/video per class, so the
-  // sidebar can't show a duration chip per item (only the currently
-  // playing class has that, from GET /classes/{id} above).
-  const courseClasses = parentCourse?.classes ?? [];
+  const courseSlug = classData.course_slug ?? null;
+  const courseLabel =
+    classData.course_name ??
+    courseClasses.find((cls) => cls.course_name)?.course_name ??
+    null;
+  const positionLabel =
+    typeof classData.position === "number" && typeof classData.total_classes === "number"
+      ? `Clase ${classData.position} de ${classData.total_classes}`
+      : null;
+
   const currentIndex = courseClasses.findIndex((cls) => cls.id === classData.id);
   const prevClass = currentIndex > 0 ? courseClasses[currentIndex - 1] : null;
   const nextClass =
@@ -97,13 +357,13 @@ export default async function ClassPage({ params }: ClassPageProps) {
       ? courseClasses[currentIndex + 1]
       : null;
 
-  const backHref = parentCourse ? `/course/${parentCourse.slug}` : "/#catalogo";
-  const backLabel = parentCourse ? "Volver al curso" : "Volver al catálogo";
+  const backHref = courseSlug ?? "/#catalogo";
+  const backLabel = courseSlug ? "Volver al curso" : "Volver al catálogo";
 
-  const breadcrumbItems = parentCourse
+  const breadcrumbItems = courseSlug
     ? [
         { label: "Inicio", href: "/" },
-        { label: parentCourse.name, href: `/course/${parentCourse.slug}` },
+        { label: courseLabel ?? "Curso", href: `/course/${courseSlug}` },
         { label: title },
       ]
     : [{ label: "Inicio", href: "/" }, { label: title }];
@@ -123,7 +383,7 @@ export default async function ClassPage({ params }: ClassPageProps) {
 
         <div className={styles.layout}>
           <div className={styles.content}>
-            <p className={styles.eyebrow}>Clase</p>
+            <p className={styles.eyebrow}>{positionLabel ?? "Clase"}</p>
             <h1 className={styles.title}>{title}</h1>
 
             {durationLabel && (
@@ -175,36 +435,11 @@ export default async function ClassPage({ params }: ClassPageProps) {
             </nav>
           </div>
 
-          {courseClasses.length > 0 && (
-            <aside className={styles.sidebar} aria-label="Clases del curso">
-              <h2 className={styles.sidebarTitle}>
-                <BookOpen size={18} aria-hidden="true" />
-                Contenido del curso
-              </h2>
-              <ol className={styles.classList}>
-                {courseClasses.map((cls, index) => {
-                  const isActive = cls.id === classData.id;
-                  return (
-                    <li key={cls.id}>
-                      <Link
-                        href={`/classes/${cls.id}`}
-                        className={`${styles.classItem} ${isActive ? styles.classItemActive : ""}`}
-                        aria-current={isActive ? "true" : undefined}
-                      >
-                        <span className={styles.classItemNumber}>
-                          {(index + 1).toString().padStart(2, "0")}
-                        </span>
-                        <span className={styles.classItemName}>{cls.name}</span>
-                        {isActive && (
-                          <Play size={14} className={styles.classItemPlaying} aria-hidden="true" />
-                        )}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ol>
-            </aside>
-          )}
+          <TemarioSidebar
+            classes={courseClasses}
+            activeId={classData.id}
+            isLoggedIn={isLoggedIn}
+          />
         </div>
       </article>
     </main>
