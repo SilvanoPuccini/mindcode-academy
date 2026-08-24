@@ -14,7 +14,10 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60 * 24 * 7  # 7 days
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    # extra="ignore": legacy .env files contain variables that are no longer
+    # part of Settings (e.g. POSTGRES_USER, RATE_LIMIT_*); without this,
+    # bare-metal runs outside Docker crash with extra_forbidden errors.
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 
 settings = Settings()
