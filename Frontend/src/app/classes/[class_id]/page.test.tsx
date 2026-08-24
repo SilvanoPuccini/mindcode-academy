@@ -78,7 +78,8 @@ function jsonResponse(body: unknown, status = 200) {
 type MockHandler = (url: string) => Promise<ReturnType<typeof jsonResponse>>;
 
 function stubFetch(handler: MockHandler) {
-  return vi.fn((input: RequestInfo | URL) =>
+  // Two-arg signature so tests can assert on the RequestInit (headers, etc.).
+  return vi.fn((input: RequestInfo | URL, _init?: RequestInit) =>
     handler(typeof input === "string" ? input : input.toString())
   );
 }
@@ -195,7 +196,7 @@ describe("ClassPage", () => {
     expect(await screen.findByTestId("mock-video-player")).toBeInTheDocument();
 
     const [, init] = fetchMock.mock.calls[0];
-    const headers = new Headers((init as RequestInit).headers ?? undefined);
+    const headers = new Headers(init?.headers ?? undefined);
     expect(headers.get("Authorization")).toBe("Bearer token-123");
   });
 });
