@@ -1,4 +1,5 @@
 import { MetadataRoute } from 'next';
+import { fetchWithTimeout } from '@/lib/safe-fetch';
 
 interface Course {
   id: number;
@@ -20,7 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all courses to generate dynamic routes
   let courses: Course[] = [];
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/courses`, {
+    const res = await fetchWithTimeout(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/courses`, {
       next: { revalidate: 3600 } // Revalidate every hour
     });
     if (res.ok) {

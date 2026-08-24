@@ -17,6 +17,7 @@ import { useCourses } from "@/contexts/CourseContext";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { focusSearchInput, SEARCH_HASH } from "@/hooks/useSearchFocus";
 import { buildCategories, inferCategory } from "@/lib/course-taxonomy";
+import { fetchWithTimeout } from "@/lib/safe-fetch";
 import Link from "next/link";
 
 type SortOption = "rating" | "classes" | "name";
@@ -61,7 +62,7 @@ export default function Home() {
   // Memoize getCourses function to prevent recreation on every render
   const getCourses = useCallback(async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/courses`, { cache: "no-store" });
+      const res = await fetchWithTimeout(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/courses`, { cache: "no-store" });
       if (!res.ok) {
         throw new Error("Failed to fetch courses");
       }
@@ -76,7 +77,7 @@ export default function Home() {
       const hydrated = await Promise.all(
         data.map(async (course): Promise<Course> => {
           try {
-            const detailRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/courses/${course.slug}`, { cache: "no-store" });
+            const detailRes = await fetchWithTimeout(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/courses/${course.slug}`, { cache: "no-store" });
             if (!detailRes.ok) return course;
             const detail: Course = await detailRes.json();
             return { ...course, classes: detail.classes };
