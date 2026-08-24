@@ -4,7 +4,10 @@ import path from "path";
 const nextConfig: NextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname, "src/styles")],
-    prependData: `@import "vars.scss";`
+    prependData: `@import "vars.scss";`,
+    // Silence Sass deprecation noise (@import, legacy JS API) that floods
+    // build logs on Vercel and hides real errors.
+    silenceDeprecations: ["import", "legacy-js-api", "global-builtin"],
   },
   images: {
     remotePatterns: [
