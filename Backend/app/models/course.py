@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Text
 from sqlalchemy.orm import relationship
 from .base import BaseModel
+from .lesson import Lesson
 
 
 class Course(BaseModel):
@@ -21,11 +22,12 @@ class Course(BaseModel):
         back_populates="courses"
     )
     
-    # One-to-many relationship with Lesson
+    # One-to-many relationship with Lesson (ordered by position within the course)
     lessons = relationship(
         "Lesson",
         back_populates="course",
-        cascade="all, delete-orphan"
+        cascade="all, delete-orphan",
+        order_by="Lesson.position"
     )
 
     # One-to-many relationship with CourseRating

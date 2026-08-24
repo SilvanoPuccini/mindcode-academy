@@ -4,7 +4,10 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.config import settings
+from app.core.dependencies import get_current_user_optional
 from app.db.base import engine, get_db
+from app.models import Lesson, User
+from app.services.class_payload import build_class_payload, build_login_required_detail
 from app.services.course_service import CourseService
 from app.schemas.rating import (
     RatingRequest,
@@ -162,26 +165,41 @@ def get_course_by_slug(slug: str, course_service: CourseService = Depends(get_co
 
 
 @app.get("/classes/{class_id}", tags=["courses"])
-def get_class_by_id(class_id: int, db: Session = Depends(get_db)) -> dict:
+def get_class_by_id(
+    class_id: int,
+    db: Session = Depends(get_db),
+    current_user: User | None = Depends(get_current_user_optional)
+) -> dict:
     """
     Get lesson/class details by ID.
-    Returns lesson information including video URL.
-    """
-    from app.models import Lesson
 
+    Login gate: only the first lesson of a course (position == 1, the free
+    preview) is public. Any other lesson requires an authenticated user,
+    otherwise the endpoint returns 401 with context so the client can
+    redirect the user to login.
+    """
     lesson = db.query(Lesson).filter(Lesson.id == class_id).first()
 
     if not lesson:
         raise HTTPException(status_code=404, detail="Class not found")
 
-    return {
-        "id": lesson.id,
-        "title": lesson.name,
-        "description": lesson.description,
-        "slug": lesson.slug,
-        "video": lesson.video_url,
-        "duration": lesson.duration
-    }
+    course = lesson.course
+    total_classes = (
+        db.query(Lesson)
+        .filter(Lesson.course_id == course.id, Lesson.deleted_at.is_(None))
+        .count()
+    )
+
+    payload = build_class_payload(lesson, course, current_user, total_classes)
+
+    # Gate: "video" is present only for the free preview or authenticated users
+    if "video" not in payload:
+        raise HTTPException(
+            status_code=401,
+            detail=build_login_required_detail(payload)
+        )
+
+    return payload
 
 
 # ==================== RATING ENDPOINTS ====================

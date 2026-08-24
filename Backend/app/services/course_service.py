@@ -103,7 +103,10 @@ class CourseService:
                     "name": lesson.name,
                     "description": lesson.description,
                     "slug": lesson.slug,
-                    "duration": lesson.duration
+                    "duration": lesson.duration,
+                    # Ordering within the course; video_url is intentionally
+                    # never exposed here (gated by GET /classes/{class_id}).
+                    "position": lesson.position
                 }
                 for lesson in course.lessons
                 if lesson.deleted_at is None
