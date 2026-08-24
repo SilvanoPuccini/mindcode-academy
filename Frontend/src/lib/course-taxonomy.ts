@@ -1,4 +1,5 @@
 import { Course } from '@/types';
+import { normalizeText } from '@/lib/course-search';
 import type { LucideIcon } from 'lucide-react';
 import {
   Code2,
@@ -134,17 +135,8 @@ const FALLBACK_RULE: CategoryRule = {
   patterns: [],
 };
 
-// Normalize: lowercase + strip diacritics so "Inteligencia" and "inteligencia"
-// match the same rules.
-function normalize(text: string): string {
-  return text
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
-}
-
 export function inferCategory(course: Pick<Course, 'name' | 'description'>): CategoryRule {
-  const haystack = normalize(`${course.name} ${course.description}`);
+  const haystack = normalizeText(`${course.name} ${course.description}`);
   return (
     CATEGORY_RULES.find((rule) => rule.patterns.some((pattern) => pattern.test(haystack))) ??
     FALLBACK_RULE

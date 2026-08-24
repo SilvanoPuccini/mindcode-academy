@@ -1,13 +1,18 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
 import { Course } from '@/types';
 import { getToken } from '@/services/authApi';
 import { getFavoriteCourseIds, toggleFavorite as toggleFavoriteApi } from '@/services/favoritesApi';
+import { inferCategory } from '@/lib/course-taxonomy';
+import {
+  matchesQuery,
+  courseDurationMinutes,
+  matchesDurationFilters,
+} from '@/lib/course-search';
 
 interface Filters {
   category: number;
-  levels: string[];
   durations: string[];
   minRating: number;
 }
@@ -32,7 +37,6 @@ export function CourseProvider({ children }: { children: ReactNode }) {
   const [allCourses, setAllCourses] = useState<Course[]>([]);
   const [filters, setFilters] = useState<Filters>({
     category: 1, // Todos
-    levels: [],
     durations: [],
     minRating: 0,
   });
@@ -89,27 +93,38 @@ export function CourseProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const filteredCourses = allCourses.filter(course => {
-    // Search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      const matchesName = course.name.toLowerCase().includes(query);
-      const matchesDescription = course.description.toLowerCase().includes(query);
-      if (!matchesName && !matchesDescription) return false;
-    }
-
-    // Rating filter
-    if (filters.minRating > 0) {
-      if (!course.average_rating || course.average_rating < filters.minRating) {
+  const filteredCourses = useMemo(() => {
+    return allCourses.filter(course => {
+      // Search filter: accent-insensitive, all tokens must appear across
+      // name + description + the inferred category label (so "react" or
+      // category-style words also match categorically).
+      if (!matchesQuery(course, searchQuery, [inferCategory(course).label])) {
         return false;
       }
-    }
 
-    // Category filter (1 = Todos, skip filter)
-    // For now we don't have category in Course type, so we skip this
+      // Rating filter
+      if (filters.minRating > 0) {
+        if (!course.average_rating || course.average_rating < filters.minRating) {
+          return false;
+        }
+      }
 
-    return true;
-  });
+      // Duration filter: selected buckets are OR-ed among themselves.
+      // Courses without hydrated classes have unknown duration and are
+      // excluded while a duration bucket is selected.
+      if (
+        filters.durations.length > 0 &&
+        !matchesDurationFilters(courseDurationMinutes(course), filters.durations)
+      ) {
+        return false;
+      }
+
+      // Category filter (1 = Todos, skip filter)
+      // Applied separately in the home page via inferCategory()
+
+      return true;
+    });
+  }, [allCourses, searchQuery, filters]);
 
   return (
     <CourseContext.Provider

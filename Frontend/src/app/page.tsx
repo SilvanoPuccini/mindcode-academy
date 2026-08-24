@@ -67,6 +67,25 @@ export default function Home() {
       }
       const data: Course[] = await res.json();
       setAllCourses(data);
+
+      // The list endpoint omits classes[], so course durations (needed by
+      // the Duración filter) are unknown until hydrated. Fetch each course's
+      // detail — which includes its classes with durations in minutes — and
+      // merge them in. A failed detail fetch is non-fatal: that course just
+      // keeps no duration data and won't match specific duration buckets.
+      const hydrated = await Promise.all(
+        data.map(async (course): Promise<Course> => {
+          try {
+            const detailRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/courses/${course.slug}`, { cache: "no-store" });
+            if (!detailRes.ok) return course;
+            const detail: Course = await detailRes.json();
+            return { ...course, classes: detail.classes };
+          } catch {
+            return course;
+          }
+        })
+      );
+      setAllCourses(hydrated);
     } catch (error) {
       console.error("Error fetching courses:", error);
     } finally {
@@ -107,7 +126,7 @@ export default function Home() {
     const match = buildCategories(allCourses).find((c) => c.key === categoryKey);
     if (!match) return;
 
-    setFilters({ category: match.id, levels: [], durations: [], minRating: 0 });
+    setFilters({ category: match.id, durations: [], minRating: 0 });
 
     const catalog = document.getElementById('catalogo');
     if (!catalog) return;

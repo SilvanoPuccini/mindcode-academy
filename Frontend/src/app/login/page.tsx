@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { login, saveSession } from '@/services/authApi';
+import { getSafeRedirectPath } from '@/lib/safe-redirect';
 import { Logo } from '@/components/Logo/Logo';
 import styles from './page.module.scss';
 
@@ -24,7 +25,8 @@ export default function LoginPage() {
     try {
       const tokenResponse = await login({ email, password });
       saveSession(tokenResponse);
-      router.push('/');
+      // Honor ?next= when present (validated against open redirects).
+      router.push(getSafeRedirectPath(window.location.search));
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'No se pudo iniciar sesión'

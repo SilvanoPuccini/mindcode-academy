@@ -4,11 +4,9 @@ import { useMemo } from 'react';
 import { Star } from 'lucide-react';
 import { useCourses } from '@/contexts/CourseContext';
 import { buildCategories } from '@/lib/course-taxonomy';
+import { DURATION_FILTER_OPTIONS } from '@/lib/course-search';
 import { useRipple } from '@/hooks/useRipple';
 import styles from './Filters.module.scss';
-
-const levels = ['Principiante', 'Intermedio', 'Avanzado'];
-const durations = ['< 2 horas', '2-5 horas', '5-10 horas', '> 10 horas'];
 
 export function Filters() {
   const { allCourses, filters, setFilters } = useCourses();
@@ -19,13 +17,6 @@ export function Filters() {
     { id: 1, label: 'Todos', count: allCourses.length },
     ...buildCategories(allCourses),
   ], [allCourses]);
-
-  const toggleLevel = (level: string) => {
-    const newLevels = filters.levels.includes(level)
-      ? filters.levels.filter(l => l !== level)
-      : [...filters.levels, level];
-    setFilters({ ...filters, levels: newLevels });
-  };
 
   const toggleDuration = (duration: string) => {
     const newDurations = filters.durations.includes(duration)
@@ -45,7 +36,6 @@ export function Filters() {
   const handleClearFilters = () => {
     setFilters({
       category: 1,
-      levels: [],
       durations: [],
       minRating: 0,
     });
@@ -78,29 +68,11 @@ export function Filters() {
         </div>
       </div>
 
-      {/* Level */}
-      <div className={styles.section}>
-        <h4 className={styles.sectionTitle}>Nivel</h4>
-        <div className={styles.checkboxList}>
-          {levels.map(level => (
-            <label key={level} className={styles.checkbox}>
-              <input
-                type="checkbox"
-                checked={filters.levels.includes(level)}
-                onChange={() => toggleLevel(level)}
-              />
-              <span className={styles.checkmark}></span>
-              <span>{level}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
       {/* Duration */}
       <div className={styles.section}>
         <h4 className={styles.sectionTitle}>Duración</h4>
         <div className={styles.checkboxList}>
-          {durations.map(duration => (
+          {DURATION_FILTER_OPTIONS.map(duration => (
             <label key={duration} className={styles.checkbox}>
               <input
                 type="checkbox"

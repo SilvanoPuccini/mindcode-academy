@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff, Loader2, Check, X } from 'lucide-react';
 import { register, saveSession } from '@/services/authApi';
+import { getSafeRedirectPath } from '@/lib/safe-redirect';
 import { Logo } from '@/components/Logo/Logo';
 import styles from './page.module.scss';
 
@@ -68,7 +69,8 @@ export default function RegisterPage() {
     try {
       const tokenResponse = await register({ name, email, password });
       saveSession(tokenResponse);
-      router.push('/');
+      // Honor ?next= when present (validated against open redirects).
+      router.push(getSafeRedirectPath(window.location.search));
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'No se pudo crear la cuenta'
