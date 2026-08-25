@@ -1,7 +1,14 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ContactForm } from './ContactForm';
+
+// The form fires a success toast through the global
+// ToastContext; mocked here since tests render the
+// component standalone.
+vi.mock('@/contexts/ToastContext', () => ({
+  useToast: () => ({ showToast: vi.fn() }),
+}));
 
 describe('ContactForm', () => {
   it('shows an inline confirmation after submitting the form and clears the fields', () => {

@@ -44,9 +44,9 @@ export default function LoginPage() {
         </div>
 
         <header className={styles.header}>
-          <h1 className={styles.title}>Iniciar Sesión</h1>
+          <h1 className={styles.title}>Iniciá sesión</h1>
           <p className={styles.subtitle}>
-            Bienvenido de vuelta. Continúa aprendiendo donde lo dejaste.
+            Bienvenido de vuelta. Seguí aprendiendo donde lo dejaste.
           </p>
         </header>
 
@@ -117,14 +117,14 @@ export default function LoginPage() {
             {submitting && (
               <Loader2 size={18} className={styles.spinner} aria-hidden="true" />
             )}
-            {submitting ? 'Ingresando...' : 'Iniciar Sesión'}
+            {submitting ? 'Ingresando...' : 'Iniciar sesión'}
           </button>
         </form>
 
         <p className={styles.switchPrompt}>
-          ¿No tienes cuenta?{' '}
+          ¿No tenés cuenta?{' '}
           <Link href="/register" className={styles.switchLink}>
-            Regístrate
+            Registrate
           </Link>
         </p>
       </div>

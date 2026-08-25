@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { Loader2, CheckCircle2 } from 'lucide-react';
+import { useToast } from '@/contexts/ToastContext';
 import styles from './page.module.scss';
 
 export function ContactForm() {
+  const { showToast } = useToast();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -21,6 +23,7 @@ export function ContactForm() {
     setName('');
     setEmail('');
     setMessage('');
+    showToast('¡Mensaje enviado! Te respondemos a la brevedad.', 'success');
   };
 
   if (submitted) {

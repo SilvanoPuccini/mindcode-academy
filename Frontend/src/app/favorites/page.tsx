@@ -49,11 +49,12 @@ export default function FavoritesPage() {
       <div className={styles.page}>
         <div className={styles.container}>
           <header className={styles.header}>
+            <span className={styles.eyebrow}>Tu biblioteca</span>
             <h1 className={styles.title}>
-              Mis <span className={styles.highlight}>Favoritos</span>
+              Mis <span className={styles.highlight}>favoritos</span>
             </h1>
             <p className={styles.subtitle}>
-              {loading ? "Cargando..." : `${favoriteCourses.length} ${favoriteCourses.length === 1 ? 'curso favorito' : 'cursos favoritos'}`}
+              {loading ? "Cargando..." : `${favoriteCourses.length} ${favoriteCourses.length === 1 ? 'curso guardado' : 'cursos guardados'}`}
             </p>
           </header>
 
@@ -61,17 +62,17 @@ export default function FavoritesPage() {
             <div className={styles.loading}>Cargando tus favoritos...</div>
           ) : !isLoggedIn ? (
             <EmptyState
-              icon={<LogIn size={56} aria-hidden="true" />}
+              icon={<LogIn size={40} aria-hidden="true" />}
               title="Iniciá sesión para ver tus favoritos"
-              message="Tus cursos favoritos se guardan en tu cuenta. Iniciá sesión para acceder a ellos desde cualquier dispositivo."
+              message="Tus favoritos se guardan en tu cuenta. Iniciá sesión para acceder a ellos desde cualquier dispositivo."
               actionLabel="Iniciar sesión"
               actionHref="/login"
             />
           ) : favorites.length === 0 ? (
             <EmptyState
-              icon={<HeartCrack size={56} aria-hidden="true" />}
-              title="No tienes favoritos aún"
-              message="Explora nuestro catálogo y guarda tus cursos preferidos para acceder a ellos fácilmente."
+              icon={<HeartCrack size={40} aria-hidden="true" />}
+              title="Todavía no tenés favoritos"
+              message="Explorá el catálogo y guardá los cursos que más te interesen para tenerlos siempre a mano."
               actionLabel="Explorar cursos"
               actionHref="/#catalogo"
             />

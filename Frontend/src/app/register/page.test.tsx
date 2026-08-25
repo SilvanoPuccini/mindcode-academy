@@ -16,7 +16,7 @@ describe('RegisterPage', () => {
 
   it('keeps the submit button disabled until the password is strong and confirmed', () => {
     render(<RegisterPage />);
-    const submitBtn = screen.getByRole('button', { name: /registrarse/i });
+    const submitBtn = screen.getByRole('button', { name: /crear cuenta/i });
     expect(submitBtn).toBeDisabled();
 
     fireEvent.change(screen.getByLabelText('Contraseña'), {
@@ -42,7 +42,7 @@ describe('RegisterPage', () => {
     });
 
     expect(screen.getByText('Las contraseñas no coinciden')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /registrarse/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /crear cuenta/i })).toBeDisabled();
   });
 
   it('updates the password rules checklist live as the user types', () => {

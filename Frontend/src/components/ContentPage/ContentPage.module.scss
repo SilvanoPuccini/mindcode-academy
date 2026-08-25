@@ -1,69 +1,92 @@
 @import '@/styles/vars.scss';
 
-// Transparent root: the global body canvas
-// (styles/_grid-bg.scss) shows through here.
+// Shared shell for static/informational pages.
+// Transparent root so the global body canvas
+// shows through; the content sits in a readable
+// article card (~72ch measure, --bg-card surface,
+// soft shadow) under a centered header that
+// follows the landing hierarchy: eyebrow pill
+// -> title -> subtitle.
 .page {
   min-height: 100vh;
-  padding-top: 100px;
+  padding-top: calc(96px + var(--space-4));
   position: relative;
-  overflow: hidden;
 }
 
 .container {
   max-width: 860px;
   margin: 0 auto;
-  padding: 3rem 2rem 5rem;
-  position: relative;
-  z-index: 1;
+  padding: var(--space-3) var(--space-2) var(--space-6);
 }
 
 .header {
   text-align: center;
-  margin-bottom: 2.5rem;
-  animation: fadeInDown 0.6s ease-out;
+  margin-bottom: var(--space-5);
 }
 
 .eyebrow {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-full);
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  // primary-hover passes AA on the tinted chip in
+  // both themes; raw --primary falls short on light.
+  color: var(--primary-hover);
   font-family: var(--font-inter);
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: color('accent');
-  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: var(--space-3);
 }
 
 .title {
   font-family: var(--font-space);
-  font-size: 2.75rem;
+  font-size: clamp(2rem, 1.5rem + 2vw, 2.75rem);
   font-weight: 700;
-  margin-bottom: 1rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
+  margin-bottom: var(--space-2);
 }
 
 .subtitle {
   font-family: var(--font-inter);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: var(--text-secondary);
-  max-width: 640px;
+  max-width: 60ch;
   margin: 0 auto;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
+// Readable article surface: ~72ch measure keeps
+// long-form text comfortable; shadow-sm matches
+// the catalog card recipe.
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  padding: 2.5rem;
-  animation: fadeIn 0.8s ease-out;
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+  max-width: 72ch;
+  margin-inline: auto;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .header {
+    animation: fadeInDown 600ms ease-out both;
+  }
+
+  .card {
+    animation: fadeIn 700ms ease-out both;
+  }
 }
 
 @keyframes fadeInDown {
   from {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateY(-16px);
   }
   to {
     opacity: 1;
@@ -82,26 +105,18 @@
 
 @media (max-width: 768px) {
   .page {
-    padding-top: 80px;
+    padding-top: calc(80px + var(--space-3));
   }
 
   .container {
-    padding: 2rem 1rem 3rem;
+    padding: var(--space-2) var(--space-2) var(--space-5);
   }
 
   .header {
-    margin-bottom: 2rem;
-  }
-
-  .title {
-    font-size: 2rem;
-  }
-
-  .subtitle {
-    font-size: 1rem;
+    margin-bottom: var(--space-4);
   }
 
   .card {
-    padding: 1.5rem;
+    padding: var(--space-3);
   }
 }

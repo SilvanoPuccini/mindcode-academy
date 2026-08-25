@@ -28,9 +28,9 @@ export default function ForgotPasswordPage() {
         </div>
 
         <header className={styles.header}>
-          <h1 className={styles.title}>Recuperar Contraseña</h1>
+          <h1 className={styles.title}>Recuperar contraseña</h1>
           <p className={styles.subtitle}>
-            Ingresa tu email y te enviaremos instrucciones para restablecer tu
+            Ingresá tu email y te enviaremos instrucciones para restablecer tu
             contraseña.
           </p>
         </header>

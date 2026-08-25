@@ -1,95 +1,117 @@
 @import '@/styles/vars.scss';
 
 // Transparent root: the global body canvas
-// (styles/_grid-bg.scss) shows through here.
+// shows through here.
 .page {
   min-height: 100vh;
-  padding-top: 100px;
+  padding-top: calc(96px + var(--space-4));
   position: relative;
-  overflow: hidden;
 }
 
 .container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 3rem 2rem;
-  position: relative;
-  z-index: 1;
+  padding: var(--space-4) var(--space-4) var(--space-6);
 }
 
+// Header follows the landing section rhythm:
+// eyebrow pill -> title -> supporting subtitle,
+// all centered above the course grid.
 .header {
   text-align: center;
-  margin-bottom: 4rem;
-  animation: fadeInDown 0.6s ease-out;
+  margin-bottom: var(--space-5);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-full);
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  // primary-hover passes AA on the tinted chip in
+  // both themes; raw --primary falls short on light.
+  color: var(--primary-hover);
+  font-family: var(--font-inter);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: var(--space-3);
 }
 
 .title {
   font-family: var(--font-space);
-  font-size: 3.5rem;
+  font-size: clamp(2rem, 1.5rem + 2vw, 2.75rem);
   font-weight: 700;
-  margin-bottom: 1rem;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-2);
   color: var(--text-primary);
+}
 
-  .highlight {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    position: relative;
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -8px;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background: linear-gradient(90deg, var(--primary), var(--secondary));
-      border-radius: 2px;
-      animation: glow 2s ease-in-out infinite;
-    }
-  }
+.highlight {
+  background: linear-gradient(120deg, var(--primary) 0%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .subtitle {
   font-family: var(--font-inter);
-  font-size: 1.25rem;
+  font-size: 1.05rem;
   color: var(--text-secondary);
 }
 
 .loading {
   text-align: center;
   font-family: var(--font-inter);
-  font-size: 1.125rem;
+  font-size: 1.05rem;
   color: var(--text-secondary);
-  padding: 4rem 2rem;
+  padding: var(--space-6) var(--space-2);
 }
 
 .coursesGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2rem;
-  animation: fadeIn 0.8s ease-out;
+  gap: var(--space-4);
 
   a {
     text-decoration: none;
     display: block;
-    transition: transform 0.3s ease;
+    transition: transform var(--speed-normal) ease;
+
+    &:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 4px;
+      border-radius: var(--radius-lg);
+    }
 
     &:hover {
       transform: translateY(-4px);
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    a:hover {
+      transform: none;
+    }
+  }
 }
 
-/* Fondo de cuadrícula: handled globally by
-   styles/_grid-bg.scss, so the page no longer
-   mounts its own duplicate layer. */
+@media (prefers-reduced-motion: no-preference) {
+  .header {
+    animation: fadeInDown 600ms ease-out both;
+  }
+
+  .coursesGrid {
+    animation: fadeIn 700ms ease-out both;
+  }
+}
 
 @keyframes fadeInDown {
   from {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateY(-16px);
   }
   to {
     opacity: 1;
@@ -106,47 +128,28 @@
   }
 }
 
-@keyframes glow {
-  0%, 100% {
-    opacity: 1;
-    filter: drop-shadow(0 0 8px var(--primary));
-  }
-  50% {
-    opacity: 0.6;
-    filter: drop-shadow(0 0 12px var(--secondary));
-  }
-}
-
 @media (max-width: 1200px) {
   .coursesGrid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+    gap: var(--space-3);
   }
 }
 
 @media (max-width: 768px) {
   .page {
-    padding-top: 80px;
+    padding-top: calc(80px + var(--space-3));
   }
 
   .container {
-    padding: 2rem 1rem;
+    padding: var(--space-3) var(--space-2) var(--space-5);
   }
 
   .header {
-    margin-bottom: 2.5rem;
-  }
-
-  .title {
-    font-size: 2.5rem;
-  }
-
-  .subtitle {
-    font-size: 1rem;
+    margin-bottom: var(--space-4);
   }
 
   .coursesGrid {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: var(--space-3);
   }
 }

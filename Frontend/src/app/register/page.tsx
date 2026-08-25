@@ -88,9 +88,9 @@ export default function RegisterPage() {
         </div>
 
         <header className={styles.header}>
-          <h1 className={styles.title}>Crear Cuenta</h1>
+          <h1 className={styles.title}>Creá tu cuenta</h1>
           <p className={styles.subtitle}>
-            Únete y empieza a aprender con inteligencia artificial.
+            Sumate y empezá a aprender con inteligencia artificial.
           </p>
         </header>
 
@@ -237,14 +237,14 @@ export default function RegisterPage() {
             {submitting && (
               <Loader2 size={18} className={styles.spinner} aria-hidden="true" />
             )}
-            {submitting ? 'Creando cuenta...' : 'Registrarse'}
+            {submitting ? 'Creando cuenta...' : 'Crear cuenta'}
           </button>
         </form>
 
         <p className={styles.switchPrompt}>
-          ¿Ya tienes cuenta?{' '}
+          ¿Ya tenés cuenta?{' '}
           <Link href="/login" className={styles.switchLink}>
-            Inicia sesión
+            Iniciá sesión
           </Link>
         </p>
       </div>
