@@ -16,15 +16,20 @@ vi.mock("next/navigation", () => ({
 }));
 
 const authMocks = vi.hoisted(() => ({
-  getToken: vi.fn<() => string | null>(() => null),
   clearSession: vi.fn(() => {}),
+  fetchCurrentUser: vi.fn<() => Promise<unknown>>(() =>
+    Promise.reject(Object.assign(new Error("HTTP 401"), { status: 401, name: "ApiClientError" }))
+  ),
+  logout: vi.fn(() => Promise.resolve()),
 }));
 
 vi.mock("@/services/authApi", () => ({
-  AUTH_TOKEN_KEY: "mindcode_token",
   AUTH_USER_KEY: "mindcode_user",
-  getToken: authMocks.getToken,
+  AUTH_CHANGE_EVENT: "mindcode-auth-change",
+  getUser: vi.fn(() => null),
   clearSession: authMocks.clearSession,
+  fetchCurrentUser: authMocks.fetchCurrentUser,
+  logout: authMocks.logout,
 }));
 
 const classDetail = {
@@ -85,7 +90,10 @@ function stubFetch(handler: MockHandler) {
 }
 
 beforeEach(() => {
-  authMocks.getToken.mockReturnValue(null);
+  // Default boot hydration: anonymous session (GET /auth/me -> 401).
+  authMocks.fetchCurrentUser.mockImplementation(() =>
+    Promise.reject(Object.assign(new Error("HTTP 401"), { status: 401 }))
+  );
   authMocks.clearSession.mockClear();
 });
 
@@ -178,8 +186,9 @@ describe("ClassPage", () => {
     expect(active).toHaveAttribute("href", "/classes/19");
   });
 
-  it("attaches the Bearer token when a session exists", async () => {
-    authMocks.getToken.mockReturnValue("token-123");
+  it("requests the class with credentials so the session cookie rides along", async () => {
+    // Cookie transport: no Authorization header is ever set client-side;
+    // apiFetch must send credentials: "include" for the httpOnly cookie.
     const fetchMock = stubFetch((url) => {
       if (url.endsWith("/classes/19")) {
         return Promise.resolve(jsonResponse(classDetail));
@@ -195,8 +204,12 @@ describe("ClassPage", () => {
 
     expect(await screen.findByTestId("mock-video-player")).toBeInTheDocument();
 
-    const [, init] = fetchMock.mock.calls[0];
+    const [url, init] = fetchMock.mock.calls.find(
+      ([u]) => typeof u === "string" && u.endsWith("/classes/19")
+    )!;
+    expect(url).toContain("/classes/19");
+    expect(init?.credentials).toBe("include");
     const headers = new Headers(init?.headers ?? undefined);
-    expect(headers.get("Authorization")).toBe("Bearer token-123");
+    expect(headers.get("Authorization")).toBeNull();
   });
 });

@@ -15,7 +15,7 @@ import {
 import { Class } from "@/types";
 import { ApiClientError, apiFetch, publicFetch } from "@/lib/api";
 import { formatDuration } from "@/lib/format-duration";
-import { getToken } from "@/services/authApi";
+import { useAuth } from "@/hooks/useAuth";
 import { ScrollToTopOnMount } from "@/components/ScrollToTopOnMount/ScrollToTopOnMount";
 import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { VideoPlayer } from "@/components/VideoPlayer/VideoPlayer";
@@ -201,12 +201,16 @@ function TemarioSidebar({
 export default function ClassPage() {
   const params = useParams<{ class_id: string }>();
   const classId = params?.class_id;
+  // Session truth lives in the httpOnly cookie: useAuth() hydrates it via
+  // GET /auth/me and drives the temario lock badges. The class request
+  // itself always goes through apiFetch (credentials: "include"); an
+  // anonymous visitor simply gets the 401 lock screen below.
+  const { isAuthenticated: isLoggedIn } = useAuth();
 
   const [phase, setPhase] = useState<Phase>("loading");
   const [classData, setClassData] = useState<Class | null>(null);
   const [gate, setGate] = useState<GateInfo | null>(null);
   const [courseClasses, setCourseClasses] = useState<Class[]>([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Temario lists cached by course slug so prev/next navigation between
   // classes of the same course doesn't refetch the roster every time.
@@ -241,16 +245,13 @@ export default function ClassPage() {
       setClassData(null);
       setGate(null);
 
-      const token = getToken();
-      setIsLoggedIn(Boolean(token));
-
       try {
-        // With a session, go through apiFetch so the Bearer token rides along.
+        // Always apiFetch: the session cookie rides along automatically.
         // skipAuthRedirect keeps a 401 in-page (lock screen) instead of the
         // default hard redirect to /login.
-        const data = token
-          ? await apiFetch<Class>(`/classes/${classId}`, { skipAuthRedirect: true })
-          : await publicFetch<Class>(`/classes/${classId}`);
+        const data = await apiFetch<Class>(`/classes/${classId}`, {
+          skipAuthRedirect: true,
+        });
         if (cancelled) return;
         setClassData(data);
         setPhase("ready");

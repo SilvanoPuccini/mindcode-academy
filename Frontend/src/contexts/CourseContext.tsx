@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
 import { Course } from '@/types';
-import { getToken } from '@/services/authApi';
+import { useAuth } from '@/hooks/useAuth';
 import { getFavoriteCourseIds, toggleFavorite as toggleFavoriteApi } from '@/services/favoritesApi';
 import { inferCategory } from '@/lib/course-taxonomy';
 import {
@@ -41,20 +41,27 @@ export function CourseProvider({ children }: { children: ReactNode }) {
     minRating: 0,
   });
   // Favorites now live on the backend (POST /favorites/toggle/{id},
-  // GET /favorites/course-ids), keyed to the logged-in user's JWT.
-  // Logged-out visitors simply see an empty list; clicking the heart
-  // button hits a 401 and apiFetch() redirects to /login.
+  // GET /favorites/course-ids), keyed to the logged-in user's session
+  // cookie. Logged-out visitors simply see an empty list; clicking the
+  // heart button hits a 401 and apiFetch() redirects to /login.
   const [favorites, setFavorites] = useState<number[]>([]);
   const [favoritesLoading, setFavoritesLoading] = useState(true);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     let cancelled = false;
 
     async function loadFavorites() {
-      if (!getToken()) {
+      // Anonymous (or not yet validated) session: nothing to load. The
+      // effect re-runs when isAuthenticated flips after boot hydration,
+      // and clears the list on logout.
+      if (!isAuthenticated) {
+        setFavorites([]);
         setFavoritesLoading(false);
         return;
       }
+
+      setFavoritesLoading(true);
 
       try {
         const courseIds = await getFavoriteCourseIds();
@@ -70,7 +77,7 @@ export function CourseProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isAuthenticated]);
 
   const toggleFavorite = async (courseId: number) => {
     const wasFavorite = favorites.includes(courseId);

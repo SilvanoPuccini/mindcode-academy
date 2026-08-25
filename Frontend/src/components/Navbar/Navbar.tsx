@@ -23,7 +23,8 @@ export function Navbar() {
   const pathname = usePathname();
 
   const handleLogout = () => {
-    logout();
+    // Fire-and-forget: navigation shouldn't wait for the cookie cleanup.
+    void logout();
     setMobileMenuOpen(false);
     router.push('/');
   };

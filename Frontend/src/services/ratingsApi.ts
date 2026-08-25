@@ -4,29 +4,29 @@
  *
  * - GET endpoints are public and keep the plain-fetch + timeout helpers.
  * - Mutations (POST/PUT/DELETE) target the authenticated user resolved
- *   server-side from the JWT: they go through apiFetch so the Bearer token
- *   is attached, and anonymous users are redirected to /login?next=...
- *   before any request is made.
+ *   server-side from the httpOnly session cookie: they go through apiFetch
+ *   (credentials: "include"), and anonymous users are redirected to
+ *   /login?next=... before any request is made.
  */
 
 import type { CourseRating, RatingRequest, RatingStats } from '@/types/rating';
 import { ApiError } from '@/types/rating';
 import { ApiClientError, apiFetch } from '@/lib/api';
-import { getToken } from '@/services/authApi';
+import { getUser } from '@/services/authApi';
 
 // Base URL del backend API
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 /**
  * Guard for rating mutations: only logged-in users may rate. Without a
- * session we bounce to /login carrying the current location as ?next= so
- * the login page can return the user to the course they were rating
- * (src/lib/safe-redirect.ts resolves it after auth). The thrown error lets
- * callers abort their flow while the navigation happens.
+ * cached profile we bounce to /login carrying the current location as
+ * ?next= so the login page can return the user to the course they were
+ * rating (src/lib/safe-redirect.ts resolves it after auth). The thrown
+ * error lets callers abort their flow while the navigation happens.
  */
 function ensureAuthenticated(): void {
   if (typeof window === 'undefined') return;
-  if (getToken()) return;
+  if (getUser()) return;
 
   const currentPath = `${window.location.pathname}${window.location.search}`;
   window.location.href = `/login?next=${encodeURIComponent(currentPath)}`;
@@ -187,8 +187,8 @@ async function getUserRating(
 /**
  * POST /courses/{course_id}/ratings
  * Creates (or upserts) the authenticated user's rating for a course.
- * Requires a JWT: goes through apiFetch so the Bearer token rides along,
- * and redirects anonymous users to /login?next=<current page> first.
+ * Requires a session: goes through apiFetch so the httpOnly cookie rides
+ * along, and redirects anonymous users to /login?next=<current page> first.
  * Errors surface as ApiClientError with the backend `detail` message.
  */
 async function createRating(

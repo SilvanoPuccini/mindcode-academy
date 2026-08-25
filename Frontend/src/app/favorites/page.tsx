@@ -11,20 +11,16 @@ import { Footer } from "@/components/Footer/Footer";
 import { ScrollProgress } from "@/components/ScrollProgress/ScrollProgress";
 import { EmptyState } from "@/components/EmptyState/EmptyState";
 import { useCourses } from "@/contexts/CourseContext";
+import { useAuth } from "@/hooks/useAuth";
 import { publicFetch } from "@/lib/api";
-import { getToken } from "@/services/authApi";
 
 export default function FavoritesPage() {
   const { favorites, favoritesLoading, setAllCourses } = useCourses();
   const [coursesLoading, setCoursesLoading] = useState(true);
   const [allCourses, setLocalCourses] = useState<CourseType[]>([]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    // Read after mount only: getToken() touches localStorage,
-    // which is unavailable during SSR/first paint.
-    setIsLoggedIn(!!getToken());
-  }, []);
+  // Session truth lives in the httpOnly cookie; useAuth() hydrates the
+  // profile from GET /auth/me at boot (no localStorage token to probe).
+  const { isAuthenticated: isLoggedIn } = useAuth();
 
   useEffect(() => {
     async function getCourses() {

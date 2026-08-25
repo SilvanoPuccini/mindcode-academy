@@ -4,19 +4,20 @@
  * Two entry points, matched to the Server/Client Component boundary:
  *
  * - `publicFetch`: for public endpoints (`GET /courses`, `GET /courses/{slug}`,
- *   `GET /classes/{id}`). No auth header. Safe to call from Server Components
- *   (build-time/request-time fetches) and from Client Components alike, since
- *   it never touches `localStorage` or `window`.
+ *   `GET /classes/{id}`). No session credentials. Safe to call from Server
+ *   Components (build-time/request-time fetches) and from Client Components
+ *   alike, since it never touches `localStorage` or `window`.
  *
- * - `apiFetch`: for authenticated endpoints (`/favorites/*`, `/progress/*`).
- *   Client-only: reads the JWT saved by `authApi.saveSession` and injects it
- *   as `Authorization: Bearer <token>`. On a 401 it clears the session and
- *   redirects to `/login`, unless called with `{ skipAuthRedirect: true }`
- *   (see below). This only makes sense in the browser, so calling it from a
- *   Server Component throws instead of silently doing nothing.
+ * - `apiFetch`: for authenticated endpoints (`/favorites/*`, `/progress/*`,
+ *   `/auth/me`). Client-only: sends `credentials: "include"` so the
+ *   httpOnly `mindcode_token` cookie set by the backend rides along.
+ *   On a 401 it clears the cached profile and redirects to `/login`,
+ *   unless called with `{ skipAuthRedirect: true }` (see below). This only
+ *   makes sense in the browser, so calling it from a Server Component
+ *   throws instead of silently doing nothing.
  */
 
-import { getToken, clearSession } from '@/services/authApi';
+import { clearSession } from '@/services/authApi';
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -97,13 +98,14 @@ export async function publicFetch<T>(path: string, options: RequestInit = {}): P
 }
 
 /**
- * Authenticated fetch for Client Components. Injects the Bearer token from
- * `authApi` (localStorage) when present. On a 401 it clears the session and,
- * by default, redirects to `/login`. Pass `{ skipAuthRedirect: true }` to
- * keep the 401 in-page (the error still carries the parsed body via
- * `ApiClientError.payload`) — used by the class playback gate so it can
- * render its own lock screen instead of bouncing to `/login`.
- * Never logs or exposes the token.
+ * Authenticated fetch for Client Components. Sends `credentials: "include"`
+ * so the httpOnly session cookie (delivered by POST /auth/login|register)
+ * is attached automatically by the browser - no token is ever read from
+ * localStorage. On a 401 it clears the cached profile and, by default,
+ * redirects to `/login`. Pass `{ skipAuthRedirect: true }` to keep the 401
+ * in-page (the error still carries the parsed body via `ApiClientError.payload`)
+ * — used by the class playback gate so it can render its own lock screen
+ * instead of bouncing to `/login`.
  */
 export type ApiFetchOptions = RequestInit & { skipAuthRedirect?: boolean };
 
@@ -113,21 +115,24 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   }
 
   const { skipAuthRedirect = false, ...fetchOptions } = options;
-  const token = getToken();
   const headers = new Headers(fetchOptions.headers);
 
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`);
-  }
   if (fetchOptions.body && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, { ...fetchOptions, headers });
+  // Forced (not defaulted) so no caller can accidentally drop the cookie
+  // transport by spreading their own options without credentials.
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...fetchOptions,
+    headers,
+    credentials: 'include',
+  });
 
   if (response.status === 401) {
-    // An invalid/expired token is cleared either way; only the redirect is
-    // optional so gated endpoints can surface their own 401 UI.
+    // An invalid/expired session clears the cached profile either way;
+    // only the redirect is optional so gated endpoints can surface their
+    // own 401 UI.
     clearSession();
     if (!skipAuthRedirect) {
       window.location.href = '/login';

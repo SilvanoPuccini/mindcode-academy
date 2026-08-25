@@ -1,5 +1,10 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# Shared name of the httpOnly session cookie. Used by the auth router to set
+# it on login/register (and clear it on logout) and by the auth dependencies
+# as a fallback transport when no Authorization: Bearer header is present.
+ACCESS_TOKEN_COOKIE_NAME = "mindcode_token"
+
 
 class Settings(BaseSettings):
     project_name: str = "MindCode Academy"

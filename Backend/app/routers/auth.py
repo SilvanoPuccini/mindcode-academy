@@ -2,8 +2,9 @@
 Authentication endpoints for user registration and login.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
+from app.core.config import ACCESS_TOKEN_COOKIE_NAME, settings
 from app.db.base import get_db
 from app.services.auth_service import AuthService
 from app.schemas.user import (
@@ -25,9 +26,30 @@ def get_auth_service(db: Session = Depends(get_db)) -> AuthService:
     return AuthService(db)
 
 
+def _set_session_cookie(response: Response, access_token: str) -> None:
+    """
+    Deliver the JWT as an httpOnly session cookie (web transport).
+
+    SameSite=None + Secure keeps the cookie working on the cross-site
+    production deployment (Vercel frontend -> Render API); browsers treat
+    localhost as trustworthy so the same attributes work in development.
+    The Bearer response body is kept unchanged for mobile/API clients.
+    """
+    response.set_cookie(
+        key=ACCESS_TOKEN_COOKIE_NAME,
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="none",
+        max_age=settings.access_token_expire_minutes * 60,
+        path="/",
+    )
+
+
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 def register(
     user_data: UserRegisterRequest,
+    response: Response,
     auth_service: AuthService = Depends(get_auth_service)
 ):
     """
@@ -38,7 +60,7 @@ def register(
     - Password must be at least 8 characters
     - Password must contain: uppercase, lowercase, digit
 
-    Returns JWT token for immediate login.
+    Returns JWT token for immediate login (also set as httpOnly cookie).
     """
     try:
         user = auth_service.register_user(
@@ -49,6 +71,8 @@ def register(
 
         # Generate token
         access_token = auth_service.create_user_token(user)
+
+        _set_session_cookie(response, access_token)
 
         return TokenResponse(
             access_token=access_token,
@@ -66,12 +90,14 @@ def register(
 @router.post("/login", response_model=TokenResponse)
 def login(
     credentials: UserLoginRequest,
+    response: Response,
     auth_service: AuthService = Depends(get_auth_service)
 ):
     """
     Login with email and password.
 
-    Returns JWT token on successful authentication.
+    Returns JWT token on successful authentication (also set as httpOnly
+    cookie for the web client).
     """
     user = auth_service.authenticate_user(
         email=credentials.email,
@@ -88,11 +114,31 @@ def login(
     # Generate token
     access_token = auth_service.create_user_token(user)
 
+    _set_session_cookie(response, access_token)
+
     return TokenResponse(
         access_token=access_token,
         token_type="bearer",
         user=UserResponse.model_validate(user)
     )
+
+
+@router.post("/logout")
+def logout(response: Response):
+    """
+    Log out the current session by clearing the auth cookie.
+
+    No authentication required: clearing an absent cookie is a no-op.
+    Mobile/API clients simply discard their Bearer token.
+    """
+    response.delete_cookie(
+        key=ACCESS_TOKEN_COOKIE_NAME,
+        path="/",
+        httponly=True,
+        secure=True,
+        samesite="none",
+    )
+    return {"message": "Sesión cerrada"}
 
 
 @router.get("/me", response_model=UserResponse)
