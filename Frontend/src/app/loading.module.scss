@@ -6,7 +6,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+  // Theme-aware canvas: light users get the light canvas instead of a
+  // full-screen dark slate takeover.
+  background-color: var(--bg-primary);
+  [data-theme='dark'] & {
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+  }
   z-index: 9999;
   overflow: hidden;
 }
@@ -134,7 +139,7 @@
   font-family: var(--font-inter);
   font-size: 1.2rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-secondary);
   letter-spacing: 0.05em;
   animation: pulse 1.5s ease-in-out infinite;
 }
