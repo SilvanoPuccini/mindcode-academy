@@ -1,8 +1,19 @@
 @import '../../styles/vars.scss';
 
+// ============================================
+// Hero - content-first, left-aligned.
+// Hierarchy: eyebrow chip -> H1 -> subheadline
+// -> SearchBar (children slot) -> secondary links.
+// Decoration: one CSS-only gradient blob that
+// echoes the body canvas glows. Every animated
+// piece is gated behind prefers-reduced-motion.
+// ============================================
+
 .hero {
   position: relative;
-  padding: 10rem 2rem var(--space-6);
+  // Fixed navbar is ~72px tall; 96px keeps the
+  // eyebrow chip comfortably clear of it.
+  padding: calc(96px + var(--space-4)) var(--space-4) var(--space-5);
   overflow: hidden;
 }
 
@@ -10,211 +21,159 @@
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
-  z-index: 2;
+  z-index: 1;
 }
 
+// Asymmetric composition: copy column hugs the
+// left, the blob owns the right whitespace.
 .content {
-  text-align: center;
-  max-width: 900px;
-  margin: 0 auto;
+  max-width: 680px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-full);
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  // primary-hover passes AA on the tinted chip in
+  // both themes; raw --primary falls short on light.
+  color: var(--primary-hover);
+  font-family: var(--font-inter);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-bottom: var(--space-3);
 }
 
 .title {
   font-family: var(--font-space);
-  font-size: 4.5rem;
+  font-size: clamp(2.5rem, 1.5rem + 3.5vw, 4rem);
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
+  max-width: 18ch;
   margin-bottom: var(--space-3);
-  animation: fadeInUp 1s ease-out;
-
-  @media (max-width: 768px) {
-    font-size: 3rem;
-  }
 }
 
 .highlight {
-  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
+  background: linear-gradient(120deg, var(--primary) 0%, var(--accent) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 0 30px color('accent-glow'));
-  display: inline-block;
 }
 
 .subtitle {
   font-family: var(--font-inter);
-  font-size: 1.3rem;
-  line-height: 1.7;
+  font-size: 1.15rem;
+  line-height: 1.65;
   color: var(--text-secondary);
-  margin-bottom: var(--space-5);
-  animation: fadeInUp 1s ease-out 0.2s both;
+  max-width: 60ch;
+  margin-bottom: var(--space-4);
 }
 
-.cta {
+.secondaryLinks {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-3);
-  justify-content: center;
-  margin-bottom: var(--space-6);
-  animation: fadeInUp 1s ease-out 0.4s both;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: center;
-  }
+  margin-top: var(--space-4);
 }
 
-.btnPrimary {
-  @include btn-primary;
-  padding: 1.1rem 2.5rem;
-  font-size: 1.1rem;
-
-  svg {
-    transition: transform var(--speed-fast) ease;
-  }
-
-  &:hover svg {
-    transform: translateX(5px);
-  }
-}
-
-.btnSecondary {
-  @include btn-secondary;
-  padding: 1.1rem 2.5rem;
-  font-size: 1.1rem;
-}
-
-.stats {
-  display: flex;
-  gap: var(--space-5);
-  justify-content: center;
-  align-items: center;
-  padding: var(--space-4);
-  background: var(--bg-card);
-  backdrop-filter: blur(10px);
-  border-radius: var(--radius-lg);
+.ghostLink {
+  @include btn-base;
+  background: transparent;
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
-  animation: fadeInUp 1s ease-out 0.6s both;
+  color: var(--text-primary);
 
-  @media (max-width: 768px) {
-    flex-direction: column;
-    gap: var(--space-3);
+  &:hover {
+    border-color: var(--primary-border);
+    color: var(--primary-hover);
+    background: var(--primary-light);
+    transform: none;
+    box-shadow: none;
   }
 }
 
-.stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-}
+.textLink {
+  @include btn-base;
+  background: transparent;
+  border: none;
+  color: var(--primary-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 
-.statNumber {
-  font-family: var(--font-space);
-  font-size: 2.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-// SVG can't inherit the gradient text clip - give it explicit amber
-.statStar {
-  color: var(--accent);
-  margin-left: 0.25rem;
-  vertical-align: baseline;
-}
-
-.statLabel {
-  font-family: var(--font-inter);
-  font-size: 0.95rem;
-  color: var(--text-secondary);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-.statDivider {
-  width: 2px;
-  height: 50px;
-  background: linear-gradient(180deg, transparent, color('accent'), transparent);
-
-  @media (max-width: 768px) {
-    width: 50px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, color('accent'), transparent);
+  &:hover {
+    color: var(--primary);
+    transform: none;
+    box-shadow: none;
   }
 }
 
-// Floating particles
-.particles {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
+@media (prefers-reduced-motion: no-preference) {
+  .eyebrow,
+  .title,
+  .subtitle,
+  .secondaryLinks {
+    animation: fadeInUp 600ms ease-out both;
+  }
+
+  .title {
+    animation-delay: 80ms;
+  }
+
+  .subtitle {
+    animation-delay: 160ms;
+  }
+
+  .secondaryLinks {
+    animation-delay: 320ms;
+  }
 }
 
-.particle {
+// Decorative gradient blob (right side). Pure CSS,
+// no assets; motion is disabled for reduced motion.
+.blob {
   position: absolute;
-  width: 100px;
-  height: 100px;
+  z-index: 0;
+  top: 6%;
+  right: -12%;
+  width: clamp(280px, 38vw, 560px);
+  aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle, color('accent-glow'), transparent);
-  opacity: 0.15;
-  animation: float 20s infinite;
+  background:
+    radial-gradient(circle at 30% 30%, var(--primary-glow), transparent 62%),
+    radial-gradient(circle at 70% 70%, var(--accent-glow), transparent 58%);
+  filter: blur(32px);
+  pointer-events: none;
 
-  &:nth-child(1) {
-    top: 10%;
-    left: 10%;
-    animation-delay: 0s;
+  @media (prefers-reduced-motion: no-preference) {
+    animation: blobFloat 14s ease-in-out infinite alternate;
   }
 
-  &:nth-child(2) {
-    top: 60%;
-    left: 80%;
-    animation-delay: -5s;
-    animation-duration: 25s;
-  }
-
-  &:nth-child(3) {
-    top: 30%;
-    right: 20%;
-    animation-delay: -10s;
-    animation-duration: 30s;
-  }
-
-  &:nth-child(4) {
-    bottom: 20%;
-    left: 60%;
-    animation-delay: -15s;
-  }
-
-  &:nth-child(5) {
-    top: 50%;
-    left: 30%;
-    animation-delay: -8s;
-    animation-duration: 22s;
+  @media (max-width: 768px) {
+    right: -40%;
+    bottom: -25%;
+    top: auto;
+    opacity: 0.55;
   }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
+@keyframes blobFloat {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
   }
-  33% {
-    transform: translate(30px, -30px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
+  to {
+    transform: translate3d(-4%, 6%, 0) scale(1.06);
   }
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;

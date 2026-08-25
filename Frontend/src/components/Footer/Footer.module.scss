@@ -1,11 +1,22 @@
 @import '../../styles/vars.scss';
 
+// ============================================
+// Footer - 4-column grid over the dark band.
+// The footer surface stays intentionally dark in
+// BOTH themes (Netflix-style anchor), so its
+// interior colors are pinned to the dark-palette
+// slate values instead of theme tokens, which
+// would flip to dark-on-dark in light mode.
+// The Logo wordmark reads theme text vars, so the
+// same slate values are re-scoped onto the lockup.
+// ============================================
+
 .footer {
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(234, 88, 12, 0.2);
-  padding: 4rem 2rem 2rem;
-  margin-top: 6rem;
+  border-top: 1px solid rgba(color('primary'), 0.2);
+  padding: var(--space-6) 2rem var(--space-4);
+  margin-top: var(--space-6);
 }
 
 .container {
@@ -15,37 +26,33 @@
 
 .grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1.5fr;
-  gap: 3rem;
-  margin-bottom: 3rem;
+  // Brand column breathes, the three link columns
+  // stay equal and compact.
+  grid-template-columns: 1.8fr 1fr 1fr 1fr;
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    gap: var(--space-4);
   }
 
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
+    gap: var(--space-3);
   }
 }
 
 .column {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1.1rem;
 }
 
-// The footer surface is intentionally dark in
-// BOTH themes (Netflix-style dark band), so its
-// interior colors are pinned to the dark-palette
-// slate values instead of theme tokens, which
-// would flip to dark-on-dark in light mode.
-// The Logo wordmark reads theme text vars, so the
-// same slate values are re-scoped onto the lockup.
 .lockup {
   --text-primary: #F1F5F9;
   --text-secondary: #94A3B8;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 .description {
@@ -53,19 +60,20 @@
   font-family: var(--font-inter);
   font-size: 0.95rem;
   line-height: 1.6;
+  max-width: 34ch;
 }
 
 .social {
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 0.75rem;
 }
 
-// Not links anymore (no real social accounts yet): plain,
-// non-interactive <span>s, dimmed so they don't read as broken buttons.
+// Not links (no real social accounts yet): plain,
+// non-interactive <span>s, dimmed so they don't read
+// as broken buttons.
 .socialLink {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -78,15 +86,13 @@
 }
 
 .columnTitle {
-  font-family: var(--font-space);
-  font-size: 1.2rem;
+  font-family: var(--font-inter);
+  font-size: 0.8rem;
   font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #F1F5F9;
+  margin: 0.25rem 0 0.25rem;
 }
 
 .links {
@@ -95,89 +101,41 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.7rem;
 
   a {
     color: #CBD5E1;
     text-decoration: none;
     font-family: var(--font-inter);
     font-size: 0.95rem;
-    transition: all 0.3s;
+    transition: color var(--speed-fast) ease;
     display: inline-block;
 
     &:hover {
-      color: color('accent');
-      transform: translateX(5px);
-      filter: drop-shadow(0 0 5px color('accent-glow'));
+      color: color('primary');
+    }
+
+    &:focus-visible {
+      outline: 2px solid color('primary');
+      outline-offset: 3px;
+      border-radius: 2px;
     }
   }
 }
 
-.newsletterText {
-  color: #CBD5E1;
-  font-family: var(--font-inter);
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-
-.newsletterForm {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-}
-
-.newsletterInput {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: var(--radius-md);
-  padding: 0.9rem 1.2rem;
-  color: #F1F5F9;
-  font-family: var(--font-inter);
-  font-size: 0.95rem;
-  transition: all 0.3s;
-
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.4);
-  }
-
-  &:focus {
-    outline: none;
-    border-color: color('accent');
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 0 20px color('accent-glow');
-  }
-}
-
-.newsletterBtn {
-  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
-  border: none;
-  border-radius: var(--radius-md);
-  padding: 0.9rem 1.5rem;
-  // Amber surface mandates near-black text in
-  // both themes (white fails AA on amber).
-  color: color('secondary-text');
-  font-family: var(--font-inter);
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(234, 88, 12, 0.4);
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(234, 88, 12, 0.6);
-    filter: brightness(1.1);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-}
-
 .bottom {
-  padding-top: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding-top: var(--space-4);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  text-align: center;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 
 .copyright {
@@ -186,10 +144,13 @@
   font-size: 0.9rem;
 }
 
-.brandGradient {
-  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.brandName {
+  color: #F1F5F9;
   font-weight: 700;
+}
+
+.microcopy {
+  color: #94A3B8;
+  font-family: var(--font-inter);
+  font-size: 0.85rem;
 }

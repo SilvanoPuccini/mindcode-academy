@@ -36,14 +36,10 @@ describe("Course Component", () => {
     total_ratings: 100,
   };
 
-  it("renders course information correctly", () => {
+  it("renders course name correctly", () => {
     render(<Course {...mockCourse} />);
 
-    // Check if name is rendered
     expect(screen.getByText(mockCourse.name)).toBeDefined();
-
-    // Check if description is rendered
-    expect(screen.getByText(mockCourse.description)).toBeDefined();
   });
 
   it("renders thumbnail with correct alt text", () => {
@@ -57,25 +53,55 @@ describe("Course Component", () => {
   it("renders with correct structure", () => {
     const { container } = render(<Course {...mockCourse} />);
 
-    // Check if the main article exists
+    // Card anatomy: article wrapper + h2 title
     expect(container.querySelector("article")).toBeDefined();
-
-    // Check if the course info section exists
     expect(container.querySelector("h2")).toBeDefined();
-    expect(container.querySelector("p")).toBeDefined();
   });
 
-  it("renders without rating when not provided", () => {
-    const courseWithoutRating = {
+  it("shows the inferred taxonomy category as a thumb badge", () => {
+    const { container } = render(<Course {...mockCourse} />);
+
+    const badge = container.querySelector("[class*='categoryBadge']");
+    expect(badge).toBeDefined();
+    // inferCategory maps anything matching /react|next.js/ to 'React'
+    expect(badge).toHaveTextContent("React");
+  });
+
+  it("renders rating average and count in the meta row", () => {
+    const { container } = render(<Course {...mockCourse} />);
+
+    const metaRow = container.querySelector("[class*='metaRow']");
+    expect(metaRow).toBeDefined();
+    // StarRating exposes "(100)" for total_ratings via showCount
+    expect(metaRow).toHaveTextContent("(100)");
+  });
+
+  it("renders class count and duration when classes are hydrated", () => {
+    const hydrated = {
+      ...mockCourse,
+      classes: [
+        { id: 1, name: "Intro", description: "...", slug: "intro", duration: 90 },
+        { id: 2, name: "Estado", description: "...", slug: "estado", duration: 30 },
+      ],
+    };
+    const { container } = render(<Course {...hydrated} />);
+
+    const metaRow = container.querySelector("[class*='metaRow']");
+    expect(metaRow).toHaveTextContent("2 clases");
+    expect(metaRow).toHaveTextContent("2 h");
+  });
+
+  it("renders without meta row when no rating or class data exists", () => {
+    const bareCourse = {
       id: 2,
       name: "New Course",
       description: "A new course without ratings",
       thumbnail: "https://example.com/thumbnail2.jpg",
     };
 
-    const { container } = render(<Course {...courseWithoutRating} />);
+    const { container } = render(<Course {...bareCourse} />);
 
-    // The rating container should not be present
-    expect(container.querySelector("[class*='ratingContainer']")).toBeNull();
+    // No data -> no meta row at all
+    expect(container.querySelector("[class*='metaRow']")).toBeNull();
   });
 });

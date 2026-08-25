@@ -4,10 +4,12 @@ import { useState, useMemo, memo } from 'react';
 import Image from 'next/image';
 import styles from "./Course.module.scss";
 import { Course as CourseType } from "@/types";
-import { Star, Flame, Sparkles } from "lucide-react";
 import { StarRating } from "@/components/StarRating/StarRating";
 import { useCourses } from "@/contexts/CourseContext";
 import { useToast } from "@/contexts/ToastContext";
+import { inferCategory } from "@/lib/course-taxonomy";
+import { courseDurationMinutes } from "@/lib/course-search";
+import { formatDuration } from "@/lib/format-duration";
 
 type CourseProps = Omit<CourseType, "slug">;
 
@@ -17,12 +19,21 @@ const CourseComponent = ({
   description,
   thumbnail,
   average_rating,
-  total_ratings
+  total_ratings,
+  classes
 }: CourseProps) => {
   const { favorites, toggleFavorite } = useCourses();
   const { showToast } = useToast();
   const [isAnimating, setIsAnimating] = useState(false);
   const isFavorite = favorites.includes(id);
+
+  // Taxonomy badge: real category inferred from the course itself.
+  const category = useMemo(() => inferCategory({ name, description }), [name, description]);
+
+  // Meta data is optional: the list endpoint omits classes[],
+  // so class count and duration render only when hydrated.
+  const totalClasses = classes?.length ?? 0;
+  const durationMinutes = courseDurationMinutes({ classes });
 
   const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -46,20 +57,6 @@ const CourseComponent = ({
     setTimeout(() => setIsAnimating(false), 600);
   };
 
-  // Memoize badge calculation to prevent unnecessary recalculations
-  const badge = useMemo(() => {
-    if (average_rating && average_rating >= 4.5 && total_ratings && total_ratings > 50) {
-      return { type: 'top', label: 'TOP RATED', Icon: Star };
-    }
-    if (total_ratings && total_ratings > 100) {
-      return { type: 'trending', label: 'TRENDING', Icon: Flame };
-    }
-    if (id % 3 === 0) { // Example logic for new courses
-      return { type: 'new', label: 'NUEVO', Icon: Sparkles };
-    }
-    return null;
-  }, [average_rating, total_ratings, id]);
-
   return (
     <article className={styles.courseCard}>
       <div className={styles.thumbnailContainer}>
@@ -72,12 +69,7 @@ const CourseComponent = ({
           loading="lazy"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
-        {badge && (
-          <span className={`${styles.badge} ${styles[badge.type]}`}>
-            <badge.Icon size={14} aria-hidden="true" />
-            {badge.label}
-          </span>
-        )}
+        <span className={styles.categoryBadge}>{category.label}</span>
 
         {/* Favorite Button */}
         <button
@@ -92,18 +84,32 @@ const CourseComponent = ({
       </div>
       <div className={styles.courseInfo}>
         <h2 className={styles.courseTitle}>{name}</h2>
-        <p className={styles.description}>{description}</p>
 
-        {/* Rating Section - solo mostrar si existe average_rating */}
-        {typeof average_rating === 'number' && (
-          <div className={styles.ratingContainer}>
-            <StarRating
-              rating={average_rating}
-              totalRatings={total_ratings}
-              showCount={true}
-              size="small"
-              readonly={true}
-            />
+        {(typeof average_rating === 'number' || totalClasses > 0 || durationMinutes > 0) && (
+          <div className={styles.metaRow}>
+            {typeof average_rating === 'number' && (
+              <div className={styles.metaRating}>
+                <StarRating
+                  rating={average_rating}
+                  totalRatings={total_ratings}
+                  showCount={true}
+                  size="small"
+                  readonly={true}
+                />
+              </div>
+            )}
+            {totalClasses > 0 && (
+              <>
+                <span className={styles.metaDot} aria-hidden="true">·</span>
+                <span>{totalClasses} clases</span>
+              </>
+            )}
+            {durationMinutes > 0 && (
+              <>
+                <span className={styles.metaDot} aria-hidden="true">·</span>
+                <span>{formatDuration(durationMinutes)}</span>
+              </>
+            )}
           </div>
         )}
       </div>

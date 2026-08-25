@@ -68,7 +68,7 @@ export function Navbar() {
   };
 
   return (
-    <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}>
+    <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`} aria-label="Navegación principal">
       <div className={styles.container}>
         {/* Logo */}
         <Logo withWordmark />
@@ -77,7 +77,8 @@ export function Navbar() {
         <button
           className={`${styles.hamburger} ${mobileMenuOpen ? styles.open : ''} ripple-container`}
           onClick={toggleMobileMenu}
-          aria-label="Toggle menu"
+          aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+          aria-expanded={mobileMenuOpen}
           {...rippleProps}
         >
           <span></span>
@@ -94,7 +95,7 @@ export function Navbar() {
               <span className={styles.badge}>{favorites.length}</span>
             )}
           </Link>
-          <Link href="#categorias" className={styles.menuItem}>Categorías</Link>
+          <Link href="/ayuda" className={styles.menuItem}>Ayuda</Link>
         </div>
 
         {/* Actions */}
@@ -170,8 +171,8 @@ export function Navbar() {
               <span className={styles.badge}>{favorites.length}</span>
             )}
           </Link>
-          <Link href="#categorias" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
-            Categorías
+          <Link href="/ayuda" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
+            Ayuda
           </Link>
         </nav>
 

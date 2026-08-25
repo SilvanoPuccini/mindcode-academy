@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from 'react';
+import { useMemo } from 'react';
 import Link from 'next/link';
-import { useToast } from '@/contexts/ToastContext';
 import { Logo } from '@/components/Logo/Logo';
+import { useCourses } from '@/contexts/CourseContext';
+import { buildCategories } from '@/lib/course-taxonomy';
 import styles from './Footer.module.scss';
 
-// Real, editorial-worthy slice of the course-taxonomy.ts categories
-// (see lib/course-taxonomy.ts): each link deep-links home with that
-// category pre-selected via ?categoria=<key>, consumed by app/page.tsx.
-const COURSE_CATEGORY_LINKS = [
+// Static fallback used before the catalog loads (or on
+// pages that never fetch it): the same five evergreen
+// taxonomy slices, deep-linking home with the category
+// pre-selected via ?categoria=<key> (consumed by app/page.tsx).
+const FALLBACK_CATEGORIES = [
   { key: 'react', label: 'React' },
   { key: 'ia-ml', label: 'IA & Machine Learning' },
   { key: 'devops-cloud', label: 'DevOps & Cloud' },
@@ -17,44 +19,42 @@ const COURSE_CATEGORY_LINKS = [
   { key: 'mobile', label: 'Desarrollo Móvil' },
 ];
 
-const SUPPORT_LINKS = [
+const RESOURCE_LINKS = [
   { href: '/ayuda', label: 'Centro de Ayuda' },
   { href: '/faq', label: 'FAQs' },
   { href: '/contacto', label: 'Contacto' },
+];
+
+const LEGAL_LINKS = [
   { href: '/terminos', label: 'Términos de Servicio' },
   { href: '/privacidad', label: 'Política de Privacidad' },
 ];
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export function Footer() {
-  const { showToast } = useToast();
-  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const { allCourses } = useCourses();
 
-  const handleNewsletterSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  // Top 5 real categories derived from the loaded catalog
+  // (lib/course-taxonomy.ts), ranked by matching course count.
+  const categories = useMemo(() => {
+    const top = buildCategories(allCourses)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5)
+      .map((category) => ({ key: category.key, label: category.label }));
 
-    if (!EMAIL_PATTERN.test(newsletterEmail)) {
-      showToast('Ingresá un email válido', 'error');
-      return;
-    }
-
-    // TODO: conectar a un endpoint de newsletter cuando exista
-    showToast('¡Listo! Te suscribiste al newsletter.', 'success');
-    setNewsletterEmail('');
-  };
+    return top.length > 0 ? top : FALLBACK_CATEGORIES;
+  }, [allCourses]);
 
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
         <div className={styles.grid}>
-          {/* Column 1: About */}
+          {/* Column 1: Brand */}
           <div className={styles.column}>
             <div className={styles.lockup}>
               <Logo withWordmark />
             </div>
             <p className={styles.description}>
-              Aprende con inteligencia artificial. La mejor plataforma de cursos online para impulsar tu carrera.
+              Aprendé programación con cursos prácticos y IA, a tu ritmo.
             </p>
             {/* No hay cuentas de redes sociales activas todavía:
                 los íconos quedan visibles pero no navegables. */}
@@ -92,11 +92,11 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Column 2: Cursos */}
+          {/* Column 2: Categories */}
           <div className={styles.column}>
-            <h3 className={styles.columnTitle}>Cursos</h3>
+            <h3 className={styles.columnTitle}>Categorías</h3>
             <ul className={styles.links}>
-              {COURSE_CATEGORY_LINKS.map((category) => (
+              {categories.map((category) => (
                 <li key={category.key}>
                   <Link href={`/?categoria=${category.key}`}>{category.label}</Link>
                 </li>
@@ -104,11 +104,11 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Column 3: Soporte */}
+          {/* Column 3: Resources */}
           <div className={styles.column}>
-            <h3 className={styles.columnTitle}>Soporte</h3>
+            <h3 className={styles.columnTitle}>Recursos</h3>
             <ul className={styles.links}>
-              {SUPPORT_LINKS.map((link) => (
+              {RESOURCE_LINKS.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>{link.label}</Link>
                 </li>
@@ -116,33 +116,25 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Column 4: Newsletter */}
+          {/* Column 4: Legal */}
           <div className={styles.column}>
-            <h3 className={styles.columnTitle}>Newsletter</h3>
-            <p className={styles.newsletterText}>
-              Suscríbete para recibir las últimas actualizaciones y ofertas exclusivas.
-            </p>
-            <form className={styles.newsletterForm} onSubmit={handleNewsletterSubmit}>
-              <input
-                type="email"
-                placeholder="Tu email"
-                className={styles.newsletterInput}
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-                aria-label="Email para el newsletter"
-              />
-              <button type="submit" className={styles.newsletterBtn}>
-                Suscribirse
-              </button>
-            </form>
+            <h3 className={styles.columnTitle}>Legal</h3>
+            <ul className={styles.links}>
+              {LEGAL_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href}>{link.label}</Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
-        {/* Bottom */}
+        {/* Bottom bar */}
         <div className={styles.bottom}>
           <p className={styles.copyright}>
-            © 2026 <span className={styles.brandGradient}>MindCode Academy</span>. Todos los derechos reservados.
+            © {new Date().getFullYear()} <span className={styles.brandName}>MindCode Academy</span>. Todos los derechos reservados.
           </p>
+          <p className={styles.microcopy}>Hecho con ☕ en Argentina</p>
         </div>
       </div>
     </footer>

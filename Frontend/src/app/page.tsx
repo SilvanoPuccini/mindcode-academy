@@ -48,6 +48,7 @@ const CourseCardWrapper = ({ course }: { course: Course }) => {
         thumbnail={course.thumbnail}
         average_rating={course.average_rating}
         total_ratings={course.total_ratings}
+        classes={course.classes}
       />
     </Link>
   );
@@ -198,11 +199,11 @@ export default function Home() {
       <Navbar />
 
       <div className={styles.page}>
-        {/* Hero Section */}
-        <Hero />
-
-        {/* Search Bar */}
-        <SearchBar />
+        {/* Hero: the SearchBar is the hero's primary action,
+            mounted directly under the copy via the children slot */}
+        <Hero>
+          <SearchBar />
+        </Hero>
 
         {/* Categories */}
         <Categories />

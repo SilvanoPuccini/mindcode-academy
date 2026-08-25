@@ -139,19 +139,25 @@
   flex-wrap: wrap;
   gap: var(--space-4);
   justify-content: center;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 // Anchor wrapping each CourseComponent card.
-// Resets the browser's default link underline;
-// the "linkeable" affordance comes back via
-// hover/focus-visible on the title itself
-// (see .courseTitle in Course.module.scss).
+// Resets the browser's default link underline and
+// caps the card width so the flex grid wraps
+// cleanly down to 320px viewports; the whole-card
+// focus ring lands here, on the anchor.
 .courseLink {
   display: block;
   text-decoration: none;
   color: inherit;
   border-radius: var(--radius-lg);
+  width: min(420px, 100%);
+
+  &:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 3px;
+  }
 }
 
 .emptyMessage {

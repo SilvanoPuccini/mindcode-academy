@@ -1,29 +1,31 @@
 @import '../../styles/vars.scss';
 
+// Loading mirror of the redesigned Course card:
+// same surface tokens, 16:9 thumb and compact info
+// block so the swap from skeleton to card is seamless.
+
 .skeletonCard {
-  background: color('white');
+  background: var(--bg-card);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.10);
-  width: 420px;
-  min-height: 420px;
+  box-shadow: var(--shadow-sm);
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  border: 2px solid color('light-gray');
-  animation: pulse 2s ease-in-out infinite;
+  border: 1px solid var(--border-color);
 }
 
 .skeletonThumbnail {
   width: 100%;
-  height: 260px;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--bg-tertiary);
   position: relative;
   overflow: hidden;
 }
 
 .skeletonInfo {
-  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  padding: 1.1rem 1.25rem 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -33,38 +35,42 @@
   height: 28px;
   width: 80%;
   border-radius: var(--radius-sm);
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
+  background: var(--bg-tertiary);
 }
 
 .skeletonText {
-  height: 16px;
-  width: 100%;
+  height: 14px;
+  width: 55%;
   border-radius: var(--radius-sm);
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
+  background: var(--bg-tertiary);
 
   &.short {
-    width: 60%;
+    width: 40%;
   }
 }
 
 .skeletonRating {
   margin-top: 0.5rem;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-top: 1px solid var(--border-light);
 }
 
 .skeletonStars {
   height: 20px;
   width: 120px;
   border-radius: var(--radius-sm);
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
+  background: var(--bg-tertiary);
 }
 
 .shimmer {
   animation: shimmer 2s ease-in-out infinite;
+  background-size: 200% 100%;
+  background-image: linear-gradient(
+    90deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.5) 50%,
+    transparent 75%
+  );
 }
 
 @keyframes shimmer {
@@ -73,14 +79,5 @@
   }
   100% {
     background-position: -200% 0;
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
   }
 }

@@ -1,24 +1,35 @@
 @import '../../styles/vars.scss';
 
+// ============================================
+// Navbar - sticky-feel fixed top bar.
+// Always-on frosted glass: translucent bg over a
+// 12px backdrop blur with a hairline bottom
+// border. --blur-bg is the per-theme rgba fallback
+// for browsers without color-mix(); where
+// color-mix() exists we mix --bg-primary at 80%.
+// ============================================
+
 .navbar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: 0.9rem 0;
-  transition:
-    padding var(--speed-normal) ease,
-    background-color var(--speed-normal) ease,
-    box-shadow var(--speed-normal) ease;
-  background: transparent;
+  padding: 0.7rem 0;
+  background: var(--blur-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-light);
+  transition: box-shadow var(--speed-normal) ease;
 
+  @supports (background: color-mix(in srgb, red 50%, transparent)) {
+    background: color-mix(in srgb, var(--bg-primary) 80%, transparent);
+  }
+
+  // Depth only once the page scrolls; the bar
+  // itself is already surfaced at the top.
   &.scrolled {
-    background: var(--blur-bg);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-light);
     box-shadow: var(--shadow-sm);
-    padding: 0.6rem 0;
   }
 }
 
@@ -49,7 +60,7 @@
   color: var(--text-primary);
   text-decoration: none;
   font-family: var(--font-inter);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
   transition: color var(--speed-fast) ease;
   position: relative;
@@ -64,18 +75,19 @@
     left: 0;
     width: 0;
     height: 2px;
-    background: linear-gradient(90deg, color('accent') 0%, color('secondary') 100%);
+    background: var(--primary);
+    border-radius: var(--radius-full);
     transition: width var(--speed-normal) ease;
   }
 
   &:focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--primary);
     outline-offset: 4px;
     border-radius: 2px;
   }
 
   &:hover {
-    color: color('primary');
+    color: var(--primary-hover);
 
     &::after {
       width: 100%;
@@ -92,22 +104,13 @@
   padding: 0 6px;
   font-size: 0.75rem;
   font-weight: 700;
-  background: linear-gradient(135deg, color('primary') 0%, color('secondary') 100%);
-  color: white;
-  border-radius: var(--radius-sm);
-  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.4);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 2px 8px rgba(234, 88, 12, 0.4);
-  }
-  50% {
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.6);
-  }
+  // Same AA-safe pairing as the hero eyebrow chip:
+  // brand text on brand tint holds contrast in
+  // both themes.
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  color: var(--primary-hover);
+  border-radius: var(--radius-full);
 }
 
 .actions {
@@ -125,24 +128,26 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 0.6rem;
-  color: color('primary');
+  color: var(--text-secondary);
   cursor: pointer;
   transition:
     background-color var(--speed-fast) ease,
     border-color var(--speed-fast) ease,
+    color var(--speed-fast) ease,
     transform var(--speed-fast) ease;
   display: flex;
   align-items: center;
   justify-content: center;
 
   &:focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--primary);
     outline-offset: 2px;
   }
 
   &:hover {
-    background: color('primary-light');
-    border-color: color('accent-border');
+    background: var(--primary-light);
+    border-color: var(--primary-border);
+    color: var(--primary-hover);
   }
 
   &:active {
@@ -155,24 +160,26 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 0.6rem;
-  color: color('primary');
+  color: var(--text-secondary);
   cursor: pointer;
   transition:
     background-color var(--speed-fast) ease,
     border-color var(--speed-fast) ease,
+    color var(--speed-fast) ease,
     transform var(--speed-fast) ease;
   display: flex;
   align-items: center;
   justify-content: center;
 
   &:focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--primary);
     outline-offset: 2px;
   }
 
   &:hover {
-    background: color('primary-light');
-    border-color: color('accent-border');
+    background: var(--primary-light);
+    border-color: var(--primary-border);
+    color: var(--primary-hover);
   }
 
   &:active {
@@ -209,8 +216,11 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
-  color: white;
+  // Brand-on-tint chip: keeps the initial readable
+  // in both themes without hardcoding colors.
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  color: var(--primary-hover);
   font-family: var(--font-space);
   font-weight: 700;
   font-size: 0.95rem;
@@ -257,8 +267,8 @@
   span {
     width: 100%;
     height: 3px;
-    background: color('accent');
-    border-radius: var(--radius-sm);
+    background: var(--text-primary);
+    border-radius: var(--radius-full);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform-origin: center;
   }
@@ -308,12 +318,19 @@
   width: 85%;
   max-width: 400px;
   height: 100vh;
-  background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-  box-shadow: -4px 0 30px rgba(0, 0, 0, 0.5);
+  // Card surface panel: solid, elevated, hairline
+  // edge - reads as a sheet over the blurred overlay.
+  background: var(--bg-card);
+  border-left: 1px solid var(--border-light);
+  box-shadow: var(--shadow-lg);
   z-index: 1000;
   transform: translateX(100%);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 
   @media (max-width: 768px) {
     display: flex;
@@ -338,18 +355,23 @@
   height: 40px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
+  background: transparent;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
 
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
   &:hover {
-    background: var(--bg-card);
-    border-color: color('accent-border');
-    color: color('primary');
+    background: var(--primary-light);
+    border-color: var(--primary-border);
+    color: var(--primary-hover);
   }
 }
 
@@ -368,15 +390,20 @@
   color: var(--text-primary);
   text-decoration: none;
   font-family: var(--font-inter);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   transition: all 0.3s ease;
   border-left: 3px solid transparent;
 
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+  }
+
   &:hover {
     background: var(--bg-tertiary);
-    border-left-color: color('accent');
-    color: color('accent');
+    border-left-color: var(--primary);
+    color: var(--primary-hover);
     padding-left: 2rem;
   }
 }
