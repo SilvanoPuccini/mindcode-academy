@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import type { FormEvent } from 'react';
 import Link from 'next/link';
 import { Logo } from '@/components/Logo/Logo';
 import { useCourses } from '@/contexts/CourseContext';
+import { useToast } from '@/contexts/ToastContext';
 import { buildCategories } from '@/lib/course-taxonomy';
 import styles from './Footer.module.scss';
 
@@ -30,8 +32,32 @@ const LEGAL_LINKS = [
   { href: '/privacidad', label: 'Política de Privacidad' },
 ];
 
+// Pragmatic email shape check: something@something.tld.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export function Footer() {
   const { allCourses } = useCourses();
+  const { showToast } = useToast();
+
+  // Newsletter demo wiring: client-side validation + success toast only.
+  // TODO(demo): there is no backend endpoint yet — nothing is stored or
+  // sent. Wire this submit to a real subscription service when available.
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterError, setNewsletterError] = useState<string | null>(null);
+
+  const handleSubscribe = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const email = newsletterEmail.trim();
+    if (!EMAIL_PATTERN.test(email)) {
+      setNewsletterError('Ingresá un email válido.');
+      return;
+    }
+
+    setNewsletterError(null);
+    setNewsletterEmail('');
+    showToast('¡Listo! Te avisamos cuando haya novedades.', 'success');
+  };
 
   // Top 5 real categories derived from the loaded catalog
   // (lib/course-taxonomy.ts), ranked by matching course count.
@@ -47,6 +73,44 @@ export function Footer() {
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
+        {/* Newsletter band (demo wiring): full-width strip above the columns. */}
+        <div className={styles.newsletter}>
+          <div className={styles.newsletterCopy}>
+            <h2 className={styles.newsletterTitle}>Novedades de la academia</h2>
+            <p className={styles.newsletterText}>
+              Nuevos cursos y funciones, directo en tu casilla.
+            </p>
+          </div>
+          <form className={styles.newsletterForm} onSubmit={handleSubscribe} noValidate>
+            <label htmlFor="newsletter-email" className={styles.newsletterLabel}>
+              Email
+            </label>
+            <input
+              id="newsletter-email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              placeholder="tu@email.com"
+              value={newsletterEmail}
+              onChange={(event) => {
+                setNewsletterEmail(event.target.value);
+                if (newsletterError) setNewsletterError(null);
+              }}
+              aria-invalid={newsletterError ? true : undefined}
+              aria-describedby={newsletterError ? 'newsletter-error' : undefined}
+              className={`${styles.newsletterInput} ${newsletterError ? styles.inputInvalid : ''}`}
+            />
+            <button type="submit" className={styles.subscribeButton}>
+              Suscribirme
+            </button>
+          </form>
+          {newsletterError && (
+            <p id="newsletter-error" role="alert" className={styles.newsletterError}>
+              {newsletterError}
+            </p>
+          )}
+        </div>
+
         <div className={styles.grid}>
           {/* Column 1: Brand */}
           <div className={styles.column}>

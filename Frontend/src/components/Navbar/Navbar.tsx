@@ -89,6 +89,9 @@ export function Navbar() {
         {/* Menu - Desktop */}
         <div className={styles.menu}>
           <Link href="/#catalogo" className={styles.menuItem}>Cursos</Link>
+          {isAuthenticated && (
+            <Link href="/aula" className={styles.menuItem}>Mi Aula</Link>
+          )}
           <Link href="/favorites" className={styles.menuItem}>
             Favoritos
             {favorites.length > 0 && (
@@ -165,6 +168,11 @@ export function Navbar() {
           <Link href="/#catalogo" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
             Cursos
           </Link>
+          {isAuthenticated && (
+            <Link href="/aula" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
+              Mi Aula
+            </Link>
+          )}
           <Link href="/favorites" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
             Favoritos
             {favorites.length > 0 && (

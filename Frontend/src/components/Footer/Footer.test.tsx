@@ -1,11 +1,20 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Footer } from './Footer';
 import type { Course } from '@/types';
 
 vi.mock('@/contexts/CourseContext', () => ({
   useCourses: vi.fn(),
+}));
+
+const toastMocks = vi.hoisted(() => ({
+  showToast: vi.fn(),
+}));
+
+vi.mock('@/contexts/ToastContext', () => ({
+  useToast: () => ({ showToast: toastMocks.showToast }),
 }));
 
 import { useCourses } from '@/contexts/CourseContext';
@@ -122,5 +131,53 @@ describe('Footer', () => {
       screen.getByText(new RegExp(`© ${new Date().getFullYear()}`))
     ).toBeInTheDocument();
     expect(screen.getByText(/Hecho con ☕/)).toBeInTheDocument();
+  });
+});
+
+describe('Footer newsletter (demo wiring)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockedUseCourses.mockReturnValue({ allCourses: [] } as never);
+  });
+
+  it('fires the success toast for a valid email and clears the input', () => {
+    render(<Footer />);
+
+    const input = screen.getByLabelText('Email');
+    fireEvent.change(input, { target: { value: 'ana@example.com' } });
+    fireEvent.submit(input.closest('form') as HTMLFormElement);
+
+    expect(toastMocks.showToast).toHaveBeenCalledWith(
+      '¡Listo! Te avisamos cuando haya novedades.',
+      'success'
+    );
+    expect(input).toHaveValue('');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('rejects an invalid email with an inline error and no toast', () => {
+    render(<Footer />);
+
+    const input = screen.getByLabelText('Email');
+    fireEvent.change(input, { target: { value: 'no-es-un-email' } });
+    fireEvent.submit(input.closest('form') as HTMLFormElement);
+
+    expect(toastMocks.showToast).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert')).toHaveTextContent('Ingresá un email válido.');
+    // Error is wired to the input via aria-describedby.
+    expect(input).toHaveAttribute('aria-describedby', 'newsletter-error');
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('clears the error once the user edits the input again', () => {
+    render(<Footer />);
+
+    const input = screen.getByLabelText('Email');
+    fireEvent.change(input, { target: { value: 'nope' } });
+    fireEvent.submit(input.closest('form') as HTMLFormElement);
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: 'a' } });
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 });

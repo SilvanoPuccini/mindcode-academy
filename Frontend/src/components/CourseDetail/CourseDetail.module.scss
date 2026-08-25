@@ -530,6 +530,12 @@
   border: 0;
 }
 
+// Scroll anchor for the RatingWidget: keeps the widget
+// clear of the fixed navbar on #rating-widget hash jumps.
+.ratingAnchor {
+  scroll-margin-top: 96px;
+}
+
 // Reviews Tab
 .reviewsTab {
   display: flex;
@@ -543,12 +549,14 @@
   gap: 1.5rem;
 }
 
+// Score rows use themed card surfaces so they read
+// correctly in BOTH themes.
 .reviewCard {
   padding: 2rem;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 .reviewHeader {
@@ -583,7 +591,7 @@
   font-family: var(--font-space);
   font-size: 1.1rem;
   font-weight: 600;
-  color: white;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -598,12 +606,64 @@
   white-space: nowrap;
 }
 
-.reviewComment {
+// Loading placeholder for the reviews request.
+.reviewsStatus {
+  font-family: var(--font-inter);
+  color: var(--text-secondary);
+}
+
+// Empty state: invite the visitor to leave the first
+// rating, jumping to the RatingWidget anchor in the hero.
+.emptyReviews {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-3);
+  background: var(--bg-card);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.emptyReviewsText {
   font-family: var(--font-inter);
   font-size: 1rem;
-  line-height: 1.6;
-  color: var(--text-primary);
+  color: var(--text-secondary);
   margin: 0;
+}
+
+.emptyReviewsCta {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.4rem;
+  border-radius: var(--radius-full);
+  background: linear-gradient(120deg, var(--primary), var(--primary-hover));
+  color: #FFFFFF;
+  font-family: var(--font-inter);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--shadow-primary);
+  transition:
+    transform var(--speed-fast) ease,
+    filter var(--speed-fast) ease;
+
+  &:hover {
+    filter: brightness(1.05);
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover {
+      transform: none;
+    }
+  }
 }
 
 // Sticky CTA

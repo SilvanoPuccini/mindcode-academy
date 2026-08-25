@@ -11,7 +11,7 @@ import { StarRating } from "@/components/StarRating/StarRating";
 import { RatingWidget } from "@/components/RatingWidget/RatingWidget";
 import { ShareButtons } from "@/components/ShareButtons/ShareButtons";
 import { formatDuration } from "@/lib/format-duration";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, publicFetch } from "@/lib/api";
 import {
   buildCompletedClassIds,
   findResumeIndex,
@@ -26,29 +26,62 @@ interface CourseDetailComponentProps {
 
 type TabType = "description" | "content" | "reviews";
 
-const mockReviews = [
-  {
-    id: 1,
-    name: "Ana Rodríguez",
-    rating: 5,
-    date: "Hace 2 semanas",
-    comment: "Excelente curso, muy bien explicado y con ejemplos prácticos. Lo recomiendo 100%.",
-  },
-  {
-    id: 2,
-    name: "Carlos Martínez",
-    rating: 5,
-    date: "Hace 1 mes",
-    comment: "El mejor curso que he tomado. El profesor explica de manera clara y concisa.",
-  },
-  {
-    id: 3,
-    name: "Laura Gómez",
-    rating: 4,
-    date: "Hace 2 meses",
-    comment: "Muy buen contenido, aunque me gustaría que tuviera más ejercicios prácticos.",
-  },
-];
+// Row shape returned by GET /courses/{course_id}/ratings (public).
+// Ratings are SCORE-ONLY on this API: there is no review text and no
+// user profile attached (see Backend/app/schemas/rating.py), so the UI
+// renders elegant score rows keyed by anonymous student numbers.
+interface RatingRow {
+  id: number;
+  course_id: number;
+  user_id: number;
+  rating: number;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+/** Timestamp used for ordering/display: last update wins, creation falls back. */
+function ratingTimestamp(review: RatingRow): number {
+  const iso = review.updated_at ?? review.created_at;
+  if (!iso) return 0;
+  const time = new Date(iso).getTime();
+  return Number.isNaN(time) ? 0 : time;
+}
+
+/**
+ * Tiny dependency-free relative formatter for Spanish copy:
+ * "justo ahora", "hace 5 minutos", "hace 3 días", "hace 2 meses"...
+ */
+function formatRelativeDate(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const time = new Date(iso).getTime();
+  if (Number.isNaN(time)) return "";
+
+  const secondsAgo = Math.max(0, Math.floor((Date.now() - time) / 1000));
+  if (secondsAgo < 60) return "justo ahora";
+
+  const units: [number, string, string][] = [
+    [31536000, "año", "años"],
+    [2592000, "mes", "meses"],
+    [604800, "semana", "semanas"],
+    [86400, "día", "días"],
+    [3600, "hora", "horas"],
+    [60, "minuto", "minutos"],
+  ];
+
+  for (const [unitSeconds, singular, plural] of units) {
+    if (secondsAgo >= unitSeconds) {
+      const amount = Math.floor(secondsAgo / unitSeconds);
+      return `hace ${amount} ${amount === 1 ? singular : plural}`;
+    }
+  }
+
+  return "justo ahora";
+}
+
+/** Anonymous-but-friendly label: the API only exposes the author's id. */
+function ratingAuthorLabel(userId: number): string {
+  return `Estudiante #${userId}`;
+}
 
 export const CourseDetailComponent: FC<CourseDetailComponentProps> = ({ course }) => {
   const [activeTab, setActiveTab] = useState<TabType>("description");
@@ -101,6 +134,38 @@ export const CourseDetailComponent: FC<CourseDetailComponentProps> = ({ course }
   const resumeIndex = useMemo(
     () => findResumeIndex(course.classes, completedIds),
     [course.classes, completedIds]
+  );
+
+  // Community reviews (public read): fetched once per course on the
+  // first Reviews tab mount. Fail-silent — a failed request just shows
+  // the empty state instead of an error screen.
+  const [reviews, setReviews] = useState<RatingRow[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewCount, setReviewCount] = useState(course.total_ratings ?? 0);
+  const reviewsRequestedRef = useRef(false);
+
+  useEffect(() => {
+    if (activeTab !== "reviews" || reviewsRequestedRef.current) return;
+    reviewsRequestedRef.current = true;
+    setReviewsLoading(true);
+
+    publicFetch<RatingRow[]>(`/courses/${course.id}/ratings`, { cache: "no-store" })
+      .then((rows) => {
+        setReviews(rows);
+        setReviewCount(rows.length);
+      })
+      .catch(() => {
+        setReviews([]);
+      })
+      .finally(() => {
+        setReviewsLoading(false);
+      });
+  }, [activeTab, course.id]);
+
+  // Newest first: last update wins, creation date breaks ties/fallbacks.
+  const sortedReviews = useMemo(
+    () => [...reviews].sort((a, b) => ratingTimestamp(b) - ratingTimestamp(a)),
+    [reviews]
   );
 
   // The sticky CTA bar (position: fixed, bottom: 0) doesn't take up
@@ -172,12 +237,16 @@ export const CourseDetailComponent: FC<CourseDetailComponentProps> = ({ course }
                   </div>
                 )}
 
-                {/* Personal rating: always rendered, even for unrated courses */}
-                <RatingWidget
-                  courseId={course.id}
-                  initialAverage={course.average_rating}
-                  initialCount={course.total_ratings}
-                />
+                {/* Personal rating: always rendered, even for unrated courses.
+                    The wrapper is the scroll anchor used by the Reviews tab's
+                    empty state ("sé el primero") CTA. */}
+                <div id="rating-widget" className={styles.ratingAnchor}>
+                  <RatingWidget
+                    courseId={course.id}
+                    initialAverage={course.average_rating}
+                    initialCount={course.total_ratings}
+                  />
+                </div>
 
                 <div className={styles.heroStats}>
                   <div className={styles.stat}>
@@ -249,7 +318,7 @@ export const CourseDetailComponent: FC<CourseDetailComponentProps> = ({ course }
               className={`${styles.tab} ${activeTab === "reviews" ? styles.activeTab : ""}`}
               onClick={() => setActiveTab("reviews")}
             >
-              Reviews ({mockReviews.length})
+              Reviews ({reviewCount})
             </button>
           </div>
 
@@ -327,25 +396,49 @@ export const CourseDetailComponent: FC<CourseDetailComponentProps> = ({ course }
             {activeTab === "reviews" && (
               <div className={styles.reviewsTab}>
                 <h2 className={styles.sectionTitle}>Reseñas de estudiantes</h2>
-                <div className={styles.reviewsList}>
-                  {mockReviews.map((review) => (
-                    <div key={review.id} className={styles.reviewCard}>
-                      <div className={styles.reviewHeader}>
-                        <div className={styles.reviewAvatar}>
-                          {review.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div className={styles.reviewMeta}>
-                          <h4 className={styles.reviewName}>{review.name}</h4>
-                          <div className={styles.reviewStars}>
-                            <StarRating rating={review.rating} size="small" readonly={true} />
+
+                {reviewsLoading ? (
+                  <p className={styles.reviewsStatus}>Cargando reseñas...</p>
+                ) : sortedReviews.length === 0 ? (
+                  <div className={styles.emptyReviews}>
+                    <p className={styles.emptyReviewsText}>
+                      Todavía no hay reseñas — ¡sé el primero!
+                    </p>
+                    <a href="#rating-widget" className={styles.emptyReviewsCta}>
+                      Calificar este curso
+                    </a>
+                  </div>
+                ) : (
+                  <div className={styles.reviewsList}>
+                    {/* The API returns score-only ratings (no text, no user
+                        profile), so each row shows the anonymous student
+                        number, its stars and a relative date. */}
+                    {sortedReviews.map((review) => {
+                      const author = ratingAuthorLabel(review.user_id);
+                      return (
+                        <div key={review.id} className={styles.reviewCard} data-testid="review-row">
+                          <div className={styles.reviewHeader}>
+                            <div className={styles.reviewAvatar} aria-hidden="true">
+                              {author.charAt(0).toUpperCase()}
+                            </div>
+                            <div className={styles.reviewMeta}>
+                              <h4 className={styles.reviewName}>{author}</h4>
+                              <div className={styles.reviewStars}>
+                                <StarRating rating={review.rating} size="small" readonly={true} />
+                              </div>
+                            </div>
+                            <time
+                              className={styles.reviewDate}
+                              dateTime={review.updated_at ?? review.created_at ?? undefined}
+                            >
+                              {formatRelativeDate(review.updated_at ?? review.created_at)}
+                            </time>
                           </div>
                         </div>
-                        <span className={styles.reviewDate}>{review.date}</span>
-                      </div>
-                      <p className={styles.reviewComment}>{review.comment}</p>
-                    </div>
-                  ))}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
           </div>

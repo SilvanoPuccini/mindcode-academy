@@ -49,6 +49,143 @@
   gap: 1.1rem;
 }
 
+// ============================================
+// Newsletter band (demo wiring). Lives above the
+// link columns; uses the same pinned slate palette
+// as the rest of the footer (dark in BOTH themes).
+// ============================================
+
+.newsletter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-5);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(color('primary'), 0.25);
+  border-radius: var(--radius-lg);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+}
+
+.newsletterCopy {
+  min-width: 0;
+
+  p {
+    margin: 0.25rem 0 0;
+  }
+}
+
+.newsletterTitle {
+  font-family: var(--font-space);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #F1F5F9;
+  margin: 0;
+}
+
+.newsletterText {
+  color: #94A3B8;
+  font-family: var(--font-inter);
+  font-size: 0.9rem;
+}
+
+.newsletterForm {
+  display: flex;
+  align-items: stretch;
+  gap: 0.6rem;
+  flex-wrap: nowrap;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
+}
+
+// Visually hidden label keeps the input accessible
+// for screen readers without cluttering the band.
+.newsletterLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.newsletterInput {
+  flex: 1;
+  min-width: 220px;
+  padding: 0.65rem 1rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
+  color: #F1F5F9;
+  font-family: var(--font-inter);
+  font-size: 0.95rem;
+
+  &::placeholder {
+    color: #94A3B8;
+  }
+
+  &:focus-visible {
+    outline: 2px solid color('primary');
+    outline-offset: 2px;
+    border-color: color('primary');
+  }
+}
+
+.inputInvalid {
+  border-color: rgba(248, 113, 113, 0.6);
+}
+
+.subscribeButton {
+  padding: 0.65rem 1.5rem;
+  border-radius: var(--radius-md);
+  border: 0;
+  background: linear-gradient(120deg, color('primary'), color('primary-hover'));
+  color: #FFFFFF;
+  font-family: var(--font-inter);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    filter var(--speed-fast) ease,
+    transform var(--speed-fast) ease;
+
+  &:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #F1F5F9;
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+.newsletterError {
+  width: 100%;
+  color: #FCA5A5;
+  font-family: var(--font-inter);
+  font-size: 0.85rem;
+  margin: calc(var(--space-2) * -0.5) 0 0;
+}
+
 .lockup {
   --text-primary: #F1F5F9;
   --text-secondary: #94A3B8;
