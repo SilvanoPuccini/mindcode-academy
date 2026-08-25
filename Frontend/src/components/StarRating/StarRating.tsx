@@ -21,7 +21,11 @@ interface StarIconProps {
   fillState: 'empty' | 'half' | 'full';
 }
 
-const StarIcon = ({ fillState }: StarIconProps) => {
+/**
+ * Exported so interactive consumers (e.g. RatingWidget) reuse the exact
+ * same star artwork instead of duplicating the SVG path.
+ */
+export const StarIcon = ({ fillState }: StarIconProps) => {
   return (
     <svg
       viewBox="0 0 24 24"

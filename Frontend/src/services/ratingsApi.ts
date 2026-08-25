@@ -185,6 +185,31 @@ async function getUserRating(
 }
 
 /**
+ * GET /courses/{course_id}/ratings/me
+ * Returns the authenticated user's own rating value, or null when the API
+ * answers 404 {"detail": "Sin calificación"} (no active rating yet).
+ * Requires a session like the mutations: goes through apiFetch so the
+ * httpOnly cookie rides along; anonymous users are redirected to
+ * /login?next=... by ensureAuthenticated() before any request is made.
+ */
+async function getMyRating(courseId: number): Promise<number | null> {
+  ensureAuthenticated();
+
+  try {
+    const data = await apiFetch<{ rating: number }>(
+      `/courses/${courseId}/ratings/me`
+    );
+    return data.rating;
+  } catch (error) {
+    // No active rating yet: documented 404, mapped to null (not an error)
+    if (error instanceof ApiClientError && error.status === 404) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+/**
  * POST /courses/{course_id}/ratings
  * Creates (or upserts) the authenticated user's rating for a course.
  * Requires a session: goes through apiFetch so the httpOnly cookie rides
@@ -236,6 +261,7 @@ export const ratingsApi = {
   getRatingStats,
   getCourseRatings,
   getUserRating,
+  getMyRating,
   createRating,
   updateRating,
   deleteRating,

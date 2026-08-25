@@ -86,6 +86,22 @@ class RatingStatsResponse(BaseModel):
         }
 
 
+class MyRatingResponse(BaseModel):
+    """
+    Schema for the authenticated user's own rating value on a course.
+
+    Kept minimal on purpose: the client only needs the integer value to
+    render the personal rating widget, not the full audit fields that
+    RatingResponse carries.
+    """
+    rating: int = Field(
+        ...,
+        ge=1,
+        le=5,
+        description="Current user's active rating value (1-5)"
+    )
+
+
 class ErrorResponse(BaseModel):
     """
     Standard error response schema.

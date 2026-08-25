@@ -266,6 +266,46 @@ class TestGetUserCourseRatingEndpoint:
         assert response.status_code == 204
 
 
+class TestGetMyCourseRatingEndpoint:
+    """Tests for GET /courses/{course_id}/ratings/me (authenticated)"""
+
+    def test_get_my_rating_exists(self, client, mock_course_service):
+        """Test retrieving the authenticated user's own rating value."""
+        # Arrange
+        mock_course_service.get_user_course_rating.return_value = MOCK_RATING
+
+        # Act
+        response = client.get("/courses/1/ratings/me")
+
+        # Assert: the user is the JWT-resolved one, and only the value ships
+        assert response.status_code == 200
+        assert response.json() == {"rating": 5}
+        mock_course_service.get_user_course_rating.assert_called_once_with(
+            course_id=1,
+            user_id=42
+        )
+
+    def test_get_my_rating_not_exists(self, client, mock_course_service):
+        """Test that no active rating answers 404 with the documented detail."""
+        # Arrange
+        mock_course_service.get_user_course_rating.return_value = None
+
+        # Act
+        response = client.get("/courses/1/ratings/me")
+
+        # Assert
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Sin calificación"
+
+    def test_get_my_rating_requires_authentication(self, unauthenticated_client):
+        """Test that anonymous callers are rejected before hitting the service."""
+        # Act
+        response = unauthenticated_client.get("/courses/1/ratings/me")
+
+        # Assert: get_current_user raises 401 for a missing token
+        assert response.status_code == 401
+
+
 class TestUpdateCourseRatingEndpoint:
     """Tests for PUT /courses/{course_id}/ratings (authenticated)"""
 

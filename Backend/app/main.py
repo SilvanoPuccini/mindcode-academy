@@ -13,6 +13,7 @@ from app.schemas.rating import (
     RatingRequest,
     RatingResponse,
     RatingStatsResponse,
+    MyRatingResponse,
     ErrorResponse
 )
 
@@ -352,6 +353,55 @@ def get_course_rating_stats(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e)
         )
+
+
+@app.get(
+    "/courses/{course_id}/ratings/me",
+    response_model=MyRatingResponse,
+    tags=["ratings"],
+    responses={
+        200: {"model": MyRatingResponse, "description": "Current user's active rating value"},
+        401: {"description": "Not authenticated"},
+        404: {"model": ErrorResponse, "description": "No active rating for the current user"}
+    }
+)
+def get_my_course_rating(
+    course_id: int,
+    current_user: User = Depends(get_current_user),
+    course_service: CourseService = Depends(get_course_service)
+) -> MyRatingResponse:
+    """
+    Get the authenticated user's own rating value for a course.
+
+    Response convention: a missing rating answers 404 {"detail": "Sin
+    calificación"} instead of a nullable 200 body. This mirrors the
+    {"detail": "..."} envelope every other rating endpoint uses and lets
+    clients branch on the status code rather than on nullable payloads.
+
+    Requires authentication: the user is resolved from the JWT (cookie or
+    Bearer header), never from query params.
+
+    Example:
+        GET /courses/1/ratings/me
+
+        Response (if rated):
+        {"rating": 4}
+
+        Response (if not rated):
+        HTTP 404 {"detail": "Sin calificación"}
+    """
+    rating = course_service.get_user_course_rating(
+        course_id=course_id,
+        user_id=current_user.id
+    )
+
+    if rating is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Sin calificación"
+        )
+
+    return MyRatingResponse(rating=rating["rating"])
 
 
 @app.get(

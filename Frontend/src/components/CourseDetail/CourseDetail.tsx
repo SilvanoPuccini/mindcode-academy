@@ -8,6 +8,7 @@ import { CourseDetail } from "@/types";
 import { Clock, BookOpen, GraduationCap, Rocket, Play } from "lucide-react";
 import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { StarRating } from "@/components/StarRating/StarRating";
+import { RatingWidget } from "@/components/RatingWidget/RatingWidget";
 import { ShareButtons } from "@/components/ShareButtons/ShareButtons";
 import { formatDuration } from "@/lib/format-duration";
 import styles from "./CourseDetail.module.scss";
@@ -114,6 +115,13 @@ export const CourseDetailComponent: FC<CourseDetailComponentProps> = ({ course }
                     />
                   </div>
                 )}
+
+                {/* Personal rating: always rendered, even for unrated courses */}
+                <RatingWidget
+                  courseId={course.id}
+                  initialAverage={course.average_rating}
+                  initialCount={course.total_ratings}
+                />
 
                 <div className={styles.heroStats}>
                   <div className={styles.stat}>
