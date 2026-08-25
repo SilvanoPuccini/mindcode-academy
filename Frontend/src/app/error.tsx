@@ -65,9 +65,6 @@ export default function Error({
           </Link>
         </div>
       </div>
-
-      {/* Background Grid */}
-      <div className={styles.gridBg}></div>
     </div>
   );
 }

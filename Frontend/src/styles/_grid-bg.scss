@@ -1,96 +1,39 @@
 // ============================================
-// MINDCODE ACADEMY - Global cuadrille background
-// Ported from loading.module.scss .gridBg so
-// the signature grid pattern lives site-wide.
-// Fixed decorative layer behind all content
-// (z-index -1 paints above the body canvas but
-// below every content element).
-// Light mode shows a clear warm cuadrille on
-// white; dark mode keeps the deeper original.
-// The pulsing glow stays subtle in both themes.
+// MINDCODE ACADEMY - Global body canvas
+// (formerly the site-wide cuadrille layer; the
+// filename stays so existing imports keep
+// working). The signature cuadrille now lives
+// ONLY on route loading screens, each painted
+// locally by its own loading.module.scss.
+//
+// What remains here is a static brand-tinted
+// depth wash painted directly on <body>: warm
+// radial glows anchored to the viewport over
+// var(--bg-primary). No animation, no extra
+// DOM — route containers stay transparent and
+// let this canvas show through.
 // ============================================
 
-// The page canvas moves to <body> so route
-// containers can stay transparent and let the
-// cuadrille show through.
 body {
   background-color: var(--bg-primary);
-}
 
-.grid-bg-layer {
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-
-  // Light mode: clearly visible warm cuadrille.
+  // Static brand-tinted depth: amber bloom top-right,
+  // orange bloom bottom-left, red ember at the foot.
   background-image:
-    linear-gradient(transparent 31px, rgba(234, 88, 12, 0.14) 32px),
-    linear-gradient(90deg, transparent 31px, rgba(245, 158, 11, 0.11) 32px);
-  background-size: 64px 64px;
+    radial-gradient(1200px 800px at 85% -10%, rgba(245, 158, 11, 0.07), transparent 60%),
+    radial-gradient(1000px 700px at -10% 110%, rgba(234, 88, 12, 0.06), transparent 55%),
+    radial-gradient(900px 600px at 50% 130%, rgba(220, 38, 38, 0.04), transparent 60%);
 
-  [data-theme='dark'] & {
-    background-image:
-      linear-gradient(transparent 31px, rgba(234, 88, 12, 0.09) 32px),
-      linear-gradient(90deg, transparent 31px, rgba(245, 158, 11, 0.09) 32px);
-  }
-
-  // Soft radial pulse in both themes. Light runs
-  // a very subtle breathing glow (~0.05 -> 0.09
-  // effective alpha); dark keeps the original
-  // deeper pulse.
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      circle at 50% 50%,
-      rgba(234, 88, 12, 0.09) 0%,
-      transparent 50%
-    );
-    animation: gridBgPulseLight 8s ease-in-out infinite;
-  }
-
-  [data-theme='dark'] &::after {
-    background: radial-gradient(
-      circle at 50% 50%,
-      rgba(234, 88, 12, 0.15) 0%,
-      transparent 50%
-    );
-    animation-name: gridBgPulseDark;
-  }
+  // Glows stay anchored to the viewport while
+  // page content scrolls over them.
+  background-attachment: fixed;
 }
 
-// Light pulse: gradient peak alpha is 0.09, so an
-// opacity floor of ~0.55 oscillates the effective
-// glow between roughly 0.05 and 0.09.
-@keyframes gridBgPulseLight {
-  0%,
-  100% {
-    opacity: 0.55;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes gridBgPulseDark {
-  0%,
-  100% {
-    opacity: 0.15;
-  }
-  50% {
-    opacity: 0.35;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .grid-bg-layer::after {
-    animation: none;
-    opacity: 0.2;
-  }
-
-  [data-theme='dark'] .grid-bg-layer::after {
-    opacity: 0.25;
-  }
+[data-theme='dark'] body {
+  // Same geometry as light mode with stronger
+  // alphas so the wash reads on deep slate.
+  background-image:
+    radial-gradient(1200px 800px at 85% -10%, rgba(245, 158, 11, 0.1), transparent 60%),
+    radial-gradient(1000px 700px at -10% 110%, rgba(234, 88, 12, 0.08), transparent 55%),
+    radial-gradient(900px 600px at 50% 130%, rgba(220, 38, 38, 0.05), transparent 60%);
 }

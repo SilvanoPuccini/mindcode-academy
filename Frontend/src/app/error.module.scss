@@ -247,35 +247,3 @@
   }
 }
 
-.gridBg {
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  background-image:
-    linear-gradient(transparent 31px, rgba(234, 88, 12, 0.1) 32px),
-    linear-gradient(90deg, transparent 31px, rgba(245, 158, 11, 0.1) 32px);
-  background-size: 64px 64px;
-  opacity: 0.5;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      circle at 50% 50%,
-      rgba(234, 88, 12, 0.15) 0%,
-      transparent 50%
-    );
-    animation: pulseGrid 4s ease-in-out infinite;
-  }
-}
-
-@keyframes pulseGrid {
-  0%, 100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}

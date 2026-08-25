@@ -1,8 +1,8 @@
 @import '../../styles/vars.scss';
 
-// Centered auth card over the global cuadrille
-// background. The page canvas is transparent so
-// the fixed grid layer shows through.
+// Centered auth card over the global body
+// canvas. The page root is transparent so the
+// brand-tinted wash shows through.
 .authPage {
   min-height: 100vh;
   display: flex;

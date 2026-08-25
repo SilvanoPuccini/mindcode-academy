@@ -1,7 +1,7 @@
 @import '@/styles/vars.scss';
 
-// Transparent page root: the global cuadrille
-// layer shows around the card in both themes.
+// Transparent page root: the global body canvas
+// shows around the card in both themes.
 .page {
   min-height: 100vh;
   padding: var(--space-5) var(--space-2);
@@ -11,7 +11,7 @@
 }
 
 // Card surface so content sits on a solid
-// token-based layer over the cuadrille.
+// token-based layer over the body canvas.
 .card {
   width: 100%;
   max-width: 1040px;

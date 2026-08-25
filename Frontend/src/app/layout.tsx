@@ -116,8 +116,6 @@ export default function RootLayout({
         <meta name="theme-color" content="#EA580C" />
       </head>
       <body className={`${spaceGrotesk.variable} ${inter.variable}`}>
-        {/* Site-wide decorative cuadrille layer (styles/_grid-bg.scss) */}
-        <div className="grid-bg-layer" aria-hidden="true" />
         <ThemeProvider>
           <ToastProvider>
             <CourseProvider>
