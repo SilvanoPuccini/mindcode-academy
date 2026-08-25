@@ -24,7 +24,9 @@ interface CourseContextType {
   setFilters: (filters: Filters) => void;
   allCourses: Course[];
   filteredCourses: Course[];
-  setAllCourses: (courses: Course[]) => void;
+  // Full state-setter signature so consumers can merge onto the
+  // latest list with a functional update (e.g. background hydration).
+  setAllCourses: React.Dispatch<React.SetStateAction<Course[]>>;
   favorites: number[];
   favoritesLoading: boolean;
   toggleFavorite: (courseId: number) => Promise<void>;

@@ -201,10 +201,12 @@
 
 .tabs {
   display: flex;
+  // No horizontal scroll: tabs wrap to a second row if they ever
+  // outgrow the viewport (fallback for the tightened sizes below).
+  flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 3rem;
   border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-  overflow-x: auto;
 
   @media (max-width: 768px) {
     gap: 0.5rem;
@@ -229,8 +231,15 @@
   }
 
   @media (max-width: 768px) {
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1rem;
     font-size: 1rem;
+  }
+
+  // Tighter tabs so Descripción/Contenido/Reviews fit on one row
+  // down to a 320px viewport without horizontal scrolling.
+  @media (max-width: 400px) {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.8125rem;
   }
 }
 

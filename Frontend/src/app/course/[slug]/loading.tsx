@@ -1,27 +1,31 @@
 import { SkeletonCourse } from "@/components/SkeletonCourse/SkeletonCourse";
+import { Logo } from "@/components/Logo/Logo";
+// The site-wide grid background utility (branded spinner backdrop on the
+// home route) is reused verbatim so this cartel matches app/loading.tsx.
+import gridStyles from "../../loading.module.scss";
 import styles from "./loading.module.scss";
 
-// Route-level skeleton for cold API responses: mirrors the home
-// catalog section header plus a grid of shimmering course cards,
-// so the course detail page never flashes blank while fetching.
+// Route-level branded "cartel" for cold API responses: a centered card
+// with the logo lockup, a shimmer progress line and an eyebrow, dimmed
+// skeleton cards below, and the shared grid background — so the course
+// detail page never flashes blank while fetching.
 export default function Loading() {
   return (
-    <main className={styles.container}>
-      <header className={styles.sectionHeader}>
-        <span className={styles.sectionEyebrow}>Explora la plataforma</span>
-        <h1 className={styles.sectionTitle}>
-          Preparando <span className={styles.highlight}>tu curso</span>
-        </h1>
-        <p className={styles.sectionSubtitle}>
-          Estamos trayendo el programa, las clases y los profesores para ti.
-        </p>
-      </header>
+    <>
+      <main className={styles.container} aria-busy="true" aria-label="Cargando curso">
+        <div className={styles.card}>
+          <Logo size={48} />
+          <span className={styles.shimmerLine} aria-hidden="true" />
+          <p className={styles.eyebrow}>Cargando curso…</p>
+        </div>
 
-      <section className={styles.coursesGrid} aria-busy="true" aria-label="Cargando curso">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <SkeletonCourse key={index} />
-        ))}
-      </section>
-    </main>
+        <section className={styles.suggestions} aria-hidden="true">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <SkeletonCourse key={index} />
+          ))}
+        </section>
+      </main>
+      <div className={gridStyles.gridBg} />
+    </>
   );
 }

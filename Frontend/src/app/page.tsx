@@ -67,14 +67,17 @@ export default function Home() {
         throw new Error("Failed to fetch courses");
       }
       const data: Course[] = await res.json();
+      // The list response is enough to unblock the UI: show real cards now.
       setAllCourses(data);
+      setLoading(false);
 
       // The list endpoint omits classes[], so course durations (needed by
       // the Duración filter) are unknown until hydrated. Fetch each course's
       // detail — which includes its classes with durations in minutes — and
-      // merge them in. A failed detail fetch is non-fatal: that course just
-      // keeps no duration data and won't match specific duration buckets.
-      const hydrated = await Promise.all(
+      // merge them in the background. A failed detail fetch is non-fatal:
+      // that course just keeps no duration data and won't match specific
+      // duration buckets.
+      void Promise.all(
         data.map(async (course): Promise<Course> => {
           try {
             const detailRes = await fetchWithTimeout(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/courses/${course.slug}`, { cache: "no-store" });
@@ -85,13 +88,22 @@ export default function Home() {
             return course;
           }
         })
-      );
-      setAllCourses(hydrated);
+      ).then((hydrated) => {
+        // Merge onto the LATEST state by id instead of overwriting the
+        // whole array: while the details were in flight, filters/search or
+        // a refetch may have replaced allCourses. Only the hydration
+        // payload (classes) is attached; everything else stays as-is.
+        const classesById = new Map(hydrated.map((c) => [c.id, c.classes]));
+        setAllCourses((prev) =>
+          prev.map((course) => {
+            const classes = classesById.get(course.id);
+            return classes ? { ...course, classes } : course;
+          })
+        );
+      });
     } catch (error) {
       console.error("Error fetching courses:", error);
-    } finally {
-      // Simular mínimo de carga para UX suave
-      setTimeout(() => setLoading(false), 500);
+      setLoading(false);
     }
   }, [setAllCourses]);
 
