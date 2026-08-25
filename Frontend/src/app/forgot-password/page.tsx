@@ -24,7 +24,7 @@ export default function ForgotPasswordPage() {
     <main className={styles.authPage}>
       <div className={styles.card}>
         <div className={styles.logoWrap}>
-          <Logo />
+          <Logo withWordmark />
         </div>
 
         <header className={styles.header}>

@@ -71,7 +71,7 @@ export function Navbar() {
     <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}>
       <div className={styles.container}>
         {/* Logo */}
-        <Logo />
+        <Logo withWordmark />
 
         {/* Hamburger Button - Mobile Only */}
         <button
@@ -154,7 +154,7 @@ export function Navbar() {
       {/* Mobile Menu */}
       <div className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ''}`}>
         <div className={styles.mobileMenuHeader}>
-          <Logo onClick={toggleMobileMenu} />
+          <Logo withWordmark onClick={toggleMobileMenu} />
           <button className={styles.closeBtn} onClick={toggleMobileMenu} aria-label="Cerrar menú">
             <X size={24} aria-hidden="true" />
           </button>

@@ -35,38 +35,19 @@
   gap: 1.2rem;
 }
 
-.logo {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  font-family: var(--font-space);
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  margin-bottom: 0.5rem;
-}
-
-.logoMind {
-  background: linear-gradient(135deg, color('primary') 0%, color('secondary') 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 10px color('primary-glow'));
-}
-
-.logoIA {
-  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 10px color('accent-glow'));
-}
-
 // The footer surface is intentionally dark in
 // BOTH themes (Netflix-style dark band), so its
 // interior colors are pinned to the dark-palette
 // slate values instead of theme tokens, which
 // would flip to dark-on-dark in light mode.
+// The Logo wordmark reads theme text vars, so the
+// same slate values are re-scoped onto the lockup.
+.lockup {
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  margin-bottom: 0.5rem;
+}
+
 .description {
   color: #CBD5E1;
   font-family: var(--font-inter);

@@ -1,18 +1,13 @@
-@import '../../styles/vars.scss';
+// Branded logo lockup: gradient icon tile plus optional wordmark block.
+// Colors come from theme tokens so the wordmark stays legible in both
+// light and dark mode; the white strokes sit on the gradient tile and
+// are theme-independent.
 
-// Same visual recipe as the Navbar wordmark
-// (Navbar.module.scss), extracted so auth pages
-// (login/register/forgot-password) can link back
-// to the home page with a consistent brand mark.
 .logo {
   display: inline-flex;
-  gap: 0.5rem;
   align-items: center;
+  gap: 0.75rem;
   text-decoration: none;
-  font-family: var(--font-space);
-  font-size: 1.8rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
   transition: transform 0.3s;
 
   &:hover {
@@ -22,22 +17,36 @@
   &:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 4px;
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
   }
 }
 
-.logoMind {
-  background: linear-gradient(135deg, color('primary') 0%, color('secondary') 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 10px color('primary-glow'));
+.icon {
+  display: block;
+  flex-shrink: 0;
 }
 
-.logoIA {
-  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 10px color('accent-glow'));
+.wordmark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.wordmarkTitle {
+  font-family: var(--font-space);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.wordmarkSubtitle {
+  font-family: var(--font-inter);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--text-strong);
 }

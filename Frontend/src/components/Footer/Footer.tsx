@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useToast } from '@/contexts/ToastContext';
+import { Logo } from '@/components/Logo/Logo';
 import styles from './Footer.module.scss';
 
 // Real, editorial-worthy slice of the course-taxonomy.ts categories
@@ -49,9 +50,8 @@ export function Footer() {
         <div className={styles.grid}>
           {/* Column 1: About */}
           <div className={styles.column}>
-            <div className={styles.logo}>
-              <span className={styles.logoMind}>Mind</span>
-              <span className={styles.logoIA}>Code</span>
+            <div className={styles.lockup}>
+              <Logo withWordmark />
             </div>
             <p className={styles.description}>
               Aprende con inteligencia artificial. La mejor plataforma de cursos online para impulsar tu carrera.
