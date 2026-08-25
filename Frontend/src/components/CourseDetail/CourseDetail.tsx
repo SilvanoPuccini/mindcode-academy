@@ -1,16 +1,23 @@
 "use client";
 
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CourseDetail } from "@/types";
-import { Clock, BookOpen, GraduationCap, Rocket, Play } from "lucide-react";
+import { Clock, BookOpen, GraduationCap, Rocket, Play, Check } from "lucide-react";
 import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { StarRating } from "@/components/StarRating/StarRating";
 import { RatingWidget } from "@/components/RatingWidget/RatingWidget";
 import { ShareButtons } from "@/components/ShareButtons/ShareButtons";
 import { formatDuration } from "@/lib/format-duration";
+import { apiFetch } from "@/lib/api";
+import {
+  buildCompletedClassIds,
+  findResumeIndex,
+  CourseProgressResponse,
+} from "@/lib/course-progress";
+import { useAuth } from "@/hooks/useAuth";
 import styles from "./CourseDetail.module.scss";
 
 interface CourseDetailComponentProps {
@@ -46,6 +53,55 @@ const mockReviews = [
 export const CourseDetailComponent: FC<CourseDetailComponentProps> = ({ course }) => {
   const [activeTab, setActiveTab] = useState<TabType>("description");
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
+
+  // Temario progress (authenticated users only): the backend returns a
+  // COUNT of completed lessons for this course (no per-lesson flags), so
+  // the UI maps it onto the first N classes by position. Any failure
+  // (404 = course not started, offline...) degrades to an empty set.
+  const [completedIds, setCompletedIds] = useState<Set<number>>(() => new Set());
+  const [progressLoaded, setProgressLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setCompletedIds(new Set());
+      setProgressLoaded(false);
+      return;
+    }
+
+    let cancelled = false;
+    setProgressLoaded(false);
+
+    apiFetch<CourseProgressResponse>(`/progress/course/${course.id}`, {
+      skipAuthRedirect: true,
+    })
+      .then((progress) => {
+        if (!cancelled) {
+          setCompletedIds(buildCompletedClassIds(course.classes, progress.completed_lessons));
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setCompletedIds(new Set());
+      })
+      .finally(() => {
+        if (!cancelled) setProgressLoaded(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, course.id, course.classes]);
+
+  // Circles render only once the fetch settled so the resume pill never
+  // flashes on class #1 while the request is in flight.
+  const showProgressCircles = isAuthenticated && progressLoaded;
+
+  // First incomplete class by position gets the "Seguí acá" pill (-1
+  // when everything is complete).
+  const resumeIndex = useMemo(
+    () => findResumeIndex(course.classes, completedIds),
+    [course.classes, completedIds]
+  );
 
   // The sticky CTA bar (position: fixed, bottom: 0) doesn't take up
   // space in normal flow, so it visually covers whatever content
@@ -233,16 +289,36 @@ export const CourseDetailComponent: FC<CourseDetailComponentProps> = ({ course }
               <div className={styles.contentTab}>
                 <h2 className={styles.sectionTitle}>Contenido del curso</h2>
                 <div className={styles.classesList}>
-                  {course.classes.map((cls, index) => (
-                    <Link href={`/classes/${cls.id}`} key={cls.id} className={styles.classItem}>
-                      <div className={styles.classNumber}>{(index + 1).toString().padStart(2, "0")}</div>
-                      <div className={styles.classInfo}>
-                        <h3 className={styles.classTitle}>{cls.name}</h3>
-                        <p className={styles.classDescription}>{cls.description}</p>
-                      </div>
-                      <span className={styles.classDuration}>{formatDuration(cls.duration ?? 0)}</span>
-                    </Link>
-                  ))}
+                  {course.classes.map((cls, index) => {
+                    const isDone = completedIds.has(cls.id);
+                    return (
+                      <Link href={`/classes/${cls.id}`} key={cls.id} className={styles.classItem}>
+                        {showProgressCircles && (
+                          <span
+                            data-testid={`class-progress-${cls.id}`}
+                            className={`${styles.progressCircle} ${isDone ? styles.circleDone : ""}`}
+                            aria-hidden="true"
+                          >
+                            {isDone && <Check size={14} strokeWidth={3} aria-hidden="true" />}
+                          </span>
+                        )}
+                        <div className={styles.classNumber}>{(index + 1).toString().padStart(2, "0")}</div>
+                        <div className={styles.classInfo}>
+                          <h3 className={styles.classTitle}>{cls.name}</h3>
+                          {showProgressCircles && (
+                            <span className={styles.srOnly}>
+                              {isDone ? "Clase completada" : "Clase pendiente"}
+                            </span>
+                          )}
+                          {showProgressCircles && index === resumeIndex && (
+                            <span className={styles.resumePill}>Seguí acá</span>
+                          )}
+                          <p className={styles.classDescription}>{cls.description}</p>
+                        </div>
+                        <span className={styles.classDuration}>{formatDuration(cls.duration ?? 0)}</span>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )}

@@ -1,0 +1,63 @@
+// Active filter chips row: pill per active constraint plus a
+// clear-all escape hatch. Brand-tint pills keep the same visual
+// language as the hero eyebrow chip; tokens only, both themes.
+
+.activeFilters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.5rem 0.3rem 0.85rem;
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-full);
+}
+
+.chipLabel {
+  font-family: var(--font-inter);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary-hover);
+  white-space: nowrap;
+}
+
+.chipRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  color: var(--primary-hover);
+  cursor: pointer;
+  transition:
+    background-color var(--speed-fast) ease,
+    color var(--speed-fast) ease;
+
+  &:hover {
+    background: var(--primary-border);
+    color: var(--text-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}
+
+.clearAll {
+  @include btn-ghost;
+  min-height: 32px;
+  padding: 0.25rem 0.9rem;
+  font-size: 0.85rem;
+}

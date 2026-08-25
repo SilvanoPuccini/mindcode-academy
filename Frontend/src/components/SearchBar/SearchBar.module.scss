@@ -130,3 +130,86 @@
     justify-content: center;
   }
 }
+
+// ============================================
+// Quick-match dropdown card.
+// position: fixed (anchored from SearchBar.tsx via
+// measured coordinates): the hero clips absolutely
+// positioned overflow, and fixed escapes that clip.
+// Card surface per design system: --bg-card,
+// --shadow-lg, hairline border + radius.
+// ============================================
+
+.suggestions {
+  position: fixed;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.suggestionItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--speed-fast) ease;
+
+  &:hover,
+  &.highlighted {
+    background: var(--bg-tertiary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: -2px;
+  }
+}
+
+.thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.suggestionText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.suggestionTitle {
+  font-family: var(--font-inter);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestionMeta {
+  font-family: var(--font-inter);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.suggestionEmpty {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  font-family: var(--font-inter);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}

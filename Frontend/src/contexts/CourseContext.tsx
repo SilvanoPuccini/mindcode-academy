@@ -11,7 +11,7 @@ import {
   matchesDurationFilters,
 } from '@/lib/course-search';
 
-interface Filters {
+export interface Filters {
   category: number;
   durations: string[];
   minRating: number;

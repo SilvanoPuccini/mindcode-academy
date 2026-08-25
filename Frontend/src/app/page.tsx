@@ -9,6 +9,7 @@ import { Hero } from "@/components/Hero/Hero";
 import { SearchBar } from "@/components/SearchBar/SearchBar";
 import { Categories } from "@/components/Categories/Categories";
 import { Filters } from "@/components/Filters/Filters";
+import { ActiveFilters } from "@/components/ActiveFilters/ActiveFilters";
 import { Testimonials } from "@/components/Testimonials/Testimonials";
 import { Footer } from "@/components/Footer/Footer";
 import { ScrollProgress } from "@/components/ScrollProgress/ScrollProgress";
@@ -216,6 +217,10 @@ export default function Home() {
 
             {/* Courses Grid */}
             <div className={styles.coursesWrapper}>
+              {/* Removable chips for every active filter/search;
+                  renders nothing while nothing is active */}
+              <ActiveFilters />
+
               <div className={styles.sectionHeader}>
                 <div>
                   <span className={styles.sectionEyebrow}>Explora la plataforma</span>

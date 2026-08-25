@@ -238,3 +238,147 @@
   font-weight: 600;
   filter: drop-shadow(0 0 8px color('accent-glow'));
 }
+
+// ============================================
+// Mobile bottom-sheet drawer (Phase 4).
+// Hidden entirely on desktop (>1024px), where the
+// inline panel above is visible. On small screens
+// the aside disappears, so the trigger button takes
+// its place and opens a fixed bottom sheet.
+// ============================================
+
+.mobileFilters {
+  display: none;
+}
+
+.mobileToggle {
+  @include btn-ghost;
+  width: 100%;
+  justify-content: flex-start;
+  margin-bottom: var(--space-3);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 700;
+  // Same AA-safe brand-on-tint pairing as the Navbar badge.
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  color: var(--primary-hover);
+  border-radius: var(--radius-full);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+  background: var(--overlay-bg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--speed-normal) ease;
+
+  &.overlayOpen {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  max-height: 82vh;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  border-top: 1px solid var(--border-light);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+
+  &.sheetOpen {
+    transform: translateY(0);
+  }
+}
+
+.dragHandle {
+  width: 44px;
+  height: 4px;
+  margin: var(--space-2) auto 0;
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.sheetHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-2) var(--space-3) var(--space-1);
+
+  .title {
+    font-size: 1.25rem;
+  }
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--speed-fast) ease,
+    color var(--speed-fast) ease;
+
+  &:hover {
+    background: var(--primary-light);
+    color: var(--primary-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}
+
+.sheetBody {
+  overflow-y: auto;
+  padding: 0 var(--space-3) var(--space-3);
+}
+
+.sheetFooter {
+  padding: var(--space-2) var(--space-3) calc(var(--space-3) + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border-light);
+}
+
+.applyBtn {
+  @include btn-primary;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .mobileFilters {
+    display: block;
+    width: 100%;
+  }
+}
