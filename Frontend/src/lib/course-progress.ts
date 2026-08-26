@@ -20,6 +20,18 @@ export interface CourseProgressResponse {
   is_completed: boolean;
 }
 
+/**
+ * Classes sorted for display and navigation: explicit `position` wins,
+ * array order breaks ties (stable sort) and covers payloads without
+ * positions.
+ */
+export function sortClassesByPosition(classes: Class[]): Class[] {
+  return classes
+    .map((cls, index) => ({ cls, index, position: cls.position ?? index }))
+    .sort((a, b) => a.position - b.position)
+    .map(({ cls }) => cls);
+}
+
 // Classes ordered for progress purposes: explicit `position` wins,
 // array order breaks ties (and covers payloads without positions).
 function orderedClasses(classes: Class[]): { id: number; index: number }[] {
