@@ -223,7 +223,10 @@ async function updateProfile(data: {
   email?: string;
   bio?: string;
   role?: string;
-  avatar_url?: string;
+  // null clears the avatar; omit the key entirely to leave it untouched
+  // (JSON.stringify drops `undefined` keys, which is how "untouched" is
+  // signaled to the backend's exclude_unset handling).
+  avatar_url?: string | null;
 }): Promise<AuthUser> {
   const updated = await apiFetch<AuthUser>('/auth/me', {
     method: 'PUT',

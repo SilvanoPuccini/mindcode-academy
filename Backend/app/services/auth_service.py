@@ -128,7 +128,12 @@ class AuthService:
 
         Args:
             user_id: User ID
-            **kwargs: Fields to update (name, email, etc.)
+            **kwargs: Fields to update. Callers must only pass fields the
+                client actually sent (e.g. via Pydantic's
+                model_dump(exclude_unset=True)) — every key present here is
+                applied as-is, including None, so a field can be cleared by
+                explicitly sending null. Omit a key entirely to leave it
+                untouched.
 
         Returns:
             User: Updated user
@@ -139,7 +144,7 @@ class AuthService:
             return None
 
         for key, value in kwargs.items():
-            if hasattr(user, key) and value is not None:
+            if hasattr(user, key):
                 setattr(user, key, value)
 
         self.db.commit()

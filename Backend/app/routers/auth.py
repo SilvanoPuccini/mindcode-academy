@@ -161,14 +161,15 @@ def update_current_user(
     Update current user profile.
 
     Can update: name, email, bio, role, avatar_url
+
+    Only fields actually present in the request body are touched
+    (exclude_unset) — this is what lets a field be explicitly cleared by
+    sending `null`, e.g. {"avatar_url": null} to remove the avatar,
+    without every other omitted field being wiped too.
     """
     updated_user = auth_service.update_user(
         user_id=current_user.id,
-        name=update_data.name,
-        email=update_data.email,
-        bio=update_data.bio,
-        role=update_data.role,
-        avatar_url=update_data.avatar_url,
+        **update_data.model_dump(exclude_unset=True),
     )
 
     if not updated_user:

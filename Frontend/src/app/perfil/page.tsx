@@ -209,7 +209,7 @@ export default function PerfilPage() {
   const handleRemoveAvatar = useCallback(async () => {
     setAvatarUploading(true);
     try {
-      await updateProfile({ avatar_url: undefined });
+      await updateProfile({ avatar_url: null });
       setAvatarPreview(null);
       setSaveMsg("Foto de perfil eliminada");
     } catch {
