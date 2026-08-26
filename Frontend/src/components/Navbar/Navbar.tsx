@@ -80,8 +80,14 @@ export function Navbar() {
     }
   };
 
-  // Avatar letter(s) for logged-in users
+  // Avatar for logged-in users: photo or initial
   const avatarLetter = user?.name.charAt(0).toUpperCase() ?? '?';
+  const avatarContent = user?.avatar_url ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={user.avatar_url} alt="" aria-hidden="true" />
+  ) : (
+    avatarLetter
+  );
 
   return (
     <>
@@ -146,7 +152,7 @@ export function Navbar() {
               <div className={styles.userMenu}>
                 <Link href="/perfil" className={styles.userProfileLink}>
                   <span className={styles.userAvatar} aria-hidden="true">
-                    {avatarLetter}
+                    {avatarContent}
                   </span>
                   <span className={styles.userName}>{user.name}</span>
                 </Link>
@@ -244,7 +250,7 @@ export function Navbar() {
               <div className={styles.mobileUserMenu}>
                 <Link href="/perfil" className={styles.mobileUserProfileLink} onClick={toggleMobileMenu}>
                   <span className={styles.userAvatar} aria-hidden="true">
-                    {avatarLetter}
+                    {avatarContent}
                   </span>
                   <span className={styles.userName}>{user.name}</span>
                 </Link>

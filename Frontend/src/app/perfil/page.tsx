@@ -20,7 +20,6 @@ import { EmptyState } from "@/components/EmptyState/EmptyState";
 import { useAuth } from "@/hooks/useAuth";
 import { useCourses } from "@/contexts/CourseContext";
 import { updateProfile } from "@/services/authApi";
-import { Course as CourseType } from "@/types";
 
 /* ------------------------------------------------------------------ */
 /* Demo certificates — no backend yet. Replace with real data later.   */
@@ -40,8 +39,7 @@ const AVATAR_ACCEPT = "image/png,image/jpeg,image/webp";
 
 export default function PerfilPage() {
   const { user, loading: authLoading } = useAuth();
-  const { allCourses, setAllCourses, favorites } = useCourses();
-  const [coursesLoading, setCoursesLoading] = useState(true);
+  const { allCourses, favorites } = useCourses();
 
   // Form state
   const [formName, setFormName] = useState("");
@@ -56,26 +54,6 @@ export default function PerfilPage() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
 
-  // Hydrate catalog (same pattern as /aula)
-  useEffect(() => {
-    let cancelled = false;
-    async function getCourses() {
-      try {
-        const { publicFetch } = await import("@/lib/api");
-        const data = await publicFetch<CourseType[]>("/courses", { cache: "no-store" });
-        if (!cancelled) setAllCourses(data);
-      } catch {
-        // best-effort
-      } finally {
-        if (!cancelled) setCoursesLoading(false);
-      }
-    }
-    getCourses();
-    return () => {
-      cancelled = true;
-    };
-  }, [setAllCourses]);
-
   // Sync form when user loads
   useEffect(() => {
     if (user) {
@@ -87,7 +65,7 @@ export default function PerfilPage() {
     }
   }, [user]);
 
-  const loading = authLoading || coursesLoading;
+  const loading = authLoading;
 
   // ── Avatar upload ──────────────────────────────────────────────
   const handleAvatarClick = useCallback(() => {
@@ -275,14 +253,16 @@ export default function PerfilPage() {
                     {user.bio ||
                       "Aún no escribiste tu bio. Contanos sobre vos y tu stack tecnológico."}
                   </p>
-                  {/* Skill tags — demo for now */}
-                  <div className={styles.tags}>
-                    {["JavaScript", "React", "Node.js", "Python"].map((t) => (
-                      <span key={t} className={styles.tag}>
-                        {t}
-                      </span>
-                    ))}
-                  </div>
+                  {/* Skill tags — from user role */}
+                  {user.role && (
+                    <div className={styles.tags}>
+                      {user.role.split(/[,\s]+/).filter(Boolean).map((t) => (
+                        <span key={t} className={styles.tag}>
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Stats card */}

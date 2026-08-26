@@ -1,10 +1,10 @@
 @import '@/styles/vars.scss';
-@import '@/styles/controls';
 
 .categories {
   padding: var(--space-6) 0;
   position: relative;
   scroll-margin-top: 96px;
+  overflow: hidden;
 }
 
 .container {
@@ -33,87 +33,106 @@
   background-clip: text;
 }
 
-// --------------------------------------------
-// Carousel wrapper: arrows + grid side by side
-// --------------------------------------------
-.carouselWrapper {
+// =============================================
+// Continuous scroll viewport
+// =============================================
+.carouselViewport {
   position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding: var(--space-2) 0;
+}
+
+// =============================================
+// Track: single row that scrolls infinitely
+// =============================================
+.track {
+  overflow: hidden;
+  margin-bottom: var(--space-2);
+}
+
+.trackInner {
   display: flex;
-  align-items: center;
   gap: var(--space-2);
+  width: max-content;
+  will-change: transform;
 }
 
-// --------------------------------------------
-// Arrow buttons: arrow-glass from _controls.scss
-// --------------------------------------------
-.navBtn {
-  @include arrow-glass;
-  flex-shrink: 0;
-  z-index: 10;
+// Row 1: scrolls left
+.trackLeft .trackInner {
+  animation: scrollLeft 30s linear infinite;
+}
+
+// Row 2: scrolls right (starts offset so rows are staggered)
+.trackRight .trackInner {
+  animation: scrollRight 30s linear infinite;
+}
+
+// Pause on hover
+.paused .trackInner {
+  animation-play-state: paused;
+}
+
+@keyframes scrollLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scrollRight {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+// =============================================
+// Fade edges: soft mask on left/right
+// =============================================
+.fadeEdge {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 80px;
+  pointer-events: none;
+  z-index: 5;
 
   @media (max-width: 768px) {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 20;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    @media (max-width: 768px) {
-      &:hover {
-        transform: translateY(-50%) translateY(-1px);
-      }
-      &:active {
-        transform: translateY(-50%) scale(0.94);
-      }
-    }
+    width: 40px;
   }
 }
 
-.navPrev {
-  @media (max-width: 768px) {
-    left: 0.25rem;
+.fadeLeft {
+  left: 0;
+  background: linear-gradient(to right, var(--bg-primary) 0%, transparent 100%);
+
+  @at-root .dark &,
+  [data-theme='dark'] & {
+    background: linear-gradient(to right, var(--bg-primary) 0%, transparent 100%);
   }
 }
 
-.navNext {
-  @media (max-width: 768px) {
-    right: 0.25rem;
+.fadeRight {
+  right: 0;
+  background: linear-gradient(to left, var(--bg-primary) 0%, transparent 100%);
+
+  @at-root .dark &,
+  [data-theme='dark'] & {
+    background: linear-gradient(to left, var(--bg-primary) 0%, transparent 100%);
   }
 }
 
-// --------------------------------------------
-// Carousel: exactly 2 rows visible. No overflow
-// clipping — both rows always show fully.
-// --------------------------------------------
-.carousel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-// --------------------------------------------
-// Row: 5 columns desktop, 3 tablet, 2 mobile.
-// --------------------------------------------
-.row {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: var(--space-2);
-
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  @media (max-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-// --------------------------------------------
+// =============================================
 // Category tile
-// --------------------------------------------
+// =============================================
 .card {
+  flex-shrink: 0;
+  width: 180px;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
@@ -165,16 +184,9 @@
   }
 
   @media (max-width: 640px) {
+    width: 150px;
     min-height: 110px;
     padding: var(--space-2) var(--space-1);
-  }
-}
-
-.cardPlaceholder {
-  min-height: 128px;
-
-  @media (max-width: 640px) {
-    min-height: 110px;
   }
 }
 
@@ -206,4 +218,19 @@
   font-family: var(--font-inter);
   font-size: 0.75rem;
   color: var(--text-secondary);
+}
+
+// =============================================
+// Screen-reader only (accessible fallback)
+// =============================================
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
