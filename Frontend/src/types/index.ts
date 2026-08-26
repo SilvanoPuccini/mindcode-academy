@@ -30,6 +30,9 @@ export interface Class {
   slug: string;
   title?: string;
   video?: string;
+  // Attribution for third-party YouTube content, rides along with `video`.
+  // Null/absent when the video has no external channel to credit.
+  video_credit?: string | null;
   duration?: number;
   // Enrichment fields (optional everywhere):
   position?: number;

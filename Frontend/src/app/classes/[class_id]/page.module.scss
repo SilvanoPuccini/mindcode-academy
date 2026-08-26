@@ -175,6 +175,22 @@
   border: 1px solid var(--border-color);
 }
 
+// Third-party YouTube attribution chip — same shape as .durationChip,
+// slightly muted since it's a credit line, not primary metadata.
+.videoCredit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-full);
+  font-family: var(--font-inter);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-tertiary, var(--text-secondary));
+  background: transparent;
+  border: 1px dashed var(--border-color);
+}
+
 .title {
   margin: 0;
   font-family: var(--font-space);

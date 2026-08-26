@@ -11,6 +11,7 @@ import {
   Clock,
   Lock,
   Play,
+  Video,
 } from "lucide-react";
 import { Class } from "@/types";
 import { ApiClientError, apiFetch, publicFetch } from "@/lib/api";
@@ -418,6 +419,12 @@ export default function ClassPage() {
                     <span className={styles.durationChip}>
                       <Clock size={14} aria-hidden="true" />
                       {durationLabel}
+                    </span>
+                  )}
+                  {classData.video_credit && (
+                    <span className={styles.videoCredit}>
+                      <Video size={14} aria-hidden="true" />
+                      Video de {classData.video_credit}
                     </span>
                   )}
                 </div>

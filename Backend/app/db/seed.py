@@ -16,43 +16,65 @@ def create_sample_data():
 
     try:
         # ==================== TEACHERS ====================
+        # Original MindCode Academy instructors (not real people — the
+        # previous seed used the real names/emails of actual Platzi
+        # instructors, which falsely implied an affiliation). Each one
+        # is assigned to thematically related courses only.
         teachers = [
             Teacher(
-                name="Freddy Vega",
-                email="freddy@platzi.com",
+                name="Valentina Reyes",
+                email="valentina.reyes@mindcode-academy.com",
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),
-            ),
+            ),  # Frontend & JavaScript
             Teacher(
-                name="Carlos Hernández",
-                email="carlos@platzi.com",
+                name="Bruno Iglesias",
+                email="bruno.iglesias@mindcode-academy.com",
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),
-            ),
+            ),  # React & Vue
             Teacher(
-                name="Diana García",
-                email="diana@platzi.com",
+                name="Camila Duarte",
+                email="camila.duarte@mindcode-academy.com",
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),
-            ),
+            ),  # Backend, DevOps & Git
             Teacher(
-                name="Ricardo Celis",
-                email="ricardo@platzi.com",
+                name="Martín Sosa",
+                email="martin.sosa@mindcode-academy.com",
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),
-            ),
+            ),  # Bases de Datos
             Teacher(
-                name="Oscar Barajas",
-                email="oscar@platzi.com",
+                name="Julieta Ferreyra",
+                email="julieta.ferreyra@mindcode-academy.com",
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),
-            ),
+            ),  # Python
             Teacher(
-                name="Ana Belisa Martínez",
-                email="ana@platzi.com",
+                name="Nicolás Bravo",
+                email="nicolas.bravo@mindcode-academy.com",
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),
-            ),
+            ),  # IA / Data Science
+            Teacher(
+                name="Renata Campos",
+                email="renata.campos@mindcode-academy.com",
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow(),
+            ),  # UX/UI
+            Teacher(
+                name="Sofía Aranda",
+                email="sofia.aranda@mindcode-academy.com",
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow(),
+            ),  # Mobile (Flutter/Dart)
+            Teacher(
+                name="Tomás Quiroga",
+                email="tomas.quiroga@mindcode-academy.com",
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow(),
+            ),  # Ciberseguridad & Blockchain
         ]
         db.add_all(teachers)
         db.commit()
@@ -184,21 +206,23 @@ def create_sample_data():
         db.commit()
 
         # ==================== ASSIGN TEACHERS TO COURSES ====================
-        courses[0].teachers.extend([teachers[0], teachers[4]])  # JS - Freddy, Oscar
-        courses[1].teachers.extend([teachers[1], teachers[2]])  # Python - Carlos, Diana
-        courses[2].teachers.extend([teachers[4], teachers[0]])  # React - Oscar, Freddy
-        courses[3].teachers.extend([teachers[1], teachers[3]])  # Node - Carlos, Ricardo
-        courses[4].teachers.extend([teachers[2], teachers[1]])  # AI - Diana, Carlos
-        courses[5].teachers.extend([teachers[5]])  # UX/UI - Ana
-        courses[6].teachers.extend([teachers[3], teachers[1]])  # DevOps - Ricardo, Carlos
-        courses[7].teachers.extend([teachers[1]])  # DBs - Carlos
-        courses[8].teachers.extend([teachers[4]])  # TS - Oscar
-        courses[9].teachers.extend([teachers[0]])  # Git - Freddy
-        courses[10].teachers.extend([teachers[4]])  # Vue - Oscar
-        courses[11].teachers.extend([teachers[3]])  # Cyber - Ricardo
-        courses[12].teachers.extend([teachers[2]])  # Flutter - Diana
-        courses[13].teachers.extend([teachers[3]])  # Blockchain - Ricardo
-        courses[14].teachers.extend([teachers[2]])  # R - Diana
+        # Each teacher only teaches courses within their own specialty —
+        # no one is spread across unrelated topics (e.g. mobile + stats).
+        courses[0].teachers.extend([teachers[0]])  # JS - Valentina (Frontend/JS)
+        courses[1].teachers.extend([teachers[4]])  # Python - Julieta
+        courses[2].teachers.extend([teachers[1]])  # React - Bruno (React/Vue)
+        courses[3].teachers.extend([teachers[2]])  # Node - Camila (Backend/DevOps)
+        courses[4].teachers.extend([teachers[5]])  # AI - Nicolás (IA/Data Science)
+        courses[5].teachers.extend([teachers[6]])  # UX/UI - Renata
+        courses[6].teachers.extend([teachers[2]])  # DevOps - Camila
+        courses[7].teachers.extend([teachers[3]])  # DBs - Martín
+        courses[8].teachers.extend([teachers[0]])  # TS - Valentina
+        courses[9].teachers.extend([teachers[2]])  # Git - Camila
+        courses[10].teachers.extend([teachers[1]])  # Vue - Bruno
+        courses[11].teachers.extend([teachers[8]])  # Cyber - Tomás (Seguridad/Blockchain)
+        courses[12].teachers.extend([teachers[7]])  # Flutter - Sofía (Mobile)
+        courses[13].teachers.extend([teachers[8]])  # Blockchain - Tomás
+        courses[14].teachers.extend([teachers[5]])  # R - Nicolás
 
         db.commit()
 

@@ -15,6 +15,9 @@ class Lesson(BaseModel):
     slug = Column(String(255), nullable=False, index=True)
     video_url = Column(String(500), nullable=False)  # URL to video content
     duration = Column(Integer, nullable=False, server_default='0')  # Duration in minutes
+    # Attribution for third-party YouTube content (e.g. "MoureDev", "AristiDevs").
+    # Null when the video has no external channel to credit.
+    video_credit = Column(String(255), nullable=True)
     # 1-based ordering within the course; position == 1 marks the free preview lesson
     position = Column(Integer, nullable=False, server_default='0', default=0)
     

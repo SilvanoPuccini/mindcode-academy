@@ -26,13 +26,15 @@ def build_class_payload(
 
     Args:
         lesson_like: Object with id, name, description, slug, duration,
-            position and video_url attributes (the Lesson model or a stub).
+            position, video_url and (optionally) video_credit attributes
+            (the Lesson model or a stub).
         course_like: Object with id, slug and name attributes (Course or stub).
         user: Authenticated user or None.
         total_classes: Total number of lessons in the course.
 
     Returns:
-        dict: Payload with base fields; includes "video" only when allowed.
+        dict: Payload with base fields; includes "video"/"video_credit"
+            only when allowed.
     """
     payload: dict[str, Any] = {
         "id": lesson_like.id,
@@ -49,6 +51,9 @@ def build_class_payload(
 
     if lesson_like.position == FREE_PREVIEW_POSITION or user is not None:
         payload["video"] = lesson_like.video_url
+        # Third-party YouTube attribution rides along with the video only —
+        # crediting a channel makes no sense without the video itself.
+        payload["video_credit"] = getattr(lesson_like, "video_credit", None)
 
     return payload
 
