@@ -34,61 +34,65 @@
 }
 
 // =============================================
+// Carousel shell: nav arrows flank the viewport,
+// same layout language as Testimonials.
+// =============================================
+.carouselWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+
+  @media (max-width: 768px) {
+    gap: var(--space-1);
+    padding: 0 0.75rem;
+  }
+}
+
+// Same warm glass recipe as the Testimonials carousel arrows
+// (styles/_controls.scss): one visual language for every carousel.
+.navBtn {
+  @include arrow-glass;
+  z-index: 10;
+}
+
+// =============================================
 // Continuous scroll viewport
 // =============================================
 .carouselViewport {
   position: relative;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   padding: var(--space-2) 0;
 }
 
 // =============================================
-// Track: single row that scrolls infinitely
+// Track: single row, scrolled programmatically
+// (rAF loop + arrow nudges write to scrollLeft).
+// overflow-x: hidden still allows JS-driven
+// scrollLeft/scrollBy — it only blocks the user
+// from dragging the scrollbar directly.
 // =============================================
 .track {
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
   margin-bottom: var(--space-2);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .trackInner {
   display: flex;
   gap: var(--space-2);
   width: max-content;
-  will-change: transform;
-}
-
-// Row 1: scrolls left
-.trackLeft .trackInner {
-  animation: scrollLeft 30s linear infinite;
-}
-
-// Row 2: scrolls right (starts offset so rows are staggered)
-.trackRight .trackInner {
-  animation: scrollRight 30s linear infinite;
-}
-
-// Pause on hover
-.paused .trackInner {
-  animation-play-state: paused;
-}
-
-@keyframes scrollLeft {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-@keyframes scrollRight {
-  0% {
-    transform: translateX(-50%);
-  }
-  100% {
-    transform: translateX(0);
-  }
 }
 
 // =============================================

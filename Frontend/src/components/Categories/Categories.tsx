@@ -1,9 +1,19 @@
 "use client";
 
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useRef, useEffect } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCourses } from '@/contexts/CourseContext';
 import { buildCategories } from '@/lib/course-taxonomy';
 import styles from './Categories.module.scss';
+
+// Continuous marquee pace: each row crosses half its (2x duplicated)
+// track width in this many seconds — matches the previous CSS animation.
+const SECONDS_PER_HALF_TRACK = 30;
+// Manual nudge distance per arrow click (roughly 2 cards).
+const NUDGE_PX = 376;
+// How long the carousel stays paused after a manual nudge before the
+// automatic scroll resumes.
+const RESUME_DELAY_MS = 1500;
 
 export function Categories() {
   const { allCourses, filters, setFilters } = useCourses();
@@ -20,6 +30,86 @@ export function Categories() {
     });
     return [r0, r1];
   }, [categories]);
+
+  // Row 1 scrolls left (scrollLeft grows 0 -> half), row 2 scrolls right
+  // (scrollLeft shrinks half -> 0) — same visual as before, now driven by
+  // real scrollLeft so both the auto-scroll loop and the arrow nudges
+  // share one source of truth instead of fighting over `transform`.
+  const track0Ref = useRef<HTMLDivElement>(null);
+  const track1Ref = useRef<HTMLDivElement>(null);
+  const pausedRef = useRef(false);
+  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    pausedRef.current = paused;
+  }, [paused]);
+
+  // Row 2 starts at its track's midpoint so it can count DOWN toward 0.
+  useEffect(() => {
+    const el = track1Ref.current;
+    if (!el) return;
+    el.scrollLeft = el.scrollWidth / 2;
+  }, [rows]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let rafId: number;
+    let lastTs: number | null = null;
+
+    const tick = (ts: number) => {
+      rafId = requestAnimationFrame(tick);
+      const last = lastTs ?? ts;
+      const dt = (ts - last) / 1000;
+      lastTs = ts;
+      if (pausedRef.current) return;
+
+      const el0 = track0Ref.current;
+      if (el0) {
+        const half = el0.scrollWidth / 2;
+        if (half > 0) {
+          el0.scrollLeft += (half / SECONDS_PER_HALF_TRACK) * dt;
+          if (el0.scrollLeft >= half) el0.scrollLeft -= half;
+        }
+      }
+
+      const el1 = track1Ref.current;
+      if (el1) {
+        const half = el1.scrollWidth / 2;
+        if (half > 0) {
+          el1.scrollLeft -= (half / SECONDS_PER_HALF_TRACK) * dt;
+          if (el1.scrollLeft <= 0) el1.scrollLeft += half;
+        }
+      }
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    };
+  }, []);
+
+  const pauseThenResume = useCallback(() => {
+    setPaused(true);
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => setPaused(false), RESUME_DELAY_MS);
+  }, []);
+
+  // direction 1 = "forward": row 1 keeps scrolling left, row 2 keeps
+  // scrolling right — same direction each row already auto-scrolls in.
+  const nudge = useCallback(
+    (direction: 1 | -1) => {
+      track0Ref.current?.scrollBy({ left: direction * NUDGE_PX, behavior: 'smooth' });
+      track1Ref.current?.scrollBy({ left: -direction * NUDGE_PX, behavior: 'smooth' });
+      pauseThenResume();
+    },
+    [pauseThenResume]
+  );
 
   const handleCategoryClick = useCallback(
     (categoryId: number) => {
@@ -39,7 +129,7 @@ export function Categories() {
   );
 
   // Render a row of category cards (used twice for seamless loop)
-  const renderCards = (items: typeof categories, rowIdx: number, keyPrefix: string) =>
+  const renderCards = (items: typeof categories, keyPrefix: string) =>
     items.map((category) => {
       const Icon = category.icon;
       const isActive = filters.category === category.id;
@@ -69,36 +159,53 @@ export function Categories() {
         </h2>
       </div>
 
-      <div
-        className={styles.carouselViewport}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-      >
-        {/* Row 1: scrolls left */}
-        <div
-          className={`${styles.track} ${styles.trackLeft} ${paused ? styles.paused : ''}`}
-          aria-hidden="true"
+      <div className={styles.carouselWrapper}>
+        <button
+          type="button"
+          className={`${styles.navBtn} ${styles.navPrev}`}
+          onClick={() => nudge(-1)}
+          aria-label="Categorías anteriores"
         >
-          <div className={styles.trackInner}>
-            {renderCards(rows[0], 0, 'a')}
-            {renderCards(rows[0], 0, 'b')}
+          <ChevronLeft size={22} aria-hidden="true" />
+        </button>
+
+        <div
+          className={styles.carouselViewport}
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => {
+            if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+            setPaused(false);
+          }}
+        >
+          {/* Row 1: scrolls left */}
+          <div className={`${styles.track} ${styles.trackLeft}`} ref={track0Ref} aria-hidden="true">
+            <div className={styles.trackInner}>
+              {renderCards(rows[0], 'a')}
+              {renderCards(rows[0], 'b')}
+            </div>
           </div>
+
+          {/* Row 2: scrolls right */}
+          <div className={`${styles.track} ${styles.trackRight}`} ref={track1Ref} aria-hidden="true">
+            <div className={styles.trackInner}>
+              {renderCards(rows[1], 'c')}
+              {renderCards(rows[1], 'd')}
+            </div>
+          </div>
+
+          {/* Fade edges */}
+          <div className={`${styles.fadeEdge} ${styles.fadeLeft}`} aria-hidden="true" />
+          <div className={`${styles.fadeEdge} ${styles.fadeRight}`} aria-hidden="true" />
         </div>
 
-        {/* Row 2: scrolls right */}
-        <div
-          className={`${styles.track} ${styles.trackRight} ${paused ? styles.paused : ''}`}
-          aria-hidden="true"
+        <button
+          type="button"
+          className={`${styles.navBtn} ${styles.navNext}`}
+          onClick={() => nudge(1)}
+          aria-label="Siguientes categorías"
         >
-          <div className={styles.trackInner}>
-            {renderCards(rows[1], 1, 'c')}
-            {renderCards(rows[1], 1, 'd')}
-          </div>
-        </div>
-
-        {/* Fade edges */}
-        <div className={`${styles.fadeEdge} ${styles.fadeLeft}`} aria-hidden="true" />
-        <div className={`${styles.fadeEdge} ${styles.fadeRight}`} aria-hidden="true" />
+          <ChevronRight size={22} aria-hidden="true" />
+        </button>
       </div>
 
       {/* Accessible card list for screen readers (hidden visually) */}
