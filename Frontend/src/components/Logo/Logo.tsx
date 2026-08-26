@@ -45,14 +45,14 @@ export function Logo({
       >
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#F97316" />
-            <stop offset="1" stopColor="#DC2626" />
+            <stop offset="0" stopColor="#1E293B" />
+            <stop offset="1" stopColor="#0F172A" />
           </linearGradient>
         </defs>
         <rect width="64" height="64" rx="14" fill={`url(#${gradientId})`} />
         <g
           stroke="#FFFFFF"
-          strokeWidth="3.6"
+          strokeWidth="4"
           strokeLinecap="round"
           strokeLinejoin="round"
           fill="none"
