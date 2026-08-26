@@ -59,7 +59,7 @@ class UserUpdateRequest(BaseModel):
     email: Optional[EmailStr] = None
     bio: Optional[str] = Field(None, max_length=1000)
     role: Optional[str] = Field(None, max_length=255)
-    avatar_url: Optional[str] = Field(None, max_length=512)
+    avatar_url: Optional[str] = Field(None, max_length=10_000_000)
 
 
 class PasswordChangeRequest(BaseModel):
