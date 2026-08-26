@@ -21,23 +21,46 @@ class CourseService:
         """
         Get all courses with basic information including rating stats.
 
+        Runs as 3 fixed queries total (courses + ratings aggregate + lessons
+        aggregate, joined in Python by course id) instead of 1 + 3N — the
+        previous version called get_course_rating_stats() per course, which
+        alone issued 3 queries each (existence check + avg/count + full
+        distribution breakdown nobody read here).
+
         Returns:
             List of course dictionaries with: id, name, description, thumbnail, slug,
-            average_rating, total_ratings
+            average_rating, total_ratings, total_classes, total_duration_minutes
         """
         courses = self.db.query(Course).filter(Course.deleted_at.is_(None)).all()
 
+        rating_rows = (
+            self.db.query(
+                CourseRating.course_id,
+                func.coalesce(func.avg(CourseRating.rating), 0.0).label("average_rating"),
+                func.count(CourseRating.id).label("total_ratings"),
+            )
+            .filter(CourseRating.deleted_at.is_(None))
+            .group_by(CourseRating.course_id)
+            .all()
+        )
+        ratings_by_course = {row.course_id: row for row in rating_rows}
+
+        lesson_rows = (
+            self.db.query(
+                Lesson.course_id,
+                func.count(Lesson.id).label("total_classes"),
+                func.coalesce(func.sum(Lesson.duration), 0).label("total_duration_minutes"),
+            )
+            .filter(Lesson.deleted_at.is_(None))
+            .group_by(Lesson.course_id)
+            .all()
+        )
+        lessons_by_course = {row.course_id: row for row in lesson_rows}
+
         result = []
         for course in courses:
-            # Obtener stats de ratings para cada curso
-            try:
-                rating_stats = self.get_course_rating_stats(course.id)
-            except ValueError:
-                # Si falla, usar valores por defecto
-                rating_stats = {
-                    "average_rating": 0.0,
-                    "total_ratings": 0
-                }
+            rating = ratings_by_course.get(course.id)
+            lessons = lessons_by_course.get(course.id)
 
             result.append({
                 "id": course.id,
@@ -45,8 +68,10 @@ class CourseService:
                 "description": course.description,
                 "thumbnail": course.thumbnail,
                 "slug": course.slug,
-                "average_rating": rating_stats["average_rating"],
-                "total_ratings": rating_stats["total_ratings"]
+                "average_rating": round(float(rating.average_rating), 2) if rating else 0.0,
+                "total_ratings": rating.total_ratings if rating else 0,
+                "total_classes": lessons.total_classes if lessons else 0,
+                "total_duration_minutes": lessons.total_duration_minutes if lessons else 0,
             })
 
         return result

@@ -201,19 +201,16 @@ class TestGetMyCertificatesEndpoint:
 
         mock_db = Mock()
 
-        # Mock the certificate query chain: query.filter(order_by).all()
-        cert_query = Mock()
-        cert_query.filter.return_value.order_by.return_value.all.return_value = [mock_cert]
+        # Mock the joined query chain: query(Certificate, Course.name)
+        # .outerjoin(...).filter(...).order_by(...).all() -> [(cert, course_name)]
+        joined_query = Mock()
+        joined_query.outerjoin.return_value.filter.return_value.order_by.return_value.all.return_value = [
+            (mock_cert, mock_course.name)
+        ]
 
-        # Mock the course query: query.filter.first()
-        course_query = Mock()
-        course_query.filter.return_value.first.return_value = mock_course
-
-        def mock_query(model):
-            if model == Certificate:
-                return cert_query
-            elif model == Course:
-                return course_query
+        def mock_query(*args):
+            if args and args[0] == Certificate:
+                return joined_query
             return Mock()
 
         mock_db.query.side_effect = mock_query

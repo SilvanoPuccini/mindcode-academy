@@ -37,11 +37,17 @@ export function matchesQuery(
 // also the values persisted in CourseContext.filters.durations.
 export const DURATION_FILTER_OPTIONS = ['< 2 horas', '2-5 horas', '5-10 horas', '> 10 horas'];
 
-// Total course length in minutes. Class durations arrive from the API in
-// MINUTES (see lessons.duration in the backend seed), so no conversion.
-// Courses without classes data have an unknown duration (0 here); callers
-// decide how to treat unknowns.
-export function courseDurationMinutes(course: { classes?: { duration?: number }[] }): number {
+// Total course length in minutes. Prefers the pre-aggregated
+// total_duration_minutes (present on GET /courses, computed server-side —
+// no per-course detail fetch needed) and falls back to summing classes[]
+// duration for callers that only have the hydrated detail shape.
+export function courseDurationMinutes(course: {
+  total_duration_minutes?: number;
+  classes?: { duration?: number }[];
+}): number {
+  if (typeof course.total_duration_minutes === 'number') {
+    return course.total_duration_minutes;
+  }
   return (course.classes ?? []).reduce((total, cls) => total + (cls.duration ?? 0), 0);
 }
 

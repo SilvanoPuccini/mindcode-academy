@@ -50,7 +50,8 @@ const CourseCardWrapper = ({ course }: { course: Course }) => {
         thumbnail={course.thumbnail}
         average_rating={course.average_rating}
         total_ratings={course.total_ratings}
-        classes={course.classes}
+        total_classes={course.total_classes}
+        total_duration_minutes={course.total_duration_minutes}
       />
     </Link>
   );
@@ -71,40 +72,12 @@ export default function Home() {
         throw new Error("Failed to fetch courses");
       }
       const data: Course[] = await res.json();
-      // The list response is enough to unblock the UI: show real cards now.
+      // The list endpoint now returns total_classes/total_duration_minutes
+      // pre-aggregated server-side, so a single request is enough — no
+      // more per-course detail fetch (previously 1 extra HTTP round trip
+      // per visible course just to unlock the Duración filter).
       setAllCourses(data);
       setLoading(false);
-
-      // The list endpoint omits classes[], so course durations (needed by
-      // the Duración filter) are unknown until hydrated. Fetch each course's
-      // detail — which includes its classes with durations in minutes — and
-      // merge them in the background. A failed detail fetch is non-fatal:
-      // that course just keeps no duration data and won't match specific
-      // duration buckets.
-      void Promise.all(
-        data.map(async (course): Promise<Course> => {
-          try {
-            const detailRes = await fetchWithTimeout(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/courses/${course.slug}`, { cache: "no-store" });
-            if (!detailRes.ok) return course;
-            const detail: Course = await detailRes.json();
-            return { ...course, classes: detail.classes };
-          } catch {
-            return course;
-          }
-        })
-      ).then((hydrated) => {
-        // Merge onto the LATEST state by id instead of overwriting the
-        // whole array: while the details were in flight, filters/search or
-        // a refetch may have replaced allCourses. Only the hydration
-        // payload (classes) is attached; everything else stays as-is.
-        const classesById = new Map(hydrated.map((c) => [c.id, c.classes]));
-        setAllCourses((prev) =>
-          prev.map((course) => {
-            const classes = classesById.get(course.id);
-            return classes ? { ...course, classes } : course;
-          })
-        );
-      });
     } catch (error) {
       console.error("Error fetching courses:", error);
       setLoading(false);
@@ -167,7 +140,7 @@ export default function Home() {
     switch (sortBy) {
       case "classes":
         sorted.sort(
-          (a, b) => (b.classes?.length ?? 0) - (a.classes?.length ?? 0)
+          (a, b) => (b.total_classes ?? 0) - (a.total_classes ?? 0)
         );
         break;
       case "name":

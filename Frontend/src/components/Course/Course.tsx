@@ -20,7 +20,9 @@ const CourseComponent = ({
   thumbnail,
   average_rating,
   total_ratings,
-  classes
+  classes,
+  total_classes,
+  total_duration_minutes
 }: CourseProps) => {
   const { favorites, toggleFavorite } = useCourses();
   const { showToast } = useToast();
@@ -30,10 +32,11 @@ const CourseComponent = ({
   // Taxonomy badge: real category inferred from the course itself.
   const category = useMemo(() => inferCategory({ name, description }), [name, description]);
 
-  // Meta data is optional: the list endpoint omits classes[],
-  // so class count and duration render only when hydrated.
-  const totalClasses = classes?.length ?? 0;
-  const durationMinutes = courseDurationMinutes({ classes });
+  // total_classes/total_duration_minutes come pre-aggregated from the list
+  // endpoint; classes[] is only a fallback for callers still on the
+  // hydrated detail shape.
+  const totalClasses = total_classes ?? classes?.length ?? 0;
+  const durationMinutes = courseDurationMinutes({ total_duration_minutes, classes });
 
   const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.preventDefault();

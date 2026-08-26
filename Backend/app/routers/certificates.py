@@ -27,30 +27,29 @@ def get_my_certificates(
     """
     Get all certificates for the authenticated user.
     Returns certificates with course name.
+
+    Single LEFT JOIN instead of one Course lookup per certificate (N+1).
     """
-    certificates = (
-        db.query(Certificate)
+    rows = (
+        db.query(Certificate, Course.name)
+        .outerjoin(Course, Course.id == Certificate.course_id)
         .filter(Certificate.user_id == current_user.id)
         .order_by(Certificate.issued_at.desc())
         .all()
     )
 
-    result = []
-    for cert in certificates:
-        course = db.query(Course).filter(Course.id == cert.course_id).first()
-        result.append(
-            CertificateWithCourseResponse(
-                id=cert.id,
-                user_id=cert.user_id,
-                course_id=cert.course_id,
-                course_name=course.name if course else "Unknown Course",
-                issued_at=cert.issued_at,
-                verification_code=cert.verification_code,
-                status=cert.status,
-            )
+    return [
+        CertificateWithCourseResponse(
+            id=cert.id,
+            user_id=cert.user_id,
+            course_id=cert.course_id,
+            course_name=course_name if course_name else "Unknown Course",
+            issued_at=cert.issued_at,
+            verification_code=cert.verification_code,
+            status=cert.status,
         )
-
-    return result
+        for cert, course_name in rows
+    ]
 
 
 @router.get("/{cert_id}/download", response_class=HTMLResponse)
