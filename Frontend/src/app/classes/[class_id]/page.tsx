@@ -17,7 +17,6 @@ import { ApiClientError, apiFetch, publicFetch } from "@/lib/api";
 import { formatDuration } from "@/lib/format-duration";
 import { useAuth } from "@/hooks/useAuth";
 import { ScrollToTopOnMount } from "@/components/ScrollToTopOnMount/ScrollToTopOnMount";
-import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
 import { LoadingBrand } from "@/components/LoadingBrand/LoadingBrand";
 import { VideoPlayer } from "@/components/VideoPlayer/VideoPlayer";
 import styles from "./page.module.scss";
@@ -281,9 +280,11 @@ export default function ClassPage() {
   if (phase === "loading" || !classId) {
     return (
       <main className={styles.page}>
-        <article className={styles.card}>
-          <LoadingSkeleton />
-        </article>
+        <div className={styles.shell}>
+          <article className={styles.card}>
+            <LoadingSkeleton />
+          </article>
+        </div>
       </main>
     );
   }
@@ -291,14 +292,20 @@ export default function ClassPage() {
   if (phase === "locked" && gate) {
     return (
       <main className={styles.page}>
-        <article className={styles.card}>
-          <LockScreen gate={gate} classHref={`/classes/${classId}`} />
-          <TemarioSidebar
-            classes={courseClasses}
-            activePosition={gate.position}
-            isLoggedIn={isLoggedIn}
-          />
-        </article>
+        <div className={styles.shell}>
+          <article className={styles.card}>
+            <LockScreen gate={gate} classHref={`/classes/${classId}`} />
+            {courseClasses.length > 0 && (
+              <div className={styles.lockedCurriculum}>
+                <TemarioSidebar
+                  classes={courseClasses}
+                  activePosition={gate.position}
+                  isLoggedIn={isLoggedIn}
+                />
+              </div>
+            )}
+          </article>
+        </div>
       </main>
     );
   }
@@ -306,16 +313,18 @@ export default function ClassPage() {
   if (phase !== "ready" || !classData) {
     return (
       <main className={styles.page}>
-        <article className={styles.card}>
-          <section className={styles.lockScreen} role="alert">
-            <p className={styles.lockMessage}>
-              No se pudo cargar la clase. Revisá tu conexión e intentá de nuevo.
-            </p>
-            <Link href="/" className={styles.secondaryButton}>
-              Volver al inicio
-            </Link>
-          </section>
-        </article>
+        <div className={styles.shell}>
+          <article className={styles.card}>
+            <section className={styles.lockScreen} role="alert">
+              <p className={styles.lockMessage}>
+                No se pudo cargar la clase. Revisá tu conexión e intentá de nuevo.
+              </p>
+              <Link href="/" className={styles.secondaryButton}>
+                Volver al inicio
+              </Link>
+            </section>
+          </article>
+        </div>
       </main>
     );
   }
@@ -347,88 +356,103 @@ export default function ClassPage() {
   const backHref = courseSlug ?? "/#catalogo";
   const backLabel = courseSlug ? "Volver al curso" : "Volver al catálogo";
 
-  const breadcrumbItems = courseSlug
-    ? [
-        { label: "Inicio", href: "/" },
-        { label: courseLabel ?? "Curso", href: `/course/${courseSlug}` },
-        { label: title },
-      ]
-    : [{ label: "Inicio", href: "/" }, { label: title }];
-
   return (
     <main className={styles.page}>
       <ScrollToTopOnMount />
-      <article className={styles.card}>
-        <div className={styles.stage}>
-          <div className={styles.stageHeader}>
-            <Breadcrumbs items={breadcrumbItems} />
-          </div>
-          <div className={styles.playerWrap}>
-            <VideoPlayer src={video} title={title} />
-          </div>
-        </div>
-
-        <div className={styles.layout}>
-          <div className={styles.content}>
-            <p className={styles.eyebrow}>{positionLabel ?? "Clase"}</p>
-            <h1 className={styles.title}>{title}</h1>
-
-            {durationLabel && (
-              <span className={styles.durationChip}>
-                <Clock size={14} aria-hidden="true" />
-                {durationLabel}
-              </span>
-            )}
-
-            {classData.description && (
-              <p className={styles.description}>{classData.description}</p>
-            )}
-
-            <nav className={styles.classNav} aria-label="Navegación entre clases">
-              {prevClass ? (
-                <Link href={`/classes/${prevClass.id}`} className={styles.navButton}>
-                  <ChevronLeft size={18} aria-hidden="true" />
-                  <span>Anterior</span>
-                </Link>
-              ) : (
-                <span className={`${styles.navButton} ${styles.navButtonDisabled}`} aria-disabled="true">
-                  <ChevronLeft size={18} aria-hidden="true" />
-                  <span>Anterior</span>
-                </span>
-              )}
-
-              <Link href={backHref} className={styles.backButton} aria-label={backLabel}>
-                <ArrowLeft size={18} aria-hidden="true" />
-                <span>{backLabel}</span>
+      <div className={styles.shell}>
+        <nav className={styles.crumbs} aria-label="Breadcrumb">
+          <Link href="/" className={styles.crumbLink}>
+            Inicio
+          </Link>
+          <span className={styles.crumbSep} aria-hidden="true">
+            /
+          </span>
+          {courseSlug && (
+            <>
+              <Link href={`/course/${courseSlug}`} className={styles.crumbLink}>
+                {courseLabel ?? "Curso"}
               </Link>
+              <span className={styles.crumbSep} aria-hidden="true">
+                /
+              </span>
+            </>
+          )}
+          <span className={styles.crumbPill}>{title}</span>
+        </nav>
 
-              {nextClass ? (
-                <Link
-                  href={`/classes/${nextClass.id}`}
-                  className={`${styles.navButton} ${styles.navButtonNext}`}
-                >
-                  <span>Siguiente</span>
-                  <ChevronRight size={18} aria-hidden="true" />
-                </Link>
-              ) : (
-                <span
-                  className={`${styles.navButton} ${styles.navButtonNext} ${styles.navButtonDisabled}`}
-                  aria-disabled="true"
-                >
-                  <span>Siguiente</span>
-                  <ChevronRight size={18} aria-hidden="true" />
-                </span>
-              )}
-            </nav>
+        <article className={styles.card}>
+          <div className={styles.grid}>
+            <section className={styles.mainCol}>
+              <div className={styles.stage}>
+                <div className={styles.playerWrap}>
+                  <VideoPlayer src={video} title={title} />
+                </div>
+              </div>
+
+              <div className={styles.info}>
+                <div className={styles.metaRow}>
+                  <p className={styles.metaLabel}>{positionLabel ?? "Clase"}</p>
+                  {durationLabel && (
+                    <span className={styles.durationChip}>
+                      <Clock size={14} aria-hidden="true" />
+                      {durationLabel}
+                    </span>
+                  )}
+                </div>
+
+                <h1 className={styles.title}>{title}</h1>
+
+                {classData.description && (
+                  <p className={styles.description}>{classData.description}</p>
+                )}
+
+                <nav className={styles.classNav} aria-label="Navegación entre clases">
+                  {prevClass ? (
+                    <Link href={`/classes/${prevClass.id}`} className={styles.navButton}>
+                      <ChevronLeft size={18} aria-hidden="true" />
+                      <span>Anterior</span>
+                    </Link>
+                  ) : (
+                    <span
+                      className={`${styles.navButton} ${styles.navButtonDisabled}`}
+                      aria-disabled="true"
+                    >
+                      <ChevronLeft size={18} aria-hidden="true" />
+                      <span>Anterior</span>
+                    </span>
+                  )}
+
+                  <Link href={backHref} className={styles.navButton} aria-label={backLabel}>
+                    <ArrowLeft size={18} aria-hidden="true" />
+                    <span>{backLabel}</span>
+                  </Link>
+
+                  {nextClass ? (
+                    <Link href={`/classes/${nextClass.id}`} className={styles.navButton}>
+                      <span>Siguiente</span>
+                      <ChevronRight size={18} aria-hidden="true" />
+                    </Link>
+                  ) : (
+                    <span
+                      className={`${styles.navButton} ${styles.navButtonDisabled}`}
+                      aria-disabled="true"
+                    >
+                      <span>Siguiente</span>
+                      <ChevronRight size={18} aria-hidden="true" />
+                    </span>
+                  )}
+                </nav>
+              </div>
+            </section>
+
+            <TemarioSidebar
+              classes={courseClasses}
+              activeId={classData.id}
+              isLoggedIn={isLoggedIn}
+            />
           </div>
-
-          <TemarioSidebar
-            classes={courseClasses}
-            activeId={classData.id}
-            isLoggedIn={isLoggedIn}
-          />
-        </div>
-      </article>
+        </article>
+      </div>
     </main>
   );
 }

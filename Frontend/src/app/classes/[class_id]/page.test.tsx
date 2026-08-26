@@ -174,11 +174,15 @@ describe("ClassPage", () => {
 
     // Breadcrumb points at the parent course. While logged out, only the
     // classes beyond the current one (position > 2) carry a lock badge.
+    expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("href", "/");
     expect(screen.getByRole("link", { name: "Curso de Test" })).toHaveAttribute(
       "href",
       "/course/curso-test"
     );
     expect(screen.queryAllByText("Requiere cuenta gratuita")).toHaveLength(1);
+
+    // Curriculum panel header from the blueprint structure.
+    expect(screen.getByText("Contenido del curso")).toBeInTheDocument();
 
     // The current class is highlighted in the sidebar.
     const active = screen.getByRole("link", { current: true });
