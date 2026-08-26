@@ -30,6 +30,14 @@ interface Certificate {
   status: string;
 }
 
+// Row shape returned by GET /progress (cookie auth). Same contract as
+// Frontend/src/app/aula/page.tsx — used here only for `updated_at`, to
+// derive a real "last activity" signal instead of a fake streak counter.
+interface ProgressRow {
+  course_id: number;
+  updated_at: string | null;
+}
+
 const MONTHS_ES = [
   "Ene", "Feb", "Mar", "Abr", "May", "Jun",
   "Jul", "Ago", "Sep", "Oct", "Nov", "Dic",
@@ -43,6 +51,23 @@ function formatIssuedDate(iso: string): string {
 function initialsColor(name: string): string {
   const code = (name.charCodeAt(0) + (name.charCodeAt(1) || 0)) % 360;
   return `hsl(${code}, 55%, 42%)`;
+}
+
+/**
+ * Human label for the most recent activity timestamp across progress rows
+ * and certificates. Returns null when there's nothing to show yet — the
+ * caller renders a neutral placeholder instead of a fake number.
+ */
+function formatLastActivity(mostRecentIso: string | null): string {
+  if (!mostRecentIso) return "Sin actividad aún";
+
+  const then = new Date(mostRecentIso).getTime();
+  if (Number.isNaN(then)) return "Sin actividad aún";
+
+  const diffDays = Math.floor((Date.now() - then) / (1000 * 60 * 60 * 24));
+  if (diffDays <= 0) return "Hoy";
+  if (diffDays === 1) return "Ayer";
+  return `Hace ${diffDays} días`;
 }
 
 const MAX_AVATAR_SIZE = 2 * 1024 * 1024; // 2 MB
@@ -63,6 +88,9 @@ export default function PerfilPage() {
   // Certificates
   const [certs, setCerts] = useState<Certificate[]>([]);
   const [certsLoading, setCertsLoading] = useState(false);
+
+  // Progress rows, used only to derive "last activity" (see formatLastActivity).
+  const [progressRows, setProgressRows] = useState<ProgressRow[]>([]);
 
   // Avatar upload
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -108,7 +136,37 @@ export default function PerfilPage() {
     };
   }, [user]);
 
+  // Fetch progress rows (last-activity signal only)
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!user) {
+      setProgressRows([]);
+      return;
+    }
+
+    apiFetch<ProgressRow[]>("/progress", { skipAuthRedirect: true })
+      .then((rows) => {
+        if (!cancelled) setProgressRows(rows);
+      })
+      .catch((error) => {
+        console.error("Error fetching progress:", error);
+        if (!cancelled) setProgressRows([]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
   const loading = authLoading;
+
+  // Most recent timestamp across every progress row and certificate.
+  const lastActivityIso =
+    [...progressRows.map((p) => p.updated_at), ...certs.map((c) => c.issued_at)]
+      .filter((iso): iso is string => Boolean(iso))
+      .sort()
+      .at(-1) ?? null;
 
   // ── Avatar upload ──────────────────────────────────────────────
   const handleAvatarClick = useCallback(() => {
@@ -335,8 +393,10 @@ export default function PerfilPage() {
                   </div>
                   <div className={styles.streakRow}>
                     <Flame size={20} aria-hidden="true" />
-                    <span>Racha actual</span>
-                    <span className={styles.streakVal}>—</span>
+                    <span>Última actividad</span>
+                    <span className={styles.streakVal}>
+                      {formatLastActivity(lastActivityIso)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -347,7 +407,6 @@ export default function PerfilPage() {
                 <div className={styles.certsCard}>
                   <div className={styles.certsHeader}>
                     <h3 className={styles.cardHeading}>Últimos certificados</h3>
-                    <span className={styles.viewAll}>Ver todos</span>
                   </div>
                   {certs.length === 0 ? (
                     <p className={styles.bioText}>

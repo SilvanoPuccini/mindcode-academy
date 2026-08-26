@@ -25,7 +25,7 @@ class User(BaseModel):
     # Profile fields (editable by the user via /auth/me)
     bio = Column(Text, nullable=True, default=None)
     role = Column(String(255), nullable=True, default=None)
-    avatar_url = Column(String(512), nullable=True, default=None)
+    avatar_url = Column(Text, nullable=True, default=None)
 
     # Relationships
     favorites = relationship(

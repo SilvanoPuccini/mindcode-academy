@@ -35,13 +35,13 @@ COURSE_VIDEOS: dict[str, list[str]] = {
     "curso-python-desde-cero": [
         "https://www.youtube.com/watch?v=rfscVS0vtbw",  # Python Tutorial for Beginners (freeCodeCamp)
         "https://www.youtube.com/watch?v=kqtD5dpn9C8",  # Python for Beginners (Programming with Mosh)
-        "https://www.youtube.com/watch?v=i_LwzRVP7bg",  # Python for Data Science
+        "https://www.youtube.com/watch?v=9Os0o3wzS_I",  # Python Tutorial for Beginners 8: Functions (Corey Schafer)
     ],
     # 3. React (3 lessons)
     "curso-react-profesional": [
         "https://www.youtube.com/watch?v=LDB4uaJ87e0",  # React Tutorial for Beginners
         "https://www.youtube.com/watch?v=Ke90Tje7VS0",  # React Course for Beginners
-        "https://www.youtube.com/watch?v=gp5H0Vw39yw",  # TypeScript Generics (React+TS context)
+        "https://www.youtube.com/watch?v=Ul3y1LXxzdU",  # Learn React Router v6 In 45 Minutes (Web Dev Simplified)
     ],
     # 4. Node.js (2 lessons)
     "curso-backend-nodejs": [
@@ -51,70 +51,70 @@ COURSE_VIDEOS: dict[str, list[str]] = {
     # 5. AI/ML (2 lessons)
     "curso-inteligencia-artificial-python": [
         "https://www.youtube.com/watch?v=aircAruvnKk",  # Neural Networks Explained (3Blue1Brown)
-        "https://www.youtube.com/watch?v=i_LwzRVP7bg",  # Python for Data Science
+        "https://www.youtube.com/watch?v=pqNCD_5r0IU",  # Scikit-Learn Course - Machine Learning in Python (freeCodeCamp, supervised algorithms)
     ],
     # 6. UX/UI (3 lessons)
     "curso-diseno-ux-ui": [
-        "https://www.youtube.com/watch?v=jwCmIBJ8Jtc",  # Figma Tutorial for Beginners
-        "https://www.youtube.com/watch?v=BwuLxPH8IDs",  # TypeScript Tutorial (UI components context)
-        "https://www.youtube.com/watch?v=FXpIoQ_rT_c",  # Vue 3 Tutorial (frontend UI patterns)
+        "https://www.youtube.com/watch?v=PFQf21HP9-o",  # How to Create a Customer Journey Map | UX Research in 5 Minutes
+        "https://www.youtube.com/watch?v=JyCmacSyDY4",  # Tokens, variables, and styles - Intro to design systems (Figma)
+        "https://www.youtube.com/watch?v=_4yp6ZMsUeU",  # Prototype for Beginners | Figma Tutorial
     ],
     # 7. DevOps (4 lessons)
     "curso-devops-cloud": [
-        "https://www.youtube.com/watch?v=SOTamWNgDKc",  # AWS Tutorial for Beginners
+        "https://www.youtube.com/watch?v=j5Zsa_eOXeY",  # DevOps Engineering Course for Beginners (freeCodeCamp, culture/CI-CD/automation)
+        "https://www.youtube.com/watch?v=3c-iBn73dDE",  # Docker Tutorial for Beginners [FULL COURSE in 3 Hours] (TechWorld with Nana)
         "https://www.youtube.com/watch?v=X48VuDVv0do",  # Kubernetes Tutorial for Beginners
-        "https://www.youtube.com/watch?v=EV47Oxwet6Y",  # The Kubernetes Course 2025
-        "https://www.youtube.com/watch?v=Oe421EPjeBE",  # Node.js and Express (backend deploy context)
+        "https://www.youtube.com/watch?v=SOTamWNgDKc",  # AWS Tutorial for Beginners (EC2, S3, Lambda, RDS)
     ],
     # 8. Databases (5 lessons)
     "curso-bases-datos-sql-nosql": [
         "https://www.youtube.com/watch?v=HXV3zeQKqGY",  # SQL Tutorial - Full Database Course (freeCodeCamp)
         "https://www.youtube.com/watch?v=ztHopE5Wnpc",  # Database Design Course
-        "https://www.youtube.com/watch?v=qI_g07C_Q5I",  # PostgreSQL Tutorial for Beginners
+        "https://www.youtube.com/watch?v=AgkaFwwakFQ",  # PostgreSQL - How to use CTE
         "https://www.youtube.com/watch?v=-KC-XaoaThE",  # MongoDB Tutorial (El laboratorio de Rafa)
-        "https://www.youtube.com/watch?v=i_LwzRVP7bg",  # Python for Data Science (data context)
+        "https://www.youtube.com/watch?v=jgpVdJB2sKQ",  # Redis Crash Course (Web Dev Simplified)
     ],
     # 9. TypeScript (3 lessons)
     "curso-typescript-avanzado": [
         "https://www.youtube.com/watch?v=BwuLxPH8IDs",  # TypeScript Tutorial for Beginners
         "https://www.youtube.com/watch?v=gp5H0Vw39yw",  # TypeScript Generics
-        "https://www.youtube.com/watch?v=LDB4uaJ87e0",  # React Tutorial (TS+React context)
+        "https://www.youtube.com/watch?v=0ICXyv2puNU",  # The Complete TypeScript Setup: From Zero to Hero (strict mode/config)
     ],
     # 10. Git/GitHub (3 lessons)
     "curso-git-github-profesional": [
-        "https://www.youtube.com/watch?v=RGOj5yH7evk",  # GitHub Actions Tutorial
-        "https://www.youtube.com/watch?v=PkZNo7MFNFg",  # Learn JavaScript - Full Course (version control context)
-        "https://www.youtube.com/watch?v=Ke90Tje7VS0",  # React Course for Beginners (project workflow)
+        "https://www.youtube.com/watch?v=mAFoROnOfHs",  # Git & GitHub Crash Course for Beginners (freeCodeCamp)
+        "https://www.youtube.com/watch?v=Uszj_k0DGsg",  # Git for Professionals Tutorial - branching strategies (freeCodeCamp)
+        "https://www.youtube.com/watch?v=Xwpi0ITkL3U",  # Complete GitHub Actions Course - From BEGINNER to PRO (DevOps Directive)
     ],
     # 11. Vue.js (3 lessons)
     "curso-vuejs-3-desde-cero": [
         "https://www.youtube.com/watch?v=FXpIoQ_rT_c",  # Vue 3 Tutorial for Beginners
         "https://www.youtube.com/watch?v=I_xLMmNeLDY",  # The Ultimate Vue 3 Tutorial (Composition API)
-        "https://www.youtube.com/watch?v=hNPwdOZ3qFU",  # Vue 3 & Composition API - Full Project
+        "https://www.youtube.com/watch?v=vE2v_5Fypgk",  # Master State Management in Vue 3 with Pinia
     ],
     # 12. Cybersecurity (3 lessons)
     "curso-ciberseguridad": [
-        "https://www.youtube.com/watch?v=0FyWF76Iy9s",  # Kali Linux Tutorial
-        "https://www.youtube.com/watch?v=aircAruvnKk",  # Neural Networks (AI security context)
-        "https://www.youtube.com/watch?v=HXV3zeQKqGY",  # SQL Tutorial (SQL injection context)
+        "https://www.youtube.com/watch?v=0FyWF76Iy9s",  # Kali Linux Tutorial (fundamentals/threats)
+        "https://www.youtube.com/watch?v=X4eRbHgRawI",  # Web Application Ethical Hacking - Pen Testing Course (freeCodeCamp, XSS/CSRF/SQLi)
+        "https://www.youtube.com/watch?v=kb_scuDUHls",  # Cryptography for Beginners - Full Python Course (freeCodeCamp, SHA-256/AES/RSA)
     ],
     # 13. Flutter/Dart (3 lessons)
     "curso-flutter-dart": [
-        "https://www.youtube.com/watch?v=rfscVS0vtbw",  # Python Tutorial (programming fundamentals)
-        "https://www.youtube.com/watch?v=BwuLxPH8IDs",  # TypeScript Tutorial (typed language context)
-        "https://www.youtube.com/watch?v=LDB4uaJ87e0",  # React Tutorial (component-based UI)
+        "https://www.youtube.com/watch?v=Ej_Pcr4uC2Q",  # Dart Programming Tutorial - Full Course (freeCodeCamp)
+        "https://www.youtube.com/watch?v=yYxueTNIDlA",  # Flutter Layout Basics: Row, Column, Stack, Expanded, Container, ListView, GridView
+        "https://www.youtube.com/watch?v=BgcXHA3EHJU",  # Flutter Navigator 2.0 Tutorial for Beginners - Go Router
     ],
     # 14. Blockchain/Web3 (3 lessons)
     "curso-blockchain-web3": [
         "https://www.youtube.com/watch?v=SSo_EIwHSd4",  # Blockchain Tutorial for Beginners
         "https://www.youtube.com/watch?v=gyMwXuJrbJQ",  # Solidity Tutorial
-        "https://www.youtube.com/watch?v=ENrzD9HAZK4",  # Node.js Crash Course (Web3 backend)
+        "https://www.youtube.com/watch?v=hcTPjpPvas8",  # Web3.js Tutorial - Attach a GUI to your Ethereum Smart Contract
     ],
     # 15. R/Data Science (3 lessons)
     "curso-data-science-r": [
-        "https://www.youtube.com/watch?v=i_LwzRVP7bg",  # Python for Data Science (data science context)
-        "https://www.youtube.com/watch?v=rfscVS0vtbw",  # Python Tutorial (programming fundamentals)
-        "https://www.youtube.com/watch?v=aircAruvnKk",  # Neural Networks (ML/stats context)
+        "https://www.youtube.com/watch?v=_V8eKsto3Ug",  # R Programming Tutorial - Learn the Basics of Statistical Computing (freeCodeCamp)
+        "https://www.youtube.com/watch?v=hr2X7rmkprM",  # ggplot2 Tutorial | ggplot2 In R Tutorial | Data Visualization In R
+        "https://www.youtube.com/watch?v=66z_MRwtFJM",  # Simple Linear Regression in R | R Tutorial 5.1 | MarinStatsLectures
     ],
 }
 

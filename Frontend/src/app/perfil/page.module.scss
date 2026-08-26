@@ -382,16 +382,6 @@
   margin-bottom: var(--space-2);
 }
 
-.viewAll {
-  font-family: var(--font-inter);
-  font-size: 0.8rem;
-  color: var(--primary);
-  cursor: pointer;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
 
 .certsGrid {
   display: grid;
