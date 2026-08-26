@@ -29,8 +29,9 @@ export function Navbar() {
 
   const confirmLogout = useCallback(() => {
     setShowLogoutModal(false);
-    void logout();
     setMobileMenuOpen(false);
+    // Fire-and-forget: don't await — UI should be instant
+    void logout();
     router.push('/');
   }, [logout, router]);
 

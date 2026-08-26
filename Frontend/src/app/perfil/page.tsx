@@ -20,14 +20,25 @@ import { EmptyState } from "@/components/EmptyState/EmptyState";
 import { useAuth } from "@/hooks/useAuth";
 import { useCourses } from "@/contexts/CourseContext";
 import { updateProfile } from "@/services/authApi";
+import { apiFetch } from "@/lib/api";
 
-/* ------------------------------------------------------------------ */
-/* Demo certificates — no backend yet. Replace with real data later.   */
-/* ------------------------------------------------------------------ */
-const DEMO_CERTS = [
-  { title: "Curso de React", issued: "Ago 2026" },
-  { title: "Curso de Python", issued: "Jul 2026" },
+interface Certificate {
+  id: number;
+  course_name: string;
+  issued_at: string;
+  verification_code: string;
+  status: string;
+}
+
+const MONTHS_ES = [
+  "Ene", "Feb", "Mar", "Abr", "May", "Jun",
+  "Jul", "Ago", "Sep", "Oct", "Nov", "Dic",
 ];
+
+function formatIssuedDate(iso: string): string {
+  const d = new Date(iso);
+  return `${MONTHS_ES[d.getMonth()]} ${d.getFullYear()}`;
+}
 
 function initialsColor(name: string): string {
   const code = (name.charCodeAt(0) + (name.charCodeAt(1) || 0)) % 360;
@@ -49,6 +60,10 @@ export default function PerfilPage() {
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
 
+  // Certificates
+  const [certs, setCerts] = useState<Certificate[]>([]);
+  const [certsLoading, setCertsLoading] = useState(false);
+
   // Avatar upload
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -63,6 +78,34 @@ export default function PerfilPage() {
       setFormBio(user.bio ?? "");
       setAvatarPreview(user.avatar_url ?? null);
     }
+  }, [user]);
+
+  // Fetch certificates
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!user) {
+      setCerts([]);
+      return;
+    }
+
+    setCertsLoading(true);
+
+    apiFetch<Certificate[]>("/certificates/me", { skipAuthRedirect: true })
+      .then((data) => {
+        if (!cancelled) setCerts(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching certificates:", error);
+        if (!cancelled) setCerts([]);
+      })
+      .finally(() => {
+        if (!cancelled) setCertsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   const loading = authLoading;
@@ -249,20 +292,13 @@ export default function PerfilPage() {
                     <BookOpen size={18} aria-hidden="true" />
                     Sobre mí
                   </h3>
+                  {user.role && (
+                    <span className={styles.roleBadge}>{user.role}</span>
+                  )}
                   <p className={styles.bioText}>
                     {user.bio ||
                       "Aún no escribiste tu bio. Contanos sobre vos y tu stack tecnológico."}
                   </p>
-                  {/* Skill tags — from user role */}
-                  {user.role && (
-                    <div className={styles.tags}>
-                      {user.role.split(/[,\s]+/).filter(Boolean).map((t) => (
-                        <span key={t} className={styles.tag}>
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </div>
 
                 {/* Stats card */}
@@ -282,7 +318,7 @@ export default function PerfilPage() {
                       <Award size={20} aria-hidden="true" />
                     </div>
                     <div>
-                      <span className={styles.statNum}>{DEMO_CERTS.length}</span>
+                      <span className={styles.statNum}>{certs.length}</span>
                       <span className={styles.statLabel}>Certificados</span>
                     </div>
                   </div>
@@ -313,17 +349,28 @@ export default function PerfilPage() {
                     <h3 className={styles.cardHeading}>Últimos certificados</h3>
                     <span className={styles.viewAll}>Ver todos</span>
                   </div>
-                  <div className={styles.certsGrid}>
-                    {DEMO_CERTS.map((c) => (
-                      <div key={c.title} className={styles.certItem}>
-                        <Award size={28} className={styles.certIcon} aria-hidden="true" />
-                        <div>
-                          <h4 className={styles.certTitle}>{c.title}</h4>
-                          <p className={styles.certDate}>Emitido: {c.issued}</p>
+                  {certs.length === 0 ? (
+                    <p className={styles.bioText}>
+                      {certsLoading ? "Cargando certificados…" : "Aún no tenés certificados"}
+                    </p>
+                  ) : (
+                    <div className={styles.certsGrid}>
+                      {certs.map((c) => (
+                        <div key={c.id} className={styles.certItem}>
+                          <Award size={28} className={styles.certIcon} aria-hidden="true" />
+                          <div>
+                            <h4 className={styles.certTitle}>{c.course_name}</h4>
+                            <p className={styles.certDate}>
+                              Emitido: {formatIssuedDate(c.issued_at)}
+                            </p>
+                            <p className={styles.certDate}>
+                              Código: {c.verification_code}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Account Settings */}

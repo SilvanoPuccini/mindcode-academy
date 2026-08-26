@@ -2,9 +2,11 @@
 Service for managing user course progress.
 """
 
+import uuid
+from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from app.models import UserCourseProgress, Course, Lesson
+from app.models import UserCourseProgress, Course, Lesson, Certificate
 from typing import List, Optional, Dict
 
 
@@ -67,6 +69,27 @@ class ProgressService:
 
         self.db.commit()
         self.db.refresh(progress)
+
+        # Auto-generate certificate on course completion
+        if progress.progress_percentage >= 100.0:
+            existing_cert = (
+                self.db.query(Certificate)
+                .filter(
+                    Certificate.user_id == user_id,
+                    Certificate.course_id == course_id,
+                )
+                .first()
+            )
+            if not existing_cert:
+                cert = Certificate(
+                    user_id=user_id,
+                    course_id=course_id,
+                    issued_at=datetime.utcnow(),
+                    verification_code=str(uuid.uuid4()),
+                    status="active",
+                )
+                self.db.add(cert)
+                self.db.commit()
 
         return progress
 

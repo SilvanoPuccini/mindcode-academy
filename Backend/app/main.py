@@ -18,7 +18,7 @@ from app.schemas.rating import (
 )
 
 # Import routers
-from app.routers import auth, favorites, progress
+from app.routers import auth, favorites, progress, certificates
 
 app = FastAPI(
     title=settings.project_name,
@@ -94,6 +94,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(favorites.router)
 app.include_router(progress.router)
+app.include_router(certificates.router)
 
 
 def get_course_service(db: Session = Depends(get_db)) -> CourseService:

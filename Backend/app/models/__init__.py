@@ -10,6 +10,7 @@ from .course_rating import CourseRating
 from .user import User
 from .user_favorite import UserFavorite
 from .user_course_progress import UserCourseProgress
+from .certificate import Certificate
 
 # Export all models for easy importing
 __all__ = [
@@ -23,4 +24,5 @@ __all__ = [
     'User',
     'UserFavorite',
     'UserCourseProgress',
+    'Certificate',
 ] 
