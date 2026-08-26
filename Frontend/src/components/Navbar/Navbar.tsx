@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { Moon, Sun, Search as SearchIcon, X } from 'lucide-react';
+import { Moon, Sun, Search as SearchIcon } from 'lucide-react';
 import styles from './Navbar.module.scss';
 import { useCourses } from '@/contexts/CourseContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -159,9 +159,8 @@ export function Navbar() {
       <div className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ''}`}>
         <div className={styles.mobileMenuHeader}>
           <Logo withWordmark onClick={toggleMobileMenu} />
-          <button className={styles.closeBtn} onClick={toggleMobileMenu} aria-label="Cerrar menú">
-            <X size={24} aria-hidden="true" />
-          </button>
+          {/* No separate close button: the animated hamburger in the
+              navbar already toggles to an X state and closes the menu. */}
         </div>
 
         <nav className={styles.mobileNav}>

@@ -148,33 +148,16 @@
 }
 
 .subscribeButton {
+  @include btn-primary;
   padding: 0.65rem 1.5rem;
   border-radius: var(--radius-md);
-  border: 0;
-  background: linear-gradient(120deg, color('primary'), color('primary-hover'));
-  color: #FFFFFF;
   font-family: var(--font-inter);
   font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    filter var(--speed-fast) ease,
-    transform var(--speed-fast) ease;
-
-  &:hover {
-    filter: brightness(1.08);
-    transform: translateY(-1px);
-  }
+  white-space: nowrap;
 
   &:focus-visible {
-    outline: 2px solid #F1F5F9;
+    outline: 2px solid var(--primary);
     outline-offset: 3px;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    &:hover {
-      transform: none;
-    }
   }
 }
 

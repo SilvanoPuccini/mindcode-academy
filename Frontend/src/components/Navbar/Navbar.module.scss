@@ -350,30 +350,6 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-.closeBtn {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
-  background: transparent;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-  }
-
-  &:hover {
-    background: var(--primary-light);
-    border-color: var(--primary-border);
-    color: var(--primary-hover);
-  }
-}
 
 .mobileNav {
   flex: 1;
