@@ -167,6 +167,20 @@
   font-size: 1.125rem;
 }
 
+// Discrete "Limpiar filtros" link under the section subtitle.
+.clearFiltersLink {
+  @include btn-ghost;
+  margin-top: var(--space-1);
+  font-size: 0.85rem;
+  color: var(--text-tertiary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+
+  &:hover {
+    color: var(--primary-hover);
+  }
+}
+
 // Branded spinner container while the catalog list resolves.
 .catalogLoading {
   display: flex;

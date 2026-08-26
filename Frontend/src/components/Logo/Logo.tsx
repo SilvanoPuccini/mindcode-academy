@@ -18,7 +18,7 @@ interface LogoProps {
  * the full Navbar but still need a clickable way back home.
  */
 export function Logo({
-  size = 36,
+  size = 44,
   withWordmark = false,
   className,
   onClick,

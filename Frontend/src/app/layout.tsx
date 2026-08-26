@@ -87,7 +87,7 @@ export const metadata: Metadata = {
     title: "MindCode Academy",
   },
   icons: {
-    icon: "/icons/icon-192.png",
+    icon: "/favicon.svg",
     apple: "/icons/icon-192.png",
   },
 };

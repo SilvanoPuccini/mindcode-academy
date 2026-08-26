@@ -57,7 +57,7 @@ const CourseCardWrapper = ({ course }: { course: Course }) => {
 };
 
 export default function Home() {
-  const { allCourses, filteredCourses, filters, setFilters, setAllCourses } = useCourses();
+  const { allCourses, filteredCourses, filters, setFilters, setAllCourses, searchQuery } = useCourses();
   const { isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>("rating");
@@ -234,6 +234,18 @@ export default function Home() {
                       ? "Cargando..."
                       : `${visibleCourses.length} cursos encontrados para tu próxima meta`}
                   </p>
+                  {/* Discrete clear-filters link when any filter is active */}
+                  {(filters.category !== 1 || filters.durations.length > 0 || filters.minRating > 0 || searchQuery.trim()) && (
+                    <button
+                      type="button"
+                      className={styles.clearFiltersLink}
+                      onClick={() => {
+                        setFilters({ category: 1, durations: [], minRating: 0 });
+                      }}
+                    >
+                      Limpiar filtros
+                    </button>
+                  )}
                 </div>
 
                 <div className={styles.sortControl}>
