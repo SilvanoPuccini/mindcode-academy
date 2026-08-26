@@ -59,7 +59,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: color('accent');
+  color: var(--accent);
   margin-bottom: 0.5rem;
 }
 
@@ -76,11 +76,9 @@
 }
 
 .highlight {
-  background: linear-gradient(135deg, color('accent') 0%, color('secondary') 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 15px color('accent-glow'));
+  // "de cursos" in brand primary; theme-aware
+  // via the custom property (light/dark variants).
+  color: var(--primary);
 }
 
 .sectionSubtitle {

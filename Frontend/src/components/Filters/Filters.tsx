@@ -95,9 +95,11 @@ export function Filters() {
               key={category.id}
               className={`${styles.categoryBtn} ${filters.category === category.id ? styles.active : ''} ripple-container`}
               onClick={() => handleCategoryChange(category.id)}
+              aria-pressed={filters.category === category.id}
               {...rippleProps}
             >
-              <span>{category.label}</span>
+              <span className={styles.radioDot} aria-hidden="true" />
+              <span className={styles.categoryLabel}>{category.label}</span>
               <span className={styles.count}>{category.count}</span>
             </button>
           ))}

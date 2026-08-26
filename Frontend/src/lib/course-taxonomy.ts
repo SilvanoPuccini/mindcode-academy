@@ -2,16 +2,21 @@ import { Course } from '@/types';
 import { normalizeText } from '@/lib/course-search';
 import type { LucideIcon } from 'lucide-react';
 import {
-  Code2,
-  Brain,
+  Atom,
+  Layers,
+  Terminal,
+  Code,
+  Server,
   Smartphone,
-  Palette,
+  Boxes,
+  BrainCircuit,
   Cloud,
-  Blocks,
-  ShieldCheck,
   Database,
   GitBranch,
-  Shapes,
+  Palette,
+  ShieldCheck,
+  FileCode2,
+  GitCommit,
 } from 'lucide-react';
 
 export interface CourseCategory {
@@ -35,31 +40,31 @@ const CATEGORY_RULES: CategoryRule[] = [
   {
     key: 'react',
     label: 'React',
-    icon: Code2,
+    icon: Atom,
     patterns: [/\breact\b/, /\bnext\.?js\b/],
   },
   {
     key: 'vue',
     label: 'Vue.js',
-    icon: Code2,
+    icon: Layers,
     patterns: [/\bvue\.?js?\b/],
   },
   {
     key: 'typescript',
     label: 'TypeScript',
-    icon: Code2,
+    icon: Terminal,
     patterns: [/\btypescript\b/],
   },
   {
     key: 'javascript',
     label: 'JavaScript',
-    icon: Code2,
+    icon: Code,
     patterns: [/\bjavascript\b/, /\bjs\b/],
   },
   {
     key: 'backend-node',
     label: 'Backend & Node.js',
-    icon: Code2,
+    icon: Server,
     patterns: [/\bnode\.?js\b/, /\bexpress\b/, /\bbackend\b/, /\bapi(s)?\b/],
   },
   {
@@ -71,13 +76,13 @@ const CATEGORY_RULES: CategoryRule[] = [
   {
     key: 'blockchain-web3',
     label: 'Blockchain & Web3',
-    icon: Blocks,
+    icon: Boxes,
     patterns: [/blockchain/, /\bweb3\b/, /\bsolidity\b/, /\bsmart contracts?\b/, /\bnft(s)?\b/],
   },
   {
     key: 'ia-ml',
     label: 'IA & Machine Learning',
-    icon: Brain,
+    icon: BrainCircuit,
     patterns: [
       /inteligencia artificial/,
       /\bia\b/,
@@ -123,7 +128,7 @@ const CATEGORY_RULES: CategoryRule[] = [
   {
     key: 'python',
     label: 'Python',
-    icon: Code2,
+    icon: FileCode2,
     patterns: [/\bpython\b/, /\bdjango\b/, /\bflask\b/],
   },
 ];
@@ -131,7 +136,7 @@ const CATEGORY_RULES: CategoryRule[] = [
 const FALLBACK_RULE: CategoryRule = {
   key: 'otros',
   label: 'Otros',
-  icon: Shapes,
+  icon: GitCommit,
   patterns: [],
 };
 
