@@ -5,7 +5,6 @@ import { CourseDetailComponent } from './CourseDetail';
 import styles from './CourseDetail.module.scss';
 import { apiFetch, publicFetch } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/contexts/ToastContext';
 import { CourseDetail } from '@/types';
 
 vi.mock('@/lib/api', () => ({

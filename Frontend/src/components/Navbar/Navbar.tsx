@@ -99,6 +99,7 @@ export function Navbar() {
             )}
           </Link>
           <Link href="/ayuda" className={styles.menuItem}>Ayuda</Link>
+          <Link href="/comunidad" className={styles.menuItem}>Comunidad</Link>
         </div>
 
         {/* Actions */}
@@ -180,6 +181,9 @@ export function Navbar() {
           </Link>
           <Link href="/ayuda" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
             Ayuda
+          </Link>
+          <Link href="/comunidad" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
+            Comunidad
           </Link>
         </nav>
 

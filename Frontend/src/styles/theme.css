@@ -13,6 +13,7 @@
   --bg-secondary: #FFFFFF;
   --bg-tertiary: #EFEAE3;
   --bg-card: #FFFFFF;
+  --bg-card-glass: rgba(255, 255, 255, 0.6);
 
   /* Text: primary ~16:1, secondary ~8:1, tertiary
      ~4.6:1 on white - all clear AA, body text AAA. */
@@ -88,6 +89,7 @@
   --bg-secondary: #1E293B;
   --bg-tertiary: #334155;
   --bg-card: #1E293B;
+  --bg-card-glass: rgba(30, 41, 59, 0.6);
 
   --text-primary: #F1F5F9;
   --text-secondary: #CBD5E1;
