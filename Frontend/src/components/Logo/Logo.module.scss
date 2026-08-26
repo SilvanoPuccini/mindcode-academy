@@ -58,5 +58,6 @@
   letter-spacing: 0.35em;
   text-transform: uppercase;
   line-height: 1;
-  color: var(--text-strong);
+  /* text-primary flips to white in dark mode (text-strong stays dark there) */
+  color: var(--text-primary);
 }

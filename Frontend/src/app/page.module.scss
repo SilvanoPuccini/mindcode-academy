@@ -174,3 +174,8 @@
   justify-content: center;
   min-height: 40vh;
 }
+
+// Anonymous visitors: catalog runs full-width without the sidebar column.
+.contentSectionSingle {
+  display: block;
+}

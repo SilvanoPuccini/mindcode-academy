@@ -14,6 +14,7 @@ import { Testimonials } from "@/components/Testimonials/Testimonials";
 import { Footer } from "@/components/Footer/Footer";
 import { ScrollProgress } from "@/components/ScrollProgress/ScrollProgress";
 import { useCourses } from "@/contexts/CourseContext";
+import { useAuth } from "@/hooks/useAuth";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { focusSearchInput, SEARCH_HASH } from "@/hooks/useSearchFocus";
 import { buildCategories, inferCategory } from "@/lib/course-taxonomy";
@@ -57,6 +58,7 @@ const CourseCardWrapper = ({ course }: { course: Course }) => {
 
 export default function Home() {
   const { allCourses, filteredCourses, filters, setFilters, setAllCourses } = useCourses();
+  const { isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>("rating");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -210,10 +212,10 @@ export default function Home() {
         <Categories />
 
         {/* Main Content with Filters */}
-        <main className={styles.contentSection} id="catalogo">
+        <main className={`${styles.contentSection} ${isAuthenticated ? "" : styles.contentSectionSingle}`} id="catalogo">
           <div className={styles.container}>
-            {/* Filters Sidebar */}
-            <Filters />
+            {/* Filters Sidebar: reserved for logged-in users */}
+            {isAuthenticated && <Filters />}
 
             {/* Courses Grid */}
             <div className={styles.coursesWrapper}>
