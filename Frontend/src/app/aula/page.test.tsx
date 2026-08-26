@@ -155,14 +155,15 @@ describe("AulaPage", () => {
     // Header identity
     expect(await screen.findByText("Tu aprendizaje")).toBeInTheDocument();
 
-    // Stats strip: 1 en progreso, 1 completado, 1 favorito
-    expect(screen.getByText("curso en progreso")).toBeInTheDocument();
+    // Stats strip renders once the /progress fetch settles; await it to
+    // avoid a race between auth boot and progress state updates (flaky on CI).
+    expect(await screen.findByText("curso en progreso")).toBeInTheDocument();
     expect(screen.getByText("completado")).toBeInTheDocument();
     expect(screen.getByText("favorito")).toBeInTheDocument();
 
     // Continuar viendo: only the row whose course exists (66% -> 67%)
     expect(
-      screen.getByRole("heading", { name: "Continuar viendo" })
+      await screen.findByRole("heading", { name: "Continuar viendo" })
     ).toBeInTheDocument();
     const continueCard = screen
       .getByText("Curso de React")
