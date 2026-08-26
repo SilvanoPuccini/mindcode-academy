@@ -16,6 +16,7 @@ import { Course as CourseType } from "@/types";
 import { Navbar } from "@/components/Navbar/Navbar";
 import { Footer } from "@/components/Footer/Footer";
 import { ScrollProgress } from "@/components/ScrollProgress/ScrollProgress";
+import { LoadingBrand } from "@/components/LoadingBrand/LoadingBrand";
 import { EmptyState } from "@/components/EmptyState/EmptyState";
 import { useCourses } from "@/contexts/CourseContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -140,7 +141,7 @@ export default function AulaPage() {
           </header>
 
           {loadingPage ? (
-            <div className={styles.loading}>Cargando tu aula...</div>
+            <LoadingBrand text="Cargando tu aula…" />
           ) : !isAuthenticated ? (
             <EmptyState
               icon={<LogIn size={40} aria-hidden="true" />}

@@ -168,3 +168,11 @@
   font-family: var(--font-inter);
   font-size: 1.125rem;
 }
+
+// Branded spinner container while the catalog list resolves.
+.catalogLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+}

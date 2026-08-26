@@ -18,6 +18,7 @@ import { formatDuration } from "@/lib/format-duration";
 import { useAuth } from "@/hooks/useAuth";
 import { ScrollToTopOnMount } from "@/components/ScrollToTopOnMount/ScrollToTopOnMount";
 import { Breadcrumbs } from "@/components/Breadcrumbs/Breadcrumbs";
+import { LoadingBrand } from "@/components/LoadingBrand/LoadingBrand";
 import { VideoPlayer } from "@/components/VideoPlayer/VideoPlayer";
 import styles from "./page.module.scss";
 
@@ -74,13 +75,7 @@ function LoadingSkeleton() {
       role="status"
       aria-label="Cargando clase"
     >
-      <div className={`${styles.skeletonStage} ${styles.shimmer}`} />
-      <div className={styles.skeletonBody}>
-        <div className={`${styles.skeletonLine} ${styles.skeletonLineShort} ${styles.shimmer}`} />
-        <div className={`${styles.skeletonLine} ${styles.skeletonLineTitle} ${styles.shimmer}`} />
-        <div className={`${styles.skeletonLine} ${styles.shimmer}`} />
-        <div className={`${styles.skeletonLine} ${styles.skeletonLineShort} ${styles.shimmer}`} />
-      </div>
+      <LoadingBrand text="Cargando clase…" />
     </div>
   );
 }

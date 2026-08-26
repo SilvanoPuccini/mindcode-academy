@@ -13,12 +13,12 @@ import { ActiveFilters } from "@/components/ActiveFilters/ActiveFilters";
 import { Testimonials } from "@/components/Testimonials/Testimonials";
 import { Footer } from "@/components/Footer/Footer";
 import { ScrollProgress } from "@/components/ScrollProgress/ScrollProgress";
-import { SkeletonCourse } from "@/components/SkeletonCourse/SkeletonCourse";
 import { useCourses } from "@/contexts/CourseContext";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { focusSearchInput, SEARCH_HASH } from "@/hooks/useSearchFocus";
 import { buildCategories, inferCategory } from "@/lib/course-taxonomy";
 import { fetchWithTimeout } from "@/lib/safe-fetch";
+import { LoadingBrand } from "@/components/LoadingBrand/LoadingBrand";
 import Link from "next/link";
 
 type SortOption = "rating" | "classes" | "name";
@@ -255,11 +255,9 @@ export default function Home() {
 
               <div className={styles.coursesGrid}>
                 {loading ? (
-                  <>
-                    {Array.from({ length: 6 }).map((_, index) => (
-                      <SkeletonCourse key={index} />
-                    ))}
-                  </>
+                  <div className={styles.catalogLoading} aria-busy="true">
+                    <LoadingBrand text="Cargando cursos…" />
+                  </div>
                 ) : visibleCourses.length === 0 ? (
                   <div className={styles.emptyMessage}>
                     <p>No se encontraron cursos con los filtros seleccionados</p>
