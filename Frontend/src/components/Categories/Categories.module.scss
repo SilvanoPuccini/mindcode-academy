@@ -1,10 +1,9 @@
 @import '@/styles/vars.scss';
+@import '@/styles/controls';
 
 .categories {
   padding: var(--space-6) 0;
   position: relative;
-  // Keep anchored section titles clear of the
-  // fixed navbar when navigating to #categorias.
   scroll-margin-top: 96px;
 }
 
@@ -27,8 +26,6 @@
   }
 }
 
-// Last word of the heading, accent-forward.
-// CSS custom properties keep it theme-aware.
 .highlight {
   background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
   -webkit-background-clip: text;
@@ -37,26 +34,111 @@
 }
 
 // --------------------------------------------
-// Tile grid: 2 columns on phones, 3 on tablet,
-// 5 from desktop up (blueprint rhythm).
+// Reel wrapper: holds arrows + scrollable grid
 // --------------------------------------------
-.grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+.reelWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
   gap: var(--space-2);
+}
 
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+// --------------------------------------------
+// Arrow buttons: reuse the shared arrow-glass
+// mixin from _controls.scss (same as Testimonials).
+// --------------------------------------------
+.navBtn {
+  @include arrow-glass;
+  flex-shrink: 0;
+  z-index: 10;
+
+  // Desktop: centered vertically outside the grid
+  @media (min-width: 769px) {
+    position: relative;
   }
 
-  @media (max-width: 640px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  // Mobile: overlay on top of the grid
+  @media (max-width: 768px) {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @media (max-width: 768px) {
+      &:hover {
+        transform: translateY(-50%) translateY(-1px);
+      }
+      &:active {
+        transform: translateY(-50%) scale(0.94);
+      }
+    }
+  }
+}
+
+.navPrev {
+  @media (max-width: 768px) {
+    left: 0.25rem;
+  }
+}
+
+.navNext {
+  @media (max-width: 768px) {
+    right: 0.25rem;
   }
 }
 
 // --------------------------------------------
-// Category tile: icon chip + name + count,
-// all centered like the reference layout.
+// Reel: fixed-height viewport that holds the
+// 2-row grid. Overflow hidden clips off-page
+// categories. On expand (hover 3s), height
+// grows to fit all rows.
+// --------------------------------------------
+.reel {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  // Exactly 2 rows tall (each ~128px card + gap).
+  max-height: calc((128px + var(--space-2)) * 2);
+  transition: max-height 0.35s ease;
+
+  &.expanded {
+    // Let it grow to fit all categories.
+    max-height: 2000px;
+  }
+
+  @media (max-width: 640px) {
+    max-height: calc((110px + var(--space-2)) * 2);
+    &.expanded {
+      max-height: 2000px;
+    }
+  }
+}
+
+// --------------------------------------------
+// Row: up to 5 cards per row, evenly spaced.
+// --------------------------------------------
+.row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-2);
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+// --------------------------------------------
+// Category tile: icon chip + name + count.
+// Same card recipe as before, tuned for the
+// 5-column rhythm.
 // --------------------------------------------
 .card {
   background: var(--bg-card);
@@ -108,6 +190,21 @@
   &:active {
     transform: translateY(-1px);
   }
+
+  @media (max-width: 640px) {
+    min-height: 110px;
+    padding: var(--space-2) var(--space-1);
+  }
+}
+
+// Invisible placeholder keeps grid alignment
+// when the last row is incomplete.
+.cardPlaceholder {
+  min-height: 128px;
+
+  @media (max-width: 640px) {
+    min-height: 110px;
+  }
 }
 
 .categoryIcon {
@@ -138,4 +235,42 @@
   font-family: var(--font-inter);
   font-size: 0.75rem;
   color: var(--text-secondary);
+}
+
+// --------------------------------------------
+// Page dots: small pill indicators below the
+// reel, same visual language as Testimonials.
+// --------------------------------------------
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: var(--space-3);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: var(--border-color);
+  transition:
+    background var(--speed-fast) ease,
+    width var(--speed-fast) ease;
+
+  &:hover {
+    background: var(--primary-border);
+  }
+
+  &.dotActive {
+    width: 24px;
+    background: var(--primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
 }

@@ -15,28 +15,40 @@ import { useAuth } from "@/hooks/useAuth";
 import { publicFetch } from "@/lib/api";
 
 export default function FavoritesPage() {
-  const { favorites, favoritesLoading, setAllCourses } = useCourses();
-  const [coursesLoading, setCoursesLoading] = useState(true);
-  const [allCourses, setLocalCourses] = useState<CourseType[]>([]);
+  const { favorites, favoritesLoading, allCourses: contextCourses, setAllCourses } = useCourses();
+  const [localCourses, setLocalCourses] = useState<CourseType[]>([]);
+  const allCourses = contextCourses.length > 0 ? contextCourses : localCourses;
+  const [coursesLoading, setCoursesLoading] = useState(allCourses.length > 0);
   // Session truth lives in the httpOnly cookie; useAuth() hydrates the
   // profile from GET /auth/me at boot (no localStorage token to probe).
   const { isAuthenticated: isLoggedIn } = useAuth();
 
   useEffect(() => {
+    // If CourseContext already has courses (navigated from home), skip the fetch.
+    if (contextCourses.length > 0) {
+      setCoursesLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
     async function getCourses() {
       try {
         const data = await publicFetch<CourseType[]>("/courses", { cache: "no-store" });
-        setAllCourses(data);
-        setLocalCourses(data);
+        if (!cancelled) {
+          setAllCourses(data);
+          setLocalCourses(data);
+        }
       } catch (error) {
         console.error("Error fetching courses:", error);
       } finally {
-        setCoursesLoading(false);
+        if (!cancelled) setCoursesLoading(false);
       }
     }
 
     getCourses();
-  }, [setAllCourses]);
+    return () => { cancelled = true; };
+  }, [setAllCourses, contextCourses.length]);
 
   const loading = coursesLoading || favoritesLoading;
   const favoriteCourses = allCourses.filter(course => favorites.includes(course.id));

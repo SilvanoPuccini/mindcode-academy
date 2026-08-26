@@ -35,19 +35,27 @@ interface ProgressRow {
 }
 
 export default function AulaPage() {
-  const { favorites, setAllCourses } = useCourses();
+  const { favorites, allCourses: contextCourses, setAllCourses } = useCourses();
   const { isAuthenticated, loading: authLoading } = useAuth();
 
-  // Same catalog bootstrap as /favorites: the context may arrive empty on
-  // a cold navigation to this route, so fetch the list and share it back.
-  const [allCourses, setLocalCourses] = useState<CourseType[]>([]);
-  const [coursesLoading, setCoursesLoading] = useState(true);
+  // Local fallback: when context already has courses (navigated from home)
+  // we use those; otherwise we fetch and keep a local copy so the page
+  // works even if setAllCourses is a no-op (e.g. in tests).
+  const [localCourses, setLocalCourses] = useState<CourseType[]>([]);
+  const allCourses = contextCourses.length > 0 ? contextCourses : localCourses;
+  const [coursesLoading, setCoursesLoading] = useState(allCourses.length === 0);
 
   // Progress rows for the authenticated session (empty while anonymous).
   const [progressRows, setProgressRows] = useState<ProgressRow[]>([]);
   const [progressLoading, setProgressLoading] = useState(true);
 
   useEffect(() => {
+    // If CourseContext already has courses, skip the fetch.
+    if (contextCourses.length > 0) {
+      setCoursesLoading(false);
+      return;
+    }
+
     let cancelled = false;
 
     async function getCourses() {
@@ -67,7 +75,7 @@ export default function AulaPage() {
     return () => {
       cancelled = true;
     };
-  }, [setAllCourses]);
+  }, [setAllCourses, contextCourses.length]);
 
   useEffect(() => {
     let cancelled = false;

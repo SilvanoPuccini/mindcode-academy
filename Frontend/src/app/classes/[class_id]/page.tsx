@@ -353,7 +353,7 @@ export default function ClassPage() {
       ? courseClasses[currentIndex + 1]
       : null;
 
-  const backHref = courseSlug ?? "/#catalogo";
+  const backHref = courseSlug ? `/course/${courseSlug}` : "/#catalogo";
   const backLabel = courseSlug ? "Volver al curso" : "Volver al catálogo";
 
   return (
