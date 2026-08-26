@@ -37,6 +37,9 @@ class UserResponse(BaseModel):
     name: str
     is_active: bool
     is_verified: bool
+    bio: Optional[str] = None
+    role: Optional[str] = None
+    avatar_url: Optional[str] = None
     created_at: Optional[datetime] = None
 
     class Config:
@@ -54,6 +57,9 @@ class UserUpdateRequest(BaseModel):
     """Schema for updating user profile."""
     name: Optional[str] = Field(None, min_length=2, max_length=255)
     email: Optional[EmailStr] = None
+    bio: Optional[str] = Field(None, max_length=1000)
+    role: Optional[str] = Field(None, max_length=255)
+    avatar_url: Optional[str] = Field(None, max_length=512)
 
 
 class PasswordChangeRequest(BaseModel):

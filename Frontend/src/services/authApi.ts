@@ -42,6 +42,9 @@ export interface AuthUser {
   name: string;
   is_active: boolean;
   is_verified: boolean;
+  bio: string | null;
+  role: string | null;
+  avatar_url: string | null;
   created_at: string | null;
 }
 
@@ -211,4 +214,24 @@ function clearSession(): void {
   notifyAuthChange();
 }
 
-export { clearSession, fetchCurrentUser, getUser, login, logout, register };
+/**
+ * Update the current user's profile via PUT /auth/me.
+ * Returns the refreshed profile and persists it locally.
+ */
+async function updateProfile(data: {
+  name?: string;
+  email?: string;
+  bio?: string;
+  role?: string;
+  avatar_url?: string;
+}): Promise<AuthUser> {
+  const updated = await apiFetch<AuthUser>('/auth/me', {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+  persistUser(updated);
+  notifyAuthChange();
+  return updated;
+}
+
+export { clearSession, fetchCurrentUser, getUser, login, logout, register, updateProfile };

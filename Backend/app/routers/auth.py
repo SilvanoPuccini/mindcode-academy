@@ -160,12 +160,15 @@ def update_current_user(
     """
     Update current user profile.
 
-    Can update: name, email
+    Can update: name, email, bio, role, avatar_url
     """
     updated_user = auth_service.update_user(
         user_id=current_user.id,
         name=update_data.name,
-        email=update_data.email
+        email=update_data.email,
+        bio=update_data.bio,
+        role=update_data.role,
+        avatar_url=update_data.avatar_url,
     )
 
     if not updated_user:

@@ -18,6 +18,9 @@ const user: AuthUser = {
   name: "Test User",
   is_active: true,
   is_verified: false,
+  bio: null,
+  role: null,
+  avatar_url: null,
   created_at: null,
 };
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Boolean
+from sqlalchemy import Column, String, Boolean, Text
 from sqlalchemy.orm import relationship
 from .base import BaseModel
 
@@ -21,6 +21,11 @@ class User(BaseModel):
     name = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
     is_verified = Column(Boolean, default=False, nullable=False)
+
+    # Profile fields (editable by the user via /auth/me)
+    bio = Column(Text, nullable=True, default=None)
+    role = Column(String(255), nullable=True, default=None)
+    avatar_url = Column(String(512), nullable=True, default=None)
 
     # Relationships
     favorites = relationship(
@@ -54,6 +59,9 @@ class User(BaseModel):
             "name": self.name,
             "is_active": self.is_active,
             "is_verified": self.is_verified,
+            "bio": self.bio,
+            "role": self.role,
+            "avatar_url": self.avatar_url,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 

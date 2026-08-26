@@ -100,6 +100,9 @@ export function Navbar() {
           </Link>
           <Link href="/ayuda" className={styles.menuItem}>Ayuda</Link>
           <Link href="/comunidad" className={styles.menuItem}>Comunidad</Link>
+          {isAuthenticated && (
+            <Link href="/perfil" className={styles.menuItem}>Mi Perfil</Link>
+          )}
         </div>
 
         {/* Actions */}
@@ -185,6 +188,11 @@ export function Navbar() {
           <Link href="/comunidad" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
             Comunidad
           </Link>
+          {isAuthenticated && (
+            <Link href="/perfil" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
+              Mi Perfil
+            </Link>
+          )}
         </nav>
 
         <div className={styles.mobileActions}>
