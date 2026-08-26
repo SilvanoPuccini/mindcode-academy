@@ -1,13 +1,13 @@
 import { LoadingBrand } from "@/components/LoadingBrand/LoadingBrand";
-import gridStyles from "../../loading.module.scss";
+import styles from "./loading.module.scss";
 
 // Route-level loading for /course/[slug]: the standardized branded
-// spinner with contextual copy, over the shared grid backdrop.
+// spinner with contextual copy. Light and transparent by design —
+// no fixed overlays, no dark takeover.
 export default function Loading() {
   return (
-    <div className={gridStyles.loadingContainer} aria-busy="true" aria-label="Cargando curso">
+    <div className={styles.wrap} aria-busy="true" aria-label="Cargando curso">
       <LoadingBrand text="Cargando curso…" />
-      <div className={gridStyles.gridBg} />
     </div>
   );
 }

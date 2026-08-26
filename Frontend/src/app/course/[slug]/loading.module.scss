@@ -1,0 +1,8 @@
+// Light, transparent loading state for /course/[slug]:
+// centered branded spinner, no fixed overlay, no dark takeover.
+.wrap {
+  min-height: 65vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

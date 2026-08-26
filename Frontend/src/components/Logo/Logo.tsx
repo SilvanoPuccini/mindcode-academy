@@ -45,31 +45,34 @@ export function Logo({
       >
         <defs>
           <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#1E293B" />
-            <stop offset="1" stopColor="#0F172A" />
+            <stop offset="0" stopColor="#EA580C" />
+            <stop offset="1" stopColor="#F59E0B" />
           </linearGradient>
         </defs>
-        <rect width="64" height="64" rx="14" fill={`url(#${gradientId})`} />
+        {/* Transparent background: pure [MC] mark in brand gradient */}
         <g
-          stroke="#FFFFFF"
-          strokeWidth="4"
+          stroke={`url(#${gradientId})`}
+          strokeWidth="3.2"
           strokeLinecap="round"
           strokeLinejoin="round"
           fill="none"
         >
-          {/* Left angle bracket */}
-          <path d="M13 22 L5 32 L13 41" />
+          {/* Left square bracket */}
+          <path d="M17 15 H9 V49 H17" />
           {/* Glued MC ligature */}
-          <path d="M17.5 41 L17.5 25 L22.5 33 L27.5 25 L27.5 41" />
-          <path d="M43.5 28.2 A7.5 7.5 0 1 0 43.5 37.8" />
-          {/* Right angle bracket */}
-          <path d="M51 22 L59 32 L51 41" />
+          <path d="M22 43 L22 23 L26.5 32.5 L31 23 L31 43" />
+          <path d="M42.8 27.3 A7 7 0 1 0 42.8 38.7" />
+          {/* Right square bracket */}
+          <path d="M47 15 H55 V49 H47" />
         </g>
       </svg>
 
       {withWordmark && (
         <span className={styles.wordmark}>
-          <span className={styles.wordmarkTitle}>MindCode</span>
+          <span className={styles.wordmarkTitle}>
+            <span className={styles.titlePrimary}>Mind</span>
+            <span className={styles.titleAccent}>Code</span>
+          </span>
           <span className={styles.wordmarkSubtitle}>Academy</span>
         </span>
       )}
