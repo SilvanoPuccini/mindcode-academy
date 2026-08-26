@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { VideoPlayer, VideoPlayerProps, getYouTubeId } from "./VideoPlayer";
 
@@ -24,6 +24,14 @@ describe("VideoPlayer", () => {
   it("renders the title as fallback text", () => {
     render(<VideoPlayer {...mockProps} />);
     expect(screen.getByText(mockProps.title)).toBeInTheDocument();
+  });
+
+  it("fires onEnded when the native video finishes playing", () => {
+    const onEnded = vi.fn();
+    render(<VideoPlayer {...mockProps} onEnded={onEnded} />);
+    const video = screen.getByTestId("video-element");
+    video.dispatchEvent(new Event("ended"));
+    expect(onEnded).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -63,27 +71,67 @@ describe("VideoPlayer YouTube support", () => {
     title: "Clase con YouTube",
   };
 
-  it("renders an iframe instead of a native video", () => {
+  interface MockPlayerOptions {
+    videoId: string;
+    host?: string;
+    playerVars?: Record<string, unknown>;
+    events?: {
+      onStateChange?: (event: { data: number; target: unknown }) => void;
+    };
+  }
+
+  class MockYTPlayer {
+    elementId: string;
+    options: MockPlayerOptions;
+    destroy = vi.fn();
+
+    constructor(elementId: string, options: MockPlayerOptions) {
+      this.elementId = elementId;
+      this.options = options;
+      playerInstances.push(this);
+    }
+  }
+
+  // Reset before each test so instances don't leak across assertions.
+  let playerInstances: MockYTPlayer[];
+
+  beforeEach(() => {
+    playerInstances = [];
+    window.YT = {
+      Player: MockYTPlayer,
+      PlayerState: {
+        ENDED: 0,
+        PLAYING: 1,
+        PAUSED: 2,
+        BUFFERING: 3,
+        CUED: 5,
+        UNSTARTED: -1,
+      },
+    } as unknown as NonNullable<Window["YT"]>;
+  });
+
+  afterEach(() => {
+    delete window.YT;
+  });
+
+  it("renders the YouTube player container instead of a native video", () => {
     render(<VideoPlayer {...youTubeProps} />);
     expect(screen.queryByTestId("video-element")).not.toBeInTheDocument();
-    expect(screen.getByTitle("Clase con YouTube").tagName).toBe("IFRAME");
+    expect(screen.getByTestId("youtube-player-container")).toBeInTheDocument();
   });
 
-  it("embeds the privacy-enhanced youtube-nocookie player", () => {
+  it("instantiates YT.Player with the extracted videoId", async () => {
     render(<VideoPlayer {...youTubeProps} />);
-    const iframe = screen.getByTitle("Clase con YouTube");
-    expect(iframe).toHaveAttribute(
-      "src",
-      "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"
-    );
-    expect(iframe).toHaveAttribute("allowfullscreen");
+    await waitFor(() => expect(playerInstances).toHaveLength(1));
+    expect(playerInstances[0].options.videoId).toBe("dQw4w9WgXcQ");
   });
 
-  it("also detects youtu.be and shorts links as embeddable", () => {
+  it("also detects youtu.be and shorts links as embeddable", async () => {
     const { unmount } = render(
       <VideoPlayer src="https://youtu.be/dQw4w9WgXcQ" title="Corta" />
     );
-    expect(screen.getByTitle("Corta").tagName).toBe("IFRAME");
+    await waitFor(() => expect(playerInstances).toHaveLength(1));
+    expect(playerInstances[0].options.videoId).toBe("dQw4w9WgXcQ");
     unmount();
 
     render(
@@ -92,6 +140,36 @@ describe("VideoPlayer YouTube support", () => {
         title="Short"
       />
     );
-    expect(screen.getByTitle("Short").tagName).toBe("IFRAME");
+    await waitFor(() => expect(playerInstances).toHaveLength(2));
+    expect(playerInstances[1].options.videoId).toBe("dQw4w9WgXcQ");
+  });
+
+  it("calls onEnded when the player reports the ENDED state", async () => {
+    const onEnded = vi.fn();
+    render(<VideoPlayer {...youTubeProps} onEnded={onEnded} />);
+    await waitFor(() => expect(playerInstances).toHaveLength(1));
+
+    const onStateChange = playerInstances[0].options.events?.onStateChange;
+    onStateChange?.({ data: window.YT!.PlayerState.ENDED, target: playerInstances[0] });
+
+    expect(onEnded).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not call onEnded for non-ENDED state changes", async () => {
+    const onEnded = vi.fn();
+    render(<VideoPlayer {...youTubeProps} onEnded={onEnded} />);
+    await waitFor(() => expect(playerInstances).toHaveLength(1));
+
+    const onStateChange = playerInstances[0].options.events?.onStateChange;
+    onStateChange?.({ data: window.YT!.PlayerState.PLAYING, target: playerInstances[0] });
+
+    expect(onEnded).not.toHaveBeenCalled();
+  });
+
+  it("destroys the player on unmount", async () => {
+    const { unmount } = render(<VideoPlayer {...youTubeProps} />);
+    await waitFor(() => expect(playerInstances).toHaveLength(1));
+    unmount();
+    expect(playerInstances[0].destroy).toHaveBeenCalledTimes(1);
   });
 });

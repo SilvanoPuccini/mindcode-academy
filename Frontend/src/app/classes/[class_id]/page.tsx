@@ -210,9 +210,14 @@ export default function ClassPage() {
   // classes of the same course doesn't refetch the roster every time.
   const temarioCacheRef = useRef<Map<string, Class[]>>(new Map());
 
+  // Guards against POSTing progress more than once per class view (the
+  // YouTube player can fire ENDED more than once for the same video).
+  const completedRef = useRef(false);
+
   useEffect(() => {
     if (!classId) return;
 
+    completedRef.current = false;
     let cancelled = false;
 
     async function loadTemario(courseSlug: string): Promise<void> {
@@ -356,6 +361,23 @@ export default function ClassPage() {
   const backHref = courseSlug ? `/course/${courseSlug}` : "/#catalogo";
   const backLabel = courseSlug ? "Volver al curso" : "Volver al catálogo";
 
+  // Marks the class as watched once playback ends. Fire-and-forget: a
+  // network failure here shouldn't block the user, the video already
+  // finished playing.
+  function handleVideoEnded(): void {
+    if (!isLoggedIn) return;
+    if (completedRef.current) return;
+    if (classData?.course_id === undefined) return;
+
+    completedRef.current = true;
+    apiFetch(`/progress/lesson/${classData.id}?course_id=${classData.course_id}`, {
+      method: "POST",
+      skipAuthRedirect: true,
+    }).catch((error) => {
+      console.error("Failed to update lesson progress", error);
+    });
+  }
+
   return (
     <main className={styles.page}>
       <ScrollToTopOnMount />
@@ -385,7 +407,7 @@ export default function ClassPage() {
             <section className={styles.mainCol}>
               <div className={styles.stage}>
                 <div className={styles.playerWrap}>
-                  <VideoPlayer src={video} title={title} />
+                  <VideoPlayer src={video} title={title} onEnded={handleVideoEnded} />
                 </div>
               </div>
 
