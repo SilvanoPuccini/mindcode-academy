@@ -3,9 +3,13 @@
 > Plataforma de cursos online multi-plataforma. Mi propia versión del proyecto final del curso de **Claude Code de Platzi**, evolucionada a producto completo: desplegada, segura y rediseñada.
 
 <p align="center">
-  <!-- TODO: reemplazar por screenshots reales -->
-  <img src="https://placehold.co/900x420/0F172A/FFFFFF/png?text=Screenshot+del+cat%C3%A1logo" alt="MindCode Academy — screenshot" width="880" />
-  <br/><sub><i>Catálogo estilo Netflix · dark & light · buscador inteligente</i></sub>
+  <a href="https://mindcode-academy.vercel.app">
+    <img src="./docs/screenshot.png" alt="MindCode Academy — Catálogo de cursos" width="880" />
+  </a>
+  <br/>
+  <a href="https://mindcode-academy.vercel.app">
+    <img src="https://img.shields.io/badge/mindcode--academy.vercel.app-F59E0B?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Sitio web" />
+  </a>
 </p>
 
 🔗 **Producción**
@@ -31,7 +35,7 @@
 - 🖼️ Open Graph dinámico para compartir links bonitos
 
 ### Calidad
-- ✅ 145 tests frontend (Vitest + RTL) · suite pytest backend
+- ✅ 172 tests frontend (Vitest + RTL) · suite pytest backend
 - ✅ CI/CD: GitHub Actions + deploy automático en Vercel (front) y Render (API)
 
 ## 🛠️ Stack
@@ -91,12 +95,6 @@ cd Frontend && yarn test          # Vitest + React Testing Library
 cd Backend  && make test          # pytest dentro de Docker
 ```
 
-## 📸 Galería
-
-> 🚧 Espacio reservado para más capturas (aula, reproductor, dark mode).
-
-<!-- Añadir aquí: aula.png, player.png, dark-home.png -->
-
 ---
 
 ## 🎓 Origen y créditos
@@ -111,4 +109,4 @@ Este proyecto nació como entrega del curso **[Claude Code de Platzi](https://ww
 
 ---
 
-<div align="center"><sub>Hecho con ☕ y Claude Code</sub></div>
+<div align="center"><sub>Hecho con ☕ y dedicación</sub></div>

@@ -201,36 +201,52 @@
   font-size: 0.95rem;
 }
 
-// Logged-in state: avatar + name + logout, replacing the
-// login/register buttons once there's an active session.
+// Logged-in state: avatar + name (link to /perfil) + logout icon.
 .userMenu {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
+.userProfileLink {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  border-radius: var(--radius-full);
+  padding: 0.2rem 0.6rem 0.2rem 0.2rem;
+  transition: background var(--speed-fast) ease;
+
+  &:hover {
+    background: var(--bg-tertiary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+}
+
 .userAvatar {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  // Brand-on-tint chip: keeps the initial readable
-  // in both themes without hardcoding colors.
   background: var(--primary-light);
   border: 1px solid var(--primary-border);
   color: var(--primary-hover);
   font-family: var(--font-space);
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   flex-shrink: 0;
 }
 
 .userName {
   color: var(--text-primary);
   font-family: var(--font-inter);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   max-width: 140px;
   overflow: hidden;
@@ -239,9 +255,35 @@
 }
 
 .btnLogout {
-  @include btn-ghost;
-  padding: 0.6rem 1.2rem;
-  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--speed-fast) ease,
+    border-color var(--speed-fast) ease,
+    color var(--speed-fast) ease,
+    transform var(--speed-fast) ease;
+
+  &:hover {
+    background: var(--primary-light);
+    border-color: var(--primary-border);
+    color: var(--primary-hover);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
 }
 
 // ============================================
@@ -406,6 +448,20 @@
   }
 }
 
+.mobileUserProfileLink {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  padding: 0.3rem 0.6rem 0.3rem 0.3rem;
+  border-radius: var(--radius-full);
+  transition: background var(--speed-fast) ease;
+
+  &:hover {
+    background: var(--bg-tertiary);
+  }
+}
+
 .mobileUserMenu {
   display: flex;
   flex-direction: column;
@@ -428,4 +484,97 @@
   font-family: var(--font-inter);
   font-size: 0.9rem;
   font-weight: 600;
+}
+
+// ============================================
+// Logout Confirmation Modal
+// ============================================
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modalContent {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-4);
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  animation: modalSlide 0.2s ease;
+}
+
+@keyframes modalSlide {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modalIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  margin-bottom: var(--space-2);
+}
+
+.modalTitle {
+  font-family: var(--font-space);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.modalText {
+  font-family: var(--font-inter);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+.modalActions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+}
+
+.modalCancelBtn {
+  @include btn-ghost;
+  padding: 0.65rem 1.4rem;
+  font-size: 0.9rem;
+}
+
+.modalConfirmBtn {
+  @include btn-primary;
+  padding: 0.65rem 1.4rem;
+  font-size: 0.9rem;
+  background: #ef4444;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.25);
+
+  &:hover {
+    background: #dc2626;
+    box-shadow: 0 0 18px rgba(239, 68, 68, 0.4);
+  }
 }

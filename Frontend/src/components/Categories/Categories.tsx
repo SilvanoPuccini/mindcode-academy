@@ -1,35 +1,36 @@
 "use client";
 
-import { useMemo, useState, useRef, useCallback } from 'react';
+import { useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useCourses } from '@/contexts/CourseContext';
 import { buildCategories } from '@/lib/course-taxonomy';
 import styles from './Categories.module.scss';
 
-// Reel: 2 rows × 5 columns = 10 visible categories per page.
-// Hover for 3 seconds on the reel to expand and show all categories.
+// Carousel: 2 rows × 5 columns = 10 visible categories.
+// Auto-advances every 3 seconds. Pauses on hover.
 const COLS = 5;
 const ROWS = 2;
 const PAGE_SIZE = COLS * ROWS;
-const HOVER_EXPAND_DELAY = 3000;
+const AUTO_INTERVAL = 3000;
 
 export function Categories() {
   const { allCourses, filters, setFilters } = useCourses();
   const categories = useMemo(() => buildCategories(allCourses), [allCourses]);
 
   const [page, setPage] = useState(0);
-  const [expanded, setExpanded] = useState(false);
-  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [paused, setPaused] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const totalPages = Math.ceil(categories.length / PAGE_SIZE);
-  const needsReel = categories.length > PAGE_SIZE;
+  const needsCarousel = categories.length > PAGE_SIZE;
 
-  // Visible slice: when expanded show everything, otherwise current page.
-  const visibleCategories = expanded
-    ? categories
-    : categories.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
+  // Current page slice
+  const visibleCategories = useMemo(
+    () => categories.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE),
+    [categories, page]
+  );
 
-  // Split visible categories into rows for the grid.
+  // Split into rows
   const rows = useMemo(() => {
     const result: typeof categories[] = [];
     for (let i = 0; i < visibleCategories.length; i += COLS) {
@@ -38,27 +39,26 @@ export function Categories() {
     return result;
   }, [visibleCategories]);
 
-  const handlePrev = useCallback(() => {
-    setPage((p) => Math.max(0, p - 1));
-  }, []);
+  // Auto-advance
+  useEffect(() => {
+    if (!needsCarousel || paused) {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      return;
+    }
+    intervalRef.current = setInterval(() => {
+      setPage((p) => (p + 1) % totalPages);
+    }, AUTO_INTERVAL);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [needsCarousel, paused, totalPages]);
 
-  const handleNext = useCallback(() => {
-    setPage((p) => Math.min(totalPages - 1, p + 1));
+  const handlePrev = useCallback(() => {
+    setPage((p) => (p - 1 + totalPages) % totalPages);
   }, [totalPages]);
 
-  const handleMouseEnter = useCallback(() => {
-    if (!needsReel) return;
-    hoverTimerRef.current = setTimeout(() => setExpanded(true), HOVER_EXPAND_DELAY);
-  }, [needsReel]);
-
-  const handleMouseLeave = useCallback(() => {
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = null;
-    }
-    setExpanded(false);
-    // Snap page back to 0 if we collapsed past the end.
-    setPage((p) => Math.min(p, totalPages - 1));
+  const handleNext = useCallback(() => {
+    setPage((p) => (p + 1) % totalPages);
   }, [totalPages]);
 
   const handleCategoryClick = (categoryId: number) => {
@@ -83,16 +83,15 @@ export function Categories() {
         </h2>
 
         <div
-          className={styles.reelWrapper}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          className={styles.carouselWrapper}
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
         >
           {/* Prev arrow */}
-          {needsReel && !expanded && (
+          {needsCarousel && (
             <button
               className={`${styles.navBtn} ${styles.navPrev}`}
               onClick={handlePrev}
-              disabled={page === 0}
               aria-label="Categorías anteriores"
             >
               <ChevronLeft size={22} aria-hidden="true" />
@@ -100,9 +99,9 @@ export function Categories() {
           )}
 
           {/* Category grid: 2 rows × 5 cols */}
-          <div className={`${styles.reel} ${expanded ? styles.expanded : ''}`}>
+          <div className={styles.carousel}>
             {rows.map((row, rowIdx) => (
-              <div key={rowIdx} className={styles.row}>
+              <div key={`${page}-${rowIdx}`} className={styles.row}>
                 {row.map((category) => {
                   const Icon = category.icon;
                   const isActive = filters.category === category.id;
@@ -123,7 +122,7 @@ export function Categories() {
                     </button>
                   );
                 })}
-                {/* Fill incomplete rows so alignment stays consistent */}
+                {/* Fill incomplete rows */}
                 {row.length < COLS &&
                   Array.from({ length: COLS - row.length }).map((_, i) => (
                     <div key={`empty-${i}`} className={styles.cardPlaceholder} />
@@ -133,33 +132,16 @@ export function Categories() {
           </div>
 
           {/* Next arrow */}
-          {needsReel && !expanded && (
+          {needsCarousel && (
             <button
               className={`${styles.navBtn} ${styles.navNext}`}
               onClick={handleNext}
-              disabled={page >= totalPages - 1}
               aria-label="Siguientes categorías"
             >
               <ChevronRight size={22} aria-hidden="true" />
             </button>
           )}
         </div>
-
-        {/* Page dots when in reel mode */}
-        {needsReel && !expanded && totalPages > 1 && (
-          <div className={styles.dots} role="tablist" aria-label="Páginas de categorías">
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <button
-                key={i}
-                className={`${styles.dot} ${i === page ? styles.dotActive : ''}`}
-                onClick={() => setPage(i)}
-                role="tab"
-                aria-selected={i === page}
-                aria-label={`Página ${i + 1}`}
-              />
-            ))}
-          </div>
-        )}
       </div>
     </section>
   );

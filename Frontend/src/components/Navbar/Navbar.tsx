@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { Moon, Sun, Search as SearchIcon } from 'lucide-react';
+import { Moon, Sun, Search as SearchIcon, LogOut } from 'lucide-react';
 import styles from './Navbar.module.scss';
 import { useCourses } from '@/contexts/CourseContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -15,6 +15,7 @@ import { Logo } from '@/components/Logo/Logo';
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const { favorites } = useCourses();
   const { theme, toggleTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
@@ -22,12 +23,30 @@ export function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const handleLogout = () => {
-    // Fire-and-forget: navigation shouldn't wait for the cookie cleanup.
+  const handleLogout = useCallback(() => {
+    setShowLogoutModal(true);
+  }, []);
+
+  const confirmLogout = useCallback(() => {
+    setShowLogoutModal(false);
     void logout();
     setMobileMenuOpen(false);
     router.push('/');
-  };
+  }, [logout, router]);
+
+  const cancelLogout = useCallback(() => {
+    setShowLogoutModal(false);
+  }, []);
+
+  // Close modal on Escape
+  useEffect(() => {
+    if (!showLogoutModal) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowLogoutModal(false);
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [showLogoutModal]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -53,12 +72,6 @@ export function Navbar() {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
-  // On the home page the SearchBar is already mounted,
-  // so just scroll to it and focus it. On any other
-  // page (course detail, class, favorites...) navigate
-  // home with the #buscador hash first; the home page's
-  // own effect (app/page.tsx) picks up the hash on
-  // mount and focuses the input once it's rendered.
   const handleSearchClick = () => {
     if (pathname === '/') {
       focusSearchInput();
@@ -67,191 +80,230 @@ export function Navbar() {
     }
   };
 
+  // Avatar letter(s) for logged-in users
+  const avatarLetter = user?.name.charAt(0).toUpperCase() ?? '?';
+
   return (
-    <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`} aria-label="Navegación principal">
-      <div className={styles.container}>
-        {/* Logo */}
-        <Logo withWordmark />
+    <>
+      <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`} aria-label="Navegación principal">
+        <div className={styles.container}>
+          {/* Logo */}
+          <Logo withWordmark />
 
-        {/* Hamburger Button - Mobile Only */}
-        <button
-          className={`${styles.hamburger} ${mobileMenuOpen ? styles.open : ''} ripple-container`}
-          onClick={toggleMobileMenu}
-          aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-          aria-expanded={mobileMenuOpen}
-          {...rippleProps}
-        >
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
+          {/* Hamburger Button - Mobile Only */}
+          <button
+            className={`${styles.hamburger} ${mobileMenuOpen ? styles.open : ''} ripple-container`}
+            onClick={toggleMobileMenu}
+            aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={mobileMenuOpen}
+            {...rippleProps}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
 
-        {/* Menu - Desktop */}
-        <div className={styles.menu}>
-          <Link href="/#catalogo" className={styles.menuItem}>Cursos</Link>
-          {isAuthenticated && (
-            <Link href="/aula" className={styles.menuItem}>Mi Aula</Link>
-          )}
-          <Link href="/favorites" className={styles.menuItem}>
-            Favoritos
-            {favorites.length > 0 && (
-              <span className={styles.badge}>{favorites.length}</span>
+          {/* Menu - Desktop */}
+          <div className={styles.menu}>
+            <Link href="/#catalogo" className={styles.menuItem}>Cursos</Link>
+            {isAuthenticated && (
+              <Link href="/aula" className={styles.menuItem}>Mi Aula</Link>
             )}
-          </Link>
-          <Link href="/ayuda" className={styles.menuItem}>Ayuda</Link>
-          <Link href="/comunidad" className={styles.menuItem}>Comunidad</Link>
-          {isAuthenticated && (
-            <Link href="/perfil" className={styles.menuItem}>Mi Perfil</Link>
-          )}
+            <Link href="/favorites" className={styles.menuItem}>
+              Favoritos
+              {favorites.length > 0 && (
+                <span className={styles.badge}>{favorites.length}</span>
+              )}
+            </Link>
+            <Link href="/ayuda" className={styles.menuItem}>Ayuda</Link>
+            <Link href="/comunidad" className={styles.menuItem}>Comunidad</Link>
+          </div>
+
+          {/* Actions */}
+          <div className={styles.actions}>
+            {/* Theme Toggle */}
+            <button
+              className={`${styles.btnTheme} ripple-container`}
+              onClick={toggleTheme}
+              aria-label={theme === 'light' ? 'Activar modo oscuro' : 'Activar modo claro'}
+              {...rippleProps}
+            >
+              {theme === 'light' ? (
+                <Moon size={20} aria-hidden="true" />
+              ) : (
+                <Sun size={20} aria-hidden="true" />
+              )}
+            </button>
+            <button
+              className={`${styles.btnSearch} ripple-container`}
+              onClick={handleSearchClick}
+              aria-label="Buscar cursos"
+              {...rippleProps}
+            >
+              <SearchIcon size={20} aria-hidden="true" />
+            </button>
+            {isAuthenticated && user ? (
+              <div className={styles.userMenu}>
+                <Link href="/perfil" className={styles.userProfileLink}>
+                  <span className={styles.userAvatar} aria-hidden="true">
+                    {avatarLetter}
+                  </span>
+                  <span className={styles.userName}>{user.name}</span>
+                </Link>
+                <button
+                  type="button"
+                  className={`${styles.btnLogout} ripple-container`}
+                  onClick={handleLogout}
+                  aria-label="Cerrar sesión"
+                  {...rippleProps}
+                >
+                  <LogOut size={18} aria-hidden="true" />
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link href="/login" className={`${styles.btnLogin} ripple-container`} {...rippleProps}>
+                  Iniciar Sesión
+                </Link>
+                <Link href="/register" className={`${styles.btnRegister} ripple-container`} {...rippleProps}>
+                  Registrarse
+                </Link>
+              </>
+            )}
+          </div>
         </div>
 
-        {/* Actions */}
-        <div className={styles.actions}>
-          {/* Theme Toggle */}
-          <button
-            className={`${styles.btnTheme} ripple-container`}
-            onClick={toggleTheme}
-            aria-label={theme === 'light' ? 'Activar modo oscuro' : 'Activar modo claro'}
-            {...rippleProps}
-          >
-            {theme === 'light' ? (
-              <Moon size={20} aria-hidden="true" />
-            ) : (
-              <Sun size={20} aria-hidden="true" />
+        {/* Mobile Menu Overlay */}
+        <div className={`${styles.mobileMenuOverlay} ${mobileMenuOpen ? styles.open : ''}`} onClick={toggleMobileMenu} />
+
+        {/* Mobile Menu */}
+        <div className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ''}`}>
+          <div className={styles.mobileMenuHeader}>
+            <Logo withWordmark onClick={toggleMobileMenu} />
+          </div>
+
+          <nav className={styles.mobileNav}>
+            <Link href="/#catalogo" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
+              Cursos
+            </Link>
+            {isAuthenticated && (
+              <Link href="/aula" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
+                Mi Aula
+              </Link>
             )}
-          </button>
-          <button
-            className={`${styles.btnSearch} ripple-container`}
-            onClick={handleSearchClick}
-            aria-label="Buscar cursos"
-            {...rippleProps}
-          >
-            <SearchIcon size={20} aria-hidden="true" />
-          </button>
-          {isAuthenticated && user ? (
-            <div className={styles.userMenu}>
-              <span className={styles.userAvatar} aria-hidden="true">
-                {user.name.charAt(0).toUpperCase()}
+            <Link href="/favorites" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
+              Favoritos
+              {favorites.length > 0 && (
+                <span className={styles.badge}>{favorites.length}</span>
+              )}
+            </Link>
+            <Link href="/ayuda" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
+              Ayuda
+            </Link>
+            <Link href="/comunidad" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
+              Comunidad
+            </Link>
+            {isAuthenticated && (
+              <Link href="/perfil" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
+                Mi Perfil
+              </Link>
+            )}
+          </nav>
+
+          <div className={styles.mobileActions}>
+            <button
+              className={`${styles.btnSearch} ripple-container`}
+              onClick={() => {
+                toggleMobileMenu();
+                handleSearchClick();
+              }}
+              aria-label="Buscar cursos"
+              {...rippleProps}
+            >
+              <SearchIcon size={20} aria-hidden="true" />
+              <span className={styles.themeLabel}>Buscar</span>
+            </button>
+
+            <button
+              className={`${styles.btnTheme} ripple-container`}
+              onClick={toggleTheme}
+              aria-label={theme === 'light' ? 'Activar modo oscuro' : 'Activar modo claro'}
+              {...rippleProps}
+            >
+              {theme === 'light' ? (
+                <Moon size={20} aria-hidden="true" />
+              ) : (
+                <Sun size={20} aria-hidden="true" />
+              )}
+              <span className={styles.themeLabel}>
+                {theme === 'light' ? 'Modo Oscuro' : 'Modo Claro'}
               </span>
-              <span className={styles.userName}>{user.name}</span>
+            </button>
+
+            {isAuthenticated && user ? (
+              <div className={styles.mobileUserMenu}>
+                <Link href="/perfil" className={styles.mobileUserProfileLink} onClick={toggleMobileMenu}>
+                  <span className={styles.userAvatar} aria-hidden="true">
+                    {avatarLetter}
+                  </span>
+                  <span className={styles.userName}>{user.name}</span>
+                </Link>
+                <button
+                  type="button"
+                  className={`${styles.btnLogout} ripple-container`}
+                  onClick={handleLogout}
+                  {...rippleProps}
+                >
+                  <LogOut size={18} aria-hidden="true" />
+                  Cerrar sesión
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link href="/login" className={`${styles.btnLogin} ripple-container`} onClick={toggleMobileMenu} {...rippleProps}>
+                  Iniciar Sesión
+                </Link>
+                <Link href="/register" className={`${styles.btnRegister} ripple-container`} onClick={toggleMobileMenu} {...rippleProps}>
+                  Registrarse
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      {/* ── Logout Confirmation Modal ─────────────────── */}
+      {showLogoutModal && (
+        <div className={styles.modalOverlay} onClick={cancelLogout} role="dialog" aria-modal="true" aria-labelledby="logout-modal-title">
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalIcon}>
+              <LogOut size={28} aria-hidden="true" />
+            </div>
+            <h3 id="logout-modal-title" className={styles.modalTitle}>
+              ¿Cerrar sesión?
+            </h3>
+            <p className={styles.modalText}>
+              Seguro que querés cerrar sesión? Vas a tener que iniciar sesión de nuevo para acceder a tu aula y progreso.
+            </p>
+            <div className={styles.modalActions}>
               <button
                 type="button"
-                className={`${styles.btnLogout} ripple-container`}
-                onClick={handleLogout}
-                {...rippleProps}
+                className={styles.modalCancelBtn}
+                onClick={cancelLogout}
+              >
+                Quedarme
+              </button>
+              <button
+                type="button"
+                className={styles.modalConfirmBtn}
+                onClick={confirmLogout}
               >
                 Cerrar sesión
               </button>
             </div>
-          ) : (
-            <>
-              <Link href="/login" className={`${styles.btnLogin} ripple-container`} {...rippleProps}>
-                Iniciar Sesión
-              </Link>
-              <Link href="/register" className={`${styles.btnRegister} ripple-container`} {...rippleProps}>
-                Registrarse
-              </Link>
-            </>
-          )}
+          </div>
         </div>
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      <div className={`${styles.mobileMenuOverlay} ${mobileMenuOpen ? styles.open : ''}`} onClick={toggleMobileMenu} />
-
-      {/* Mobile Menu */}
-      <div className={`${styles.mobileMenu} ${mobileMenuOpen ? styles.open : ''}`}>
-        <div className={styles.mobileMenuHeader}>
-          <Logo withWordmark onClick={toggleMobileMenu} />
-          {/* No separate close button: the animated hamburger in the
-              navbar already toggles to an X state and closes the menu. */}
-        </div>
-
-        <nav className={styles.mobileNav}>
-          <Link href="/#catalogo" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
-            Cursos
-          </Link>
-          {isAuthenticated && (
-            <Link href="/aula" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
-              Mi Aula
-            </Link>
-          )}
-          <Link href="/favorites" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
-            Favoritos
-            {favorites.length > 0 && (
-              <span className={styles.badge}>{favorites.length}</span>
-            )}
-          </Link>
-          <Link href="/ayuda" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
-            Ayuda
-          </Link>
-          <Link href="/comunidad" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
-            Comunidad
-          </Link>
-          {isAuthenticated && (
-            <Link href="/perfil" className={styles.mobileMenuItem} onClick={toggleMobileMenu}>
-              Mi Perfil
-            </Link>
-          )}
-        </nav>
-
-        <div className={styles.mobileActions}>
-          <button
-            className={`${styles.btnSearch} ripple-container`}
-            onClick={() => {
-              toggleMobileMenu();
-              handleSearchClick();
-            }}
-            aria-label="Buscar cursos"
-            {...rippleProps}
-          >
-            <SearchIcon size={20} aria-hidden="true" />
-            <span className={styles.themeLabel}>Buscar</span>
-          </button>
-
-          <button
-            className={`${styles.btnTheme} ripple-container`}
-            onClick={toggleTheme}
-            aria-label={theme === 'light' ? 'Activar modo oscuro' : 'Activar modo claro'}
-            {...rippleProps}
-          >
-            {theme === 'light' ? (
-              <Moon size={20} aria-hidden="true" />
-            ) : (
-              <Sun size={20} aria-hidden="true" />
-            )}
-            <span className={styles.themeLabel}>
-              {theme === 'light' ? 'Modo Oscuro' : 'Modo Claro'}
-            </span>
-          </button>
-
-          {isAuthenticated && user ? (
-            <div className={styles.mobileUserMenu}>
-              <span className={styles.userAvatar} aria-hidden="true">
-                {user.name.charAt(0).toUpperCase()}
-              </span>
-              <span className={styles.userName}>{user.name}</span>
-              <button
-                type="button"
-                className={`${styles.btnLogout} ripple-container`}
-                onClick={handleLogout}
-                {...rippleProps}
-              >
-                Cerrar sesión
-              </button>
-            </div>
-          ) : (
-            <>
-              <Link href="/login" className={`${styles.btnLogin} ripple-container`} onClick={toggleMobileMenu} {...rippleProps}>
-                Iniciar Sesión
-              </Link>
-              <Link href="/register" className={`${styles.btnRegister} ripple-container`} onClick={toggleMobileMenu} {...rippleProps}>
-                Registrarse
-              </Link>
-            </>
-          )}
-        </div>
-      </div>
-    </nav>
+      )}
+    </>
   );
 }

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Award,
   BookOpen,
+  Camera,
   Clock,
   Flame,
   LogIn,
@@ -34,6 +35,9 @@ function initialsColor(name: string): string {
   return `hsl(${code}, 55%, 42%)`;
 }
 
+const MAX_AVATAR_SIZE = 2 * 1024 * 1024; // 2 MB
+const AVATAR_ACCEPT = "image/png,image/jpeg,image/webp";
+
 export default function PerfilPage() {
   const { user, loading: authLoading } = useAuth();
   const { allCourses, setAllCourses, favorites } = useCourses();
@@ -46,6 +50,11 @@ export default function PerfilPage() {
   const [formBio, setFormBio] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
+
+  // Avatar upload
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarUploading, setAvatarUploading] = useState(false);
 
   // Hydrate catalog (same pattern as /aula)
   useEffect(() => {
@@ -74,11 +83,64 @@ export default function PerfilPage() {
       setFormEmail(user.email);
       setFormRole(user.role ?? "");
       setFormBio(user.bio ?? "");
+      setAvatarPreview(user.avatar_url ?? null);
     }
   }, [user]);
 
   const loading = authLoading || coursesLoading;
 
+  // ── Avatar upload ──────────────────────────────────────────────
+  const handleAvatarClick = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleAvatarChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      if (file.size > MAX_AVATAR_SIZE) {
+        setSaveMsg("La imagen no puede superar 2 MB.");
+        return;
+      }
+
+      setAvatarUploading(true);
+      try {
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => reject(new Error("Error leyendo archivo"));
+          reader.readAsDataURL(file);
+        });
+
+        setAvatarPreview(dataUrl);
+        await updateProfile({ avatar_url: dataUrl });
+        setSaveMsg("Foto de perfil actualizada");
+      } catch {
+        setSaveMsg("Error al subir la foto. Intentá de nuevo.");
+      } finally {
+        setAvatarUploading(false);
+        // Reset input so re-uploading the same file triggers change
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      }
+    },
+    []
+  );
+
+  const handleRemoveAvatar = useCallback(async () => {
+    setAvatarUploading(true);
+    try {
+      await updateProfile({ avatar_url: undefined });
+      setAvatarPreview(null);
+      setSaveMsg("Foto de perfil eliminada");
+    } catch {
+      setSaveMsg("Error al eliminar la foto.");
+    } finally {
+      setAvatarUploading(false);
+    }
+  }, []);
+
+  // ── Save form ──────────────────────────────────────────────────
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -104,9 +166,32 @@ export default function PerfilPage() {
       setFormEmail(user.email);
       setFormRole(user.role ?? "");
       setFormBio(user.bio ?? "");
+      setAvatarPreview(user.avatar_url ?? null);
     }
     setSaveMsg(null);
   };
+
+  // Determine what to render inside the avatar circle
+  const avatarContent = avatarPreview ? (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={avatarPreview}
+      alt={`Foto de perfil de ${user?.name ?? ""}`}
+      className={styles.avatarImg}
+    />
+  ) : (
+    <span
+      className={styles.avatarInitials}
+      style={{ background: user ? initialsColor(user.name) : "#888" }}
+    >
+      {user
+        ?.name.split(" ")
+        .slice(0, 2)
+        .map((w) => w[0])
+        .join("")
+        .toUpperCase()}
+    </span>
+  );
 
   return (
     <>
@@ -129,27 +214,50 @@ export default function PerfilPage() {
             {/* ── Cover + Avatar ─────────────────────── */}
             <div className={styles.cover}>
               <div className={styles.coverGradient} />
-              <div className={styles.avatarRow}>
-                <div className={styles.avatarWrap}>
-                  <span
-                    className={styles.avatar}
-                    style={{ background: initialsColor(user.name) }}
-                  >
-                    {user.name
-                      .split(" ")
-                      .slice(0, 2)
-                      .map((w) => w[0])
-                      .join("")
-                      .toUpperCase()}
+            </div>
+
+            {/* Avatar row: positioned BELOW cover, never clipped */}
+            <div className={styles.avatarRow}>
+              <div className={styles.avatarWrap}>
+                <button
+                  type="button"
+                  className={styles.avatarBtn}
+                  onClick={handleAvatarClick}
+                  aria-label="Cambiar foto de perfil"
+                  disabled={avatarUploading}
+                >
+                  {avatarContent}
+                  <span className={styles.avatarOverlay}>
+                    <Camera size={20} aria-hidden="true" />
                   </span>
-                  <span className={styles.onlineDot} title="En línea" />
-                </div>
-                <div className={styles.identity}>
-                  <h1 className={styles.displayName}>{user.name}</h1>
-                  <p className={styles.roleLabel}>
-                    {user.role || "Desarrollador"}
-                  </p>
-                </div>
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept={AVATAR_ACCEPT}
+                  className={styles.srOnly}
+                  onChange={handleAvatarChange}
+                  aria-hidden="true"
+                  tabIndex={-1}
+                />
+                {avatarPreview && (
+                  <button
+                    type="button"
+                    className={styles.removeAvatar}
+                    onClick={handleRemoveAvatar}
+                    aria-label="Eliminar foto de perfil"
+                    disabled={avatarUploading}
+                  >
+                    <X size={14} aria-hidden="true" />
+                  </button>
+                )}
+                <span className={styles.onlineDot} title="En línea" />
+              </div>
+              <div className={styles.identity}>
+                <h1 className={styles.displayName}>{user.name}</h1>
+                <p className={styles.roleLabel}>
+                  {user.role || "Desarrollador"}
+                </p>
               </div>
             </div>
 

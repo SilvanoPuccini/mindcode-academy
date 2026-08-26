@@ -34,9 +34,9 @@
 }
 
 // --------------------------------------------
-// Reel wrapper: holds arrows + scrollable grid
+// Carousel wrapper: arrows + grid side by side
 // --------------------------------------------
-.reelWrapper {
+.carouselWrapper {
   position: relative;
   display: flex;
   align-items: center;
@@ -44,20 +44,13 @@
 }
 
 // --------------------------------------------
-// Arrow buttons: reuse the shared arrow-glass
-// mixin from _controls.scss (same as Testimonials).
+// Arrow buttons: arrow-glass from _controls.scss
 // --------------------------------------------
 .navBtn {
   @include arrow-glass;
   flex-shrink: 0;
   z-index: 10;
 
-  // Desktop: centered vertically outside the grid
-  @media (min-width: 769px) {
-    position: relative;
-  }
-
-  // Mobile: overlay on top of the grid
   @media (max-width: 768px) {
     position: absolute;
     top: 50%;
@@ -90,36 +83,18 @@
 }
 
 // --------------------------------------------
-// Reel: fixed-height viewport that holds the
-// 2-row grid. Overflow hidden clips off-page
-// categories. On expand (hover 3s), height
-// grows to fit all rows.
+// Carousel: exactly 2 rows visible. No overflow
+// clipping — both rows always show fully.
 // --------------------------------------------
-.reel {
+.carousel {
   flex: 1;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  // Exactly 2 rows tall (each ~128px card + gap).
-  max-height: calc((128px + var(--space-2)) * 2);
-  transition: max-height 0.35s ease;
-
-  &.expanded {
-    // Let it grow to fit all categories.
-    max-height: 2000px;
-  }
-
-  @media (max-width: 640px) {
-    max-height: calc((110px + var(--space-2)) * 2);
-    &.expanded {
-      max-height: 2000px;
-    }
-  }
 }
 
 // --------------------------------------------
-// Row: up to 5 cards per row, evenly spaced.
+// Row: 5 columns desktop, 3 tablet, 2 mobile.
 // --------------------------------------------
 .row {
   display: grid;
@@ -136,9 +111,7 @@
 }
 
 // --------------------------------------------
-// Category tile: icon chip + name + count.
-// Same card recipe as before, tuned for the
-// 5-column rhythm.
+// Category tile
 // --------------------------------------------
 .card {
   background: var(--bg-card);
@@ -197,8 +170,6 @@
   }
 }
 
-// Invisible placeholder keeps grid alignment
-// when the last row is incomplete.
 .cardPlaceholder {
   min-height: 128px;
 
@@ -235,42 +206,4 @@
   font-family: var(--font-inter);
   font-size: 0.75rem;
   color: var(--text-secondary);
-}
-
-// --------------------------------------------
-// Page dots: small pill indicators below the
-// reel, same visual language as Testimonials.
-// --------------------------------------------
-.dots {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: var(--space-3);
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: var(--radius-full);
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  background: var(--border-color);
-  transition:
-    background var(--speed-fast) ease,
-    width var(--speed-fast) ease;
-
-  &:hover {
-    background: var(--primary-border);
-  }
-
-  &.dotActive {
-    width: 24px;
-    background: var(--primary);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-  }
 }
