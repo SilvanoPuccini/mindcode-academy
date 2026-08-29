@@ -14,10 +14,14 @@ class Settings(BaseSettings):
     # Comma-separated list of allowed CORS origins (e.g. "https://app.vercel.app,http://localhost:3000")
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
 
-    # JWT Configuration
+    # JWT Configuration - shorter expiration for production security
     secret_key: str = "your-secret-key-change-this-in-production-must-be-at-least-32-chars"
     algorithm: str = "HS256"
-    access_token_expire_minutes: int = 60 * 24 * 7  # 7 days
+    access_token_expire_minutes: int = 15  # Short-lived access tokens
+
+    # Rate limiting
+    rate_limit_auth: str = "5/minute"
+    rate_limit_general: str = "100/hour"
 
     # extra="ignore": legacy .env files contain variables that are no longer
     # part of Settings (e.g. POSTGRES_USER, RATE_LIMIT_*); without this,

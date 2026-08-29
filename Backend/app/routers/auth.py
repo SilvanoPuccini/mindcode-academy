@@ -2,7 +2,9 @@
 Authentication endpoints for user registration and login.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
 from app.core.config import ACCESS_TOKEN_COOKIE_NAME, settings
 from app.db.base import get_db
@@ -17,6 +19,7 @@ from app.schemas.user import (
 )
 from app.core.dependencies import get_current_user
 from app.models import User
+from app.middleware.rate_limit import limiter
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -47,7 +50,9 @@ def _set_session_cookie(response: Response, access_token: str) -> None:
 
 
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
+@limiter.limit("5/minute")
 def register(
+    request: Request,
     user_data: UserRegisterRequest,
     response: Response,
     auth_service: AuthService = Depends(get_auth_service)
@@ -88,7 +93,9 @@ def register(
 
 
 @router.post("/login", response_model=TokenResponse)
+@limiter.limit("10/minute")
 def login(
+    request: Request,
     credentials: UserLoginRequest,
     response: Response,
     auth_service: AuthService = Depends(get_auth_service)

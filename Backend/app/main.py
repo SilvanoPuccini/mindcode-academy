@@ -16,6 +16,10 @@ from app.schemas.rating import (
     MyRatingResponse,
     ErrorResponse
 )
+from app.middleware.security_headers import SecurityHeadersMiddleware
+from app.middleware.rate_limit import limiter
+from slowapi.errors import RateLimitExceeded
+from fastapi.responses import JSONResponse
 
 # Import routers
 from app.routers import auth, favorites, progress, certificates
@@ -86,9 +90,24 @@ app.add_middleware(
         if origin.strip()
     ],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept"],
 )
+
+# Security headers middleware (must be before rate limiter)
+app.add_middleware(SecurityHeadersMiddleware)
+
+# Rate limiting: attach limiter to app and register exception handler
+app.state.limiter = limiter
+
+
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request, exc):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Demasiadas solicitudes. Intentá nuevamente más tarde."},
+    )
+
 
 # Include routers
 app.include_router(auth.router)

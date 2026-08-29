@@ -5,6 +5,7 @@ Authentication service for user registration, login, and token management.
 from sqlalchemy.orm import Session
 from app.models import User
 from app.core.security import hash_password, verify_password, create_access_token
+from email_validator import validate_email, EmailNotValidError
 from typing import Optional
 
 
@@ -19,7 +20,7 @@ class AuthService:
         Register a new user.
 
         Args:
-            email: User email
+            email: User email (validated for format and deliverability)
             password: Plain text password
             name: User name
 
@@ -27,8 +28,15 @@ class AuthService:
             User: Created user
 
         Raises:
-            ValueError: If email already exists
+            ValueError: If email already exists or email format is invalid
         """
+        # Validate email format and deliverability
+        try:
+            valid = validate_email(email)
+            email = valid.email  # Normalize email (lowercase, etc.)
+        except EmailNotValidError as e:
+            raise ValueError(f"Email inválido: {str(e)}")
+
         # Check if user already exists
         existing_user = self.db.query(User).filter(User.email == email).first()
         if existing_user:
