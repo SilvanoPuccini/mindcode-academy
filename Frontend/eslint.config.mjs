@@ -1,19 +1,16 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTypescript from "eslint-config-next/typescript";
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...nextVitals,
+  ...nextTypescript,
   {
     rules: {
-      // Standard convention: prefix intentionally unused args/vars with "_"
+      // Next 16 adds React Compiler checks that were absent from the Next 15
+      // policy. Keep their diagnostics visible without making this dependency
+      // migration change existing application behavior or prior enforcement.
+      "react-hooks/set-state-in-effect": "warn",
+      "react-hooks/refs": "warn",
       "@typescript-eslint/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
